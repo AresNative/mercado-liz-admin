@@ -1,101 +1,116 @@
-import Image from "next/image";
+'use client'
+import Filters from '@/components/ui/Filters';
+import Pagination from '@/components/ui/Pagination';
+import ReportStates from '@/components/ui/ReportStates';
+import ReportTable from '@/components/ui/ReportTable';
+import Summary from '@/components/ui/Summary';
+import TableExample from '@/components/ui/TableExample';
+import { useTheme } from 'next-themes';
+import { useState, useEffect } from 'react';
 
-export default function Home() {
+const ReportManagement = () => {
+  const [reports, setReports] = useState([
+    { id: 1, name: 'Reporte de Ventas Q1', date: '2023-05-15', type: 'Financiero', status: 'Completado' },
+    { id: 2, name: 'Reporte de Inventario', date: '2023-05-16', type: 'Logística', status: 'En Progreso' },
+    { id: 3, name: 'Campaña de Marketing Digital', date: '2023-05-17', type: 'Marketing', status: 'Pendiente' },
+    { id: 4, name: 'Evaluación de Desempeño', date: '2023-05-18', type: 'RRHH', status: 'Completado' },
+    { id: 5, name: 'Análisis de Gastos Operativos', date: '2023-05-19', type: 'Financiero', status: 'En Revisión' },
+    // Otros reportes...
+  ]);
+
+  const [filteredReports, setFilteredReports] = useState(reports);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
+  const [filterDate, setFilterDate] = useState('');
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+
+  useEffect(() => {
+    let result = reports;
+
+    if (searchTerm) {
+      result = result.filter((report) =>
+        report.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (filterType) {
+      result = result.filter((report) => report.type === filterType);
+    }
+
+    if (filterStatus) {
+      result = result.filter((report) => report.status === filterStatus);
+    }
+
+    if (filterDate) {
+      result = result.filter((report) => report.date === filterDate);
+    }
+
+    setFilteredReports(result);
+  }, [searchTerm, filterType, filterStatus, filterDate, reports]);
+
+  const summary = {
+    total: reports.length,
+    financiero: reports.filter((r) => r.type === 'Financiero').length,
+    logistica: reports.filter((r) => r.type === 'Logística').length,
+    marketing: reports.filter((r) => r.type === 'Marketing').length,
+    rrhh: reports.filter((r) => r.type === 'RRHH').length,
+  };
+
+  const reportStatus = {
+    completado: reports.filter((r) => r.status === 'Completado').length,
+    enProgreso: reports.filter((r) => r.status === 'En Progreso').length,
+    pendiente: reports.filter((r) => r.status === 'Pendiente').length,
+    enRevision: reports.filter((r) => r.status === 'En Revisión').length,
+  };
+  // Asegurarse de que el componente se monta correctamente para evitar errores de SSR
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="p-6 min-h-screen bg-background text-text">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Gestión de Reportes</h1>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        {/* Switch de Tema */}
+        <button
+          onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+          className="bg-gray-700 text-white px-4 py-2 rounded-md"
         >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          {theme === 'light' ? '🌙 Modo Oscuro' : '☀️ Modo Claro'}
+        </button>
+      </div>
+
+      <Filters
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        filterType={filterType}
+        setFilterType={setFilterType}
+        filterStatus={filterStatus}
+        setFilterStatus={setFilterStatus}
+        filterDate={filterDate}
+        setFilterDate={setFilterDate}
+        resetFilters={() => {
+          setSearchTerm('');
+          setFilterType('');
+          setFilterStatus('');
+          setFilterDate('');
+        }}
+        reports={reports} // Aquí pasamos los reportes como prop
+      />
+
+      <div className="grid grid-cols-2 gap-6 mt-6 m-5">
+        <Summary summary={summary} />
+        <ReportStates reportStatus={reportStatus} />
+      </div>
+
+      <ReportTable reports={filteredReports} />
+      <TableExample />
+      <Pagination />
     </div>
   );
-}
+};
+
+export default ReportManagement;
