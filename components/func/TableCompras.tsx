@@ -139,86 +139,84 @@ export default function ReportesScreenCompras() {
                 <h1 className="text-2xl font-bold">Reporte de Compras</h1>
             </CardHeader>
             <CardBody>
-                {!barcodeEntered ? (
-                    <div className="flex flex-col items-center">
-                        <Input
-                            placeholder="Ingrese el código de barra"
-                            value={barcode}
-                            onChange={(e) => setBarcode(e.target.value)}
-                        />
-                        <Button className="mt-4" onPress={handleBarcodeSubmit}>
-                            Confirmar Código de Barra
-                        </Button>
-                    </div>
-                ) : (
-                    <>
-                        <div className="flex gap-4 mb-4">
-                            {/* Filtros */}
-                            <div>
-                                <Input
-                                    placeholder="Código"
-                                    autoComplete="off"
-                                    value={filters.codigo}
-                                    onChange={(e) => handleFilterChange('codigo', e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <Input
-                                    placeholder="Cuenta"
-                                    autoComplete="off"
-                                    value={filters.cuenta}
-                                    onChange={(e) => handleFilterChange('cuenta', e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <Input
-                                    placeholder="Proveedor"
-                                    autoComplete="off"
-                                    value={filters.proveedor}
-                                    onChange={(e) => handleFilterChange('proveedor', e.target.value)}
-                                />
-                            </div>
+
+                <div className="flex flex-col items-center">
+                    <Input
+                        placeholder="Ingrese el código de barra"
+                        value={barcode}
+                        onChange={(e) => setBarcode(e.target.value)}
+                    />
+                    <Button className="m-4" onPress={handleBarcodeSubmit}>
+                        Confirmar Código de Barra
+                    </Button>
+                </div>
+                <>
+                    <div className="flex gap-4 mb-4">
+                        {/* Filtros */}
+                        <div>
                             <Input
-                                type="date"
-                                autoComplete="on"
-                                placeholder="Fecha de Emisión"
-                                value={filters.fechaEmision}
-                                onChange={(e) => handleFilterChange('fechaEmision', e.target.value)}
+                                placeholder="Código"
+                                autoComplete="off"
+                                value={filters.codigo}
+                                onChange={(e) => handleFilterChange('codigo', e.target.value)}
                             />
                         </div>
-                        <Table
-                            aria-label="Tabla de reportes de compras"
-                            sortDescriptor={list.sortDescriptor}
-                            onSortChange={list.sort}
-                            disableAnimation
-                        >
-                            <TableHeader>
-                                <TableColumn key="codigo" allowsSorting>Código</TableColumn>
-                                <TableColumn key="cuenta" allowsSorting>Cuenta</TableColumn>
-                                <TableColumn key="unidad" allowsSorting>Unidad</TableColumn>
-                                <TableColumn key="cantidad" allowsSorting>Cantidad</TableColumn>
-                                <TableColumn key="costo" allowsSorting>Costo</TableColumn>
-                                <TableColumn key="movID" allowsSorting>Mov ID</TableColumn>
-                                <TableColumn key="proveedor" allowsSorting>Proveedor</TableColumn>
-                                <TableColumn key="proveedor_Nombre" allowsSorting>Proveedor Nombre</TableColumn>
-                            </TableHeader>
-                            <TableBody items={filteredItems} isLoading={isLoading}>
-                                {(item: ReportItem) => (
-                                    <TableRow key={item.compraD_ID}>
-                                        <TableCell>{item.codigo}</TableCell>
-                                        <TableCell>{item.cuenta}</TableCell>
-                                        <TableCell>{item.unidad}</TableCell>
-                                        <TableCell>{item.cantidad}</TableCell>
-                                        <TableCell>{item.costo.toFixed(2)}</TableCell>
-                                        <TableCell>{item.movID}</TableCell>
-                                        <TableCell>{item.proveedor}</TableCell>
-                                        <TableCell>{item.proveedor_Nombre}</TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </>
-                )}
+                        <div>
+                            <Input
+                                placeholder="Cuenta"
+                                autoComplete="off"
+                                value={filters.cuenta}
+                                onChange={(e) => handleFilterChange('cuenta', e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <Input
+                                placeholder="Proveedor"
+                                autoComplete="off"
+                                value={filters.proveedor}
+                                onChange={(e) => handleFilterChange('proveedor', e.target.value)}
+                            />
+                        </div>
+                        <Input
+                            type="date"
+                            autoComplete="on"
+                            placeholder="Fecha de Emisión"
+                            value={filters.fechaEmision}
+                            onChange={(e) => handleFilterChange('fechaEmision', e.target.value)}
+                        />
+                    </div>
+                    <Table
+                        aria-label="Tabla de reportes de compras"
+                        sortDescriptor={list.sortDescriptor}
+                        onSortChange={list.sort}
+                        disableAnimation
+                    >
+                        <TableHeader>
+                            <TableColumn key="codigo" allowsSorting>Código</TableColumn>
+                            <TableColumn key="cuenta" allowsSorting>Cuenta</TableColumn>
+                            <TableColumn key="unidad" allowsSorting>Unidad</TableColumn>
+                            <TableColumn key="cantidad" allowsSorting>Cantidad</TableColumn>
+                            <TableColumn key="costo" allowsSorting>Costo</TableColumn>
+                            <TableColumn key="movID" allowsSorting>Mov ID</TableColumn>
+                            <TableColumn key="proveedor" allowsSorting>Proveedor</TableColumn>
+                            <TableColumn key="proveedor_Nombre" allowsSorting>Proveedor Nombre</TableColumn>
+                        </TableHeader>
+                        <TableBody items={filteredItems} isLoading={isLoading}>
+                            {(item: ReportItem) => (
+                                <TableRow key={item.compraD_ID}>
+                                    <TableCell>{item.codigo}</TableCell>
+                                    <TableCell>{item.cuenta}</TableCell>
+                                    <TableCell>{item.unidad}</TableCell>
+                                    <TableCell>{item.cantidad}</TableCell>
+                                    <TableCell>{item.costo.toFixed(2)}</TableCell>
+                                    <TableCell>{item.movID}</TableCell>
+                                    <TableCell>{item.proveedor}</TableCell>
+                                    <TableCell>{item.proveedor_Nombre}</TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </>
             </CardBody>
         </Card>
     );
