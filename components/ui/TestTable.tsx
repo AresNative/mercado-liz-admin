@@ -10,9 +10,7 @@ import { FileText, FileSpreadsheet } from 'lucide-react'
 import { useAsyncList } from '@react-stately/data'
 import jsPDF from 'jspdf'
 import * as XLSX from 'xlsx'
-
-// Requiere jspdf-autotable
-const autoTable = require('jspdf-autotable');
+import autoTable from "jspdf-autotable"
 
 type ReportItem = {
     id: number;
@@ -61,7 +59,7 @@ export default function ReportesScreen() {
     let list = useAsyncList<ReportItem>({
         async load({ signal }) {
             try {
-                let res = await fetch('http://localhost:5000/api/v1/reporteria/ventas', { signal });
+                let res = await fetch('http://matrizmercadoliz.dyndns.org:29010/api/v1/reporteria/ventas', { signal });
 
                 if (!res.ok) {
                     throw new Error(`Error ${res.status}: ${res.statusText}`);
@@ -161,7 +159,7 @@ export default function ReportesScreen() {
     return (
         <Card className="max-w-[1000px] mx-auto">
             <CardHeader className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold">Reporte de Compras</h1>
+                <h1 className="text-2xl font-bold">Reporte de Ventas</h1>
                 <Dropdown>
                     <DropdownTrigger>
                         <Button variant="flat">

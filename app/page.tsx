@@ -1,4 +1,5 @@
 'use client'
+import ReportesScreenCompras from '@/components/func/TableCompras';
 import Filters from '@/components/ui/Filters';
 import Pagination from '@/components/ui/Pagination';
 import ReportStates from '@/components/ui/ReportStates';
@@ -109,6 +110,8 @@ const ReportManagement = () => {
  */}
       {/* <ReportTable reports={filteredReports} /> */}
       <ReportesScreen />
+
+      <ReportesScreenCompras />
       {/* <Pagination /> */}
     </div>
   );
