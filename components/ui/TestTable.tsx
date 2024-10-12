@@ -9,8 +9,10 @@ import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-o
 import { FileText, FileSpreadsheet } from 'lucide-react'
 import { useAsyncList } from '@react-stately/data'
 import jsPDF from 'jspdf'
-import autoTable from 'jspdf-autotable' // Para agregar tablas a PDFs
 import * as XLSX from 'xlsx'
+
+// Requiere jspdf-autotable
+const autoTable = require('jspdf-autotable');
 
 type ReportItem = {
     id: number;
@@ -99,14 +101,16 @@ export default function ReportesScreen() {
 
     const filteredItems = filterItems(list.items, filters);
 
+    // Extraer valores únicos para sugerencias (autocompletado)
+    const uniqueValues = (key: keyof ReportItem) => {
+        return Array.from(new Set(list.items.map(item => item[key]))).slice(0, 10); // Limitar a 10 sugerencias
+    };
+
     // Función para exportar a PDF
     const exportToPDF = () => {
         const doc = new jsPDF();
-
-        // Agrega un título
         doc.text("Reporte de Compras", 14, 10);
 
-        // Define las columnas y datos de la tabla
         const tableColumns = ["Código", "Unidad", "Cantidad", "Precio", "Mov ID", "Impuesto", "Cliente", "Usuario"];
         const tableRows: any[] = [];
 
@@ -124,14 +128,12 @@ export default function ReportesScreen() {
             tableRows.push(rowData);
         });
 
-        // Agregar la tabla al PDF
         autoTable(doc, {
             head: [tableColumns],
             body: tableRows,
             startY: 20,
         });
 
-        // Guarda el PDF
         doc.save('reporte_compras.pdf');
     };
 
@@ -153,7 +155,6 @@ export default function ReportesScreen() {
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Reporte Compras");
 
-        // Genera el archivo Excel y lo descarga
         XLSX.writeFile(workbook, 'reporte_compras.xlsx');
     };
 
@@ -179,24 +180,48 @@ export default function ReportesScreen() {
             </CardHeader>
             <CardBody>
                 <div className="flex gap-4 mb-4">
-                    <Input
-                        placeholder="Código"
-                        autoComplete="on"
-                        value={filters.codigo}
-                        onChange={(e) => handleFilterChange('codigo', e.target.value)}
-                    />
-                    <Input
-                        placeholder="Unidad"
-                        autoComplete="on"
-                        value={filters.cuenta}
-                        onChange={(e) => handleFilterChange('cuenta', e.target.value)}
-                    />
-                    <Input
-                        placeholder="Cliente"
-                        autoComplete="on"
-                        value={filters.proveedor}
-                        onChange={(e) => handleFilterChange('proveedor', e.target.value)}
-                    />
+                    <div>
+                        <Input
+                            placeholder="Código"
+                            autoComplete="off"
+                            list="codigo-options"
+                            value={filters.codigo}
+                            onChange={(e) => handleFilterChange('codigo', e.target.value)}
+                        />
+                        <datalist id="codigo-options">
+                            {uniqueValues('art').map((codigo, index) => (
+                                <option key={index} value={codigo} />
+                            ))}
+                        </datalist>
+                    </div>
+                    <div>
+                        <Input
+                            placeholder="Cuenta"
+                            autoComplete="off"
+                            list="cuenta-options"
+                            value={filters.cuenta}
+                            onChange={(e) => handleFilterChange('cuenta', e.target.value)}
+                        />
+                        <datalist id="cuenta-options">
+                            {uniqueValues('unit').map((cuenta, index) => (
+                                <option key={index} value={cuenta} />
+                            ))}
+                        </datalist>
+                    </div>
+                    <div>
+                        <Input
+                            placeholder="Proveedor"
+                            autoComplete="off"
+                            list="proveedor-options"
+                            value={filters.proveedor}
+                            onChange={(e) => handleFilterChange('proveedor', e.target.value)}
+                        />
+                        <datalist id="proveedor-options">
+                            {uniqueValues('client').map((proveedor, index) => (
+                                <option key={index} value={proveedor} />
+                            ))}
+                        </datalist>
+                    </div>
                     <Input
                         type="date"
                         autoComplete="on"
