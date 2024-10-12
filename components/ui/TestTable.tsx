@@ -186,13 +186,13 @@ export default function ReportesScreen() {
                         onChange={(e) => handleFilterChange('codigo', e.target.value)}
                     />
                     <Input
-                        placeholder="Cuenta"
+                        placeholder="Unidad"
                         autoComplete="on"
                         value={filters.cuenta}
                         onChange={(e) => handleFilterChange('cuenta', e.target.value)}
                     />
                     <Input
-                        placeholder="Proveedor"
+                        placeholder="Cliente"
                         autoComplete="on"
                         value={filters.proveedor}
                         onChange={(e) => handleFilterChange('proveedor', e.target.value)}
