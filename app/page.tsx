@@ -5,6 +5,7 @@ import ReportStates from '@/components/ui/ReportStates';
 import ReportTable from '@/components/ui/ReportTable';
 import Summary from '@/components/ui/Summary';
 import TableExample from '@/components/ui/TableExample';
+import ReportesScreen from '@/components/ui/TestTable';
 import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
 
@@ -83,7 +84,7 @@ const ReportManagement = () => {
         </button>
       </div>
 
-      <Filters
+      {/*  <Filters
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         filterType={filterType}
@@ -105,10 +106,10 @@ const ReportManagement = () => {
         <Summary summary={summary} />
         <ReportStates reportStatus={reportStatus} />
       </div>
-
-      <ReportTable reports={filteredReports} />
-      <TableExample />
-      <Pagination />
+ */}
+      {/* <ReportTable reports={filteredReports} /> */}
+      <ReportesScreen />
+      {/* <Pagination /> */}
     </div>
   );
 };
