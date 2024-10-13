@@ -7,6 +7,7 @@
   --input-border: #e0e0e0;
   --card-bg: #fff;
   --table-header-bg: #e9ecef;
+  --tr-hover: #f2f2f7;
 }
 
 /* Variables CSS para el tema oscuro */
@@ -19,6 +20,7 @@
   --input-border: #444444;
   --card-bg: #1a1a1a;
   --table-header-bg: #494949;
+  --tr-hover:#000000;
 }
 
 /* Aplicar las variables globales al cuerpo */
@@ -71,4 +73,7 @@ table th {
 table td {
   color: var(--text);
   transition: color 0.3s ease;
+}
+tr:hover{
+  background-color: var(--tr-hover);
 }

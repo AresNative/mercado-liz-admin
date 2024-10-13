@@ -249,20 +249,20 @@ export default function ReportsPage() {
         </div>
 
         <div className="overflow-x-auto rounded-lg border shadow-md">
-          <table className="min-w-full divide-y divide-gray-300 overflow-x-auto">
-            <thead className=" overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-300 table-auto">
+            <thead>
               <tr>
                 {columns.map((col) => (
                   <th
                     key={col.key}
-                    className="px-6 py-3 text-left text-xs font-medium  uppercase"
+                    className="px-6 py-3 text-left text-xs font-medium uppercase whitespace-nowrap"
                   >
                     {col.label}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y overflow-x-auto">
+            <tbody className="divide-y">
               {isLoading ? (
                 <tr>
                   <td colSpan={columns.length} className="text-center py-4">
@@ -271,9 +271,12 @@ export default function ReportsPage() {
                 </tr>
               ) : reportData.length > 0 ? (
                 reportData.map((item, index) => (
-                  <tr key={index} /* className="hover:bg-gray-100" */>
+                  <tr key={index}>
                     {columns.map((col) => (
-                      <td key={col.key} className="px-6 py-4 text-sm ">
+                      <td
+                        key={col.key}
+                        className="px-6 py-4 text-sm whitespace-nowrap"
+                      >
                         {renderCell(item, col.key)}
                       </td>
                     ))}
