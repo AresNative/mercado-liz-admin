@@ -47,14 +47,14 @@ const NavBar = () => {
                   {link.label}
                 </span>
               </Link>
-            ))}{" "}
-            <AuthModal />
+            ))}
             <button
               onClick={() => setTheme(theme === "light" ? "dark" : "light")}
               className="px-4 py-2 rounded-md"
             >
               {theme === "light" ? "🌙 Modo Oscuro" : "☀️ Modo Claro"}
             </button>
+            <AuthModal />
           </div>
         </div>
       </div>
