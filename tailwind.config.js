@@ -1,4 +1,5 @@
-/** @type {import('tailwindcss').Config} */
+const { nextui } = require("@nextui-org/react");
+
 module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,10 +10,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        background: "var(--background)", // Variable CSS de fondo
+        foreground: "var(--foreground)", // Variable CSS de texto
       },
     },
   },
-  plugins: [],
+  plugins: [nextui()],
 };

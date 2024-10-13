@@ -1,9 +1,31 @@
 import Link from "next/link";
+
 export default function Home() {
   return (
-    <div className="p-6 min-h-screen bg-background text-text">
-      <Link href="/Reports">Profile</Link>
-      <Link href="/to-do">To Do</Link>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r p-6">
+      <div className="bg-white rounded-lg shadow-xl p-10 max-w-lg w-full">
+        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
+          Bienvenido a la Aplicación
+        </h1>
+        <p className="text-center text-gray-500 mb-8">
+          Selecciona una opción para empezar:
+        </p>
+
+        <div className="space-y-4">
+          <Link
+            href="/Reports"
+            className="block w-full text-center py-3 px-6 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+          >
+            Ver Reportes
+          </Link>
+          <Link
+            href="/ToDo"
+            className="block w-full text-center py-3 px-6 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition"
+          >
+            Gestionar Tareas
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

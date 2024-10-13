@@ -1,17 +1,8 @@
-import localFont from "next/font/local";
 import "./globals.css";
-import { ThemeProvider } from 'next-themes';
+import { ThemeProvider } from "next-themes";
 import { Providers } from "@/store/provider";
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+import "tailwindcss/tailwind.css";
+import NavBar from "@/components/ui/nav-barr";
 
 export const metadata = {
   title: "Create Next App",
@@ -23,7 +14,12 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <Providers>
-          <ThemeProvider attribute="class">
+          <ThemeProvider
+            attribute="class"
+            enableSystem={true}
+            defaultTheme="system"
+          >
+            <NavBar />
             {children}
           </ThemeProvider>
         </Providers>
