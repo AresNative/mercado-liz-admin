@@ -19,7 +19,7 @@ import { CircleFadingPlus } from "lucide-react";
 
 const Classes = {
   draggable: "StackedListItem--isDraggable",
-  dragging: "bg-yellow-300", // Cambia el color al arrastrar
+  dragging: "bg-purple-600", // Cambia el color al arrastrar
 };
 
 export default function ToDoPage() {
