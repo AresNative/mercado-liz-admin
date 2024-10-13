@@ -26,7 +26,7 @@ const NavBar = () => {
   if (!mounted) return null; // Prevenir renderizado SSR
 
   return (
-    <nav className="bg-background shadow-md">
+    <nav className="shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
@@ -34,7 +34,7 @@ const NavBar = () => {
               Administracion
             </Link>
           </div>
-          <div className="hidden md:flex space-x-4">
+          <div className="flex items-center space-x-4">
             {links.map((link) => (
               <Link key={link.href} href={link.href}>
                 <span
@@ -47,9 +47,7 @@ const NavBar = () => {
                   {link.label}
                 </span>
               </Link>
-            ))}
-          </div>
-          <div className="flex items-center space-x-4">
+            ))}{" "}
             <AuthModal />
             <button
               onClick={() => setTheme(theme === "light" ? "dark" : "light")}

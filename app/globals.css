@@ -55,6 +55,7 @@ button:hover {
 }
 
 /* Estilos para tarjetas */
+nav,
 .card {
   background-color: var(--card-bg);
   transition: background-color 0.3s ease;

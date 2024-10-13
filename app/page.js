@@ -3,8 +3,8 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r p-6">
-      <div className="bg-white rounded-lg shadow-xl p-10 max-w-lg w-full">
-        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
+      <nav className="rounded-lg shadow-xl p-10 max-w-lg w-full">
+        <h1 className="text-3xl font-bold text-center mb-6">
           Bienvenido a la Aplicación
         </h1>
         <p className="text-center text-gray-500 mb-8">
@@ -25,7 +25,7 @@ export default function Home() {
             Gestionar Tareas
           </Link>
         </div>
-      </div>
+      </nav>
     </div>
   );
 }

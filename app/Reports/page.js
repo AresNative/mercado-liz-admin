@@ -211,9 +211,9 @@ export default function ReportsPage() {
 
       <CardBody className="space-y-6">
         <Tabs
+          className="py-4 border-b"
           selectedKey={activeTab}
           onSelectionChange={handleTabChange}
-          className="border-b "
         >
           <Tab key="ventas" title="Reporte de Ventas" />
           <Tab key="compras" title="Reporte de Compras" />
