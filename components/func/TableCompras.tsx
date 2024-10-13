@@ -1,222 +1,282 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/table"
-import { Input } from "@nextui-org/input"
-import { Button } from "@nextui-org/button"
-import { Card, CardHeader, CardBody } from "@nextui-org/card"
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/dropdown"
-import { FileText, FileSpreadsheet } from 'lucide-react'
-import { useAsyncList } from '@react-stately/data'
-import jsPDF from 'jspdf'
-import * as XLSX from 'xlsx'
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+    Table,
+    TableHeader,
+    TableColumn,
+    TableBody,
+    TableRow,
+    TableCell,
+    Input,
+    Button,
+    Card,
+    CardHeader,
+    CardBody,
+    Tabs,
+    Tab,
+    Spinner,
+    Tooltip,
+} from '@nextui-org/react';
+import {
+    BarChart,
+    LineChart,
+    Bar,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Legend,
+    ResponsiveContainer,
+    Tooltip as RechartsTooltip,
+} from 'recharts';
+import { FileText, FileSpreadsheet } from 'lucide-react';
+import jsPDF from 'jspdf';
+import * as XLSX from 'xlsx';
+import 'jspdf-autotable';
 
-// Requiere jspdf-autotable
-const autoTable = require('jspdf-autotable');
-
-type ReportItem = {
-    codigo: string;
-    cuenta: string;
-    unidad: string;
-    compraD_ID: number;
-    compraD_Codigo: string;
-    articulo: string;
-    cantidad: number;
-    costo: number;
-    compra_ID: number;
-    movID: string;
-    fechaEmision: string;
-    proveedor: string;
-    proveedor_Nombre: string;
-}
-
-type Filters = {
-    codigo: string;
-    cuenta: string;
-    proveedor: string;
-    fechaEmision: string;
-}
-
-export default function ReportesScreenCompras() {
-    const [filters, setFilters] = useState<Filters>({
+export default function ImprovedReportsScreen() {
+    const [activeTab, setActiveTab] = useState('ventas');
+    const [filters, setFilters] = useState({
         codigo: '',
         cuenta: '',
         proveedor: '',
         fechaEmision: '',
     });
+    const [barcode, setBarcode] = useState('');
+    const [chartData, setChartData] = useState<any>([]);
+    const [reportData, setReportData] = useState<any>([]);
+    const [columns, setColumns] = useState<any>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const [barcode, setBarcode] = useState<string>('');
-    const [barcodeEntered, setBarcodeEntered] = useState<boolean>(false);
-
-    const handleFilterChange = (field: keyof Filters, value: string) => {
-        setFilters(prev => ({ ...prev, [field]: value }));
-    }
+    const handleFilterChange = (field: any, value: any) => {
+        setFilters((prev) => ({ ...prev, [field]: value }));
+    };
 
     const handleBarcodeSubmit = () => {
-        if (barcode.trim() !== '') {
-            setBarcodeEntered(true);
-            list.reload(); // Recargar la lista cuando se ingrese el código de barras
-        }
-    }
+        if (barcode.trim() !== '') fetchData();
+    };
 
-    const filterItems = (items: ReportItem[], filters: Filters) => {
-        return items.filter((item) => {
-            return (
-                (filters.codigo === '' || item.codigo.toLowerCase().includes(filters.codigo.toLowerCase())) &&
-                (filters.cuenta === '' || item.cuenta.toLowerCase().includes(filters.cuenta.toLowerCase())) &&
-                (filters.proveedor === '' || item.proveedor_Nombre.toLowerCase().includes(filters.proveedor.toLowerCase())) &&
-                (filters.fechaEmision === '' || item.fechaEmision.includes(filters.fechaEmision))
-            );
-        });
-    }
+    const updateChartData = (items: any) => {
+        const aggregatedData = items.reduce((acc: any, item: any) => {
+            const cuenta = item.cuenta || item.art || item.codigo || 'Desconocido';
+            const cantidad = item.cantidad || item.cant || 0;
+            const precio = item.precio || item.price || item.costo || 0;
 
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-
-    let list = useAsyncList<ReportItem>({
-        async load({ signal }) {
-
-            try {
-                let res = await fetch(`http://matrizmercadoliz.dyndns.org:29010/api/v1/reporteria/compras?codigo=${encodeURIComponent(barcode)}`, { signal });
-
-                if (!res.ok) {
-                    throw new Error(`Error ${res.status}: ${res.statusText}`);
-                }
-
-                let json = await res.json();
-                // Mapear los datos al formato deseado
-                let mappedData = json.map((item: any) => ({
-                    codigo: item.codigo,
-                    cuenta: item.cuenta,
-                    unidad: item.unidad,
-                    compraD_ID: item.compraD_ID,
-                    compraD_Codigo: item.compraD_Codigo || '',
-                    articulo: item.articulo,
-                    cantidad: item.cantidad,
-                    costo: item.costo,
-                    compra_ID: item.compra_ID,
-                    movID: item.movID,
-                    fechaEmision: item.fechaEmision,
-                    proveedor: item.proveedor,
-                    proveedor_Nombre: item.proveedor_Nombre,
-                }));
-
-                return {
-                    items: mappedData as ReportItem[],
-                };
-            } catch (error) {
-                console.error("Error fetching data:", error);
-                return { items: [] };
-            } finally {
-                setIsLoading(false);
+            if (!acc[cuenta]) {
+                acc[cuenta] = { cuenta, totalVentas: 0 };
             }
-        },
-        async sort({ items, sortDescriptor }) {
-            return {
-                items: items.sort((a: any, b: any) => {
-                    let first = a[sortDescriptor.column!];
-                    let second = b[sortDescriptor.column!];
+            acc[cuenta].totalVentas += cantidad * precio;
+            return acc;
+        }, {});
+        setChartData(Object.values(aggregatedData));
+    };
 
-                    let firstValue = isNaN(first) ? first : parseInt(first);
-                    let secondValue = isNaN(second) ? second : parseInt(second);
+    const filterItems = (items: any) => {
+        return items.filter((item: any) => {
+            const codigoMatch =
+                filters.codigo === '' ||
+                (item.codigo && item.codigo.toLowerCase().includes(filters.codigo.toLowerCase()));
+            const cuentaMatch =
+                filters.cuenta === '' ||
+                (item.cuenta && item.cuenta.toLowerCase().includes(filters.cuenta.toLowerCase()));
+            const proveedorMatch =
+                filters.proveedor === '' ||
+                (item.cliente && item.cliente.toLowerCase().includes(filters.proveedor.toLowerCase()));
+            const fechaMatch =
+                filters.fechaEmision === '' || (item.movID && item.movID.includes(filters.fechaEmision));
+            return codigoMatch && cuentaMatch && proveedorMatch && fechaMatch;
+        });
+    };
 
-                    let cmp = firstValue < secondValue ? -1 : 1;
+    const fetchData = async () => {
+        setIsLoading(true);
 
-                    if (sortDescriptor.direction === "descending") {
-                        cmp *= -1;
-                    }
+        try {
+            const url = `http://matrizmercadoliz.dyndns.org:29010/api/v1/reporteria/${activeTab}`;
+            const query =
+                activeTab === 'compras' ? `?codigo=${encodeURIComponent(barcode)}` : '';
+            const res = await fetch(`${url}${query}`);
 
-                    return cmp;
-                }),
-            };
-        },
-    });
+            if (!res.ok) {
+                throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
+            }
 
-    const filteredItems = filterItems(list.items, filters);
+            const json = await res.json();
+
+            if (!Array.isArray(json)) {
+                throw new Error('La respuesta de la API no es un array.');
+            }
+
+            // Añadir el campo 'tipo' a cada elemento
+            const dataWithTipo = json.map((item: any) => ({
+                ...item,
+                tipo: activeTab === 'ventas' ? 'venta' : 'compra',
+            }));
+
+            setReportData(dataWithTipo);
+            updateChartData(dataWithTipo);
+
+            // Generar columnas basadas en los datos
+            const generatedColumns = generateColumns(dataWithTipo);
+            setColumns(generatedColumns);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            setReportData([]);
+            setColumns([]); // Aseguramos que las columnas se limpien en caso de error
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const generateColumns = (data: any) => {
+        if (!data || data.length === 0) return [];
+        const keys = Object.keys(data[0]);
+
+        // Excluir claves no deseadas
+        const excludeKeys = ['tipo']; // Agrega más claves si es necesario
+        const filteredKeys = keys.filter((key: any) => !excludeKeys.includes(key));
+
+        // Mapear claves a columnas con etiquetas legibles
+        const columns = filteredKeys.map((key: any) => ({
+            key: key,
+            label: key.charAt(0).toUpperCase() + key.slice(1),
+        }));
+
+        return columns;
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, [activeTab]);
+
+    const exportToPDF = () => {
+        const doc: any = new jsPDF();
+        const tableColumn = columns.map((col: any) => col.label);
+        const tableRows = filterItems(reportData).map((item: any) => {
+            return columns.map((col: any) => item[col.key]);
+        });
+
+        doc.autoTable({
+            head: [tableColumn],
+            body: tableRows,
+        });
+        doc.save('reporte.pdf');
+    };
+
+    const exportToExcel = () => {
+        const dataToExport = filterItems(reportData).map((item: any) => {
+            const row: any = {};
+            columns.forEach((col: any) => {
+                row[col.label] = item[col.key];
+            });
+            return row;
+        });
+        const ws = XLSX.utils.json_to_sheet(dataToExport);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Reporte');
+        XLSX.writeFile(wb, 'reporte.xlsx');
+    };
+
+    const handleTabChange = (key: any) => setActiveTab(String(key));
+
+    const renderCell = useCallback((item: any, columnKey: any) => {
+        return item[columnKey] !== undefined && item[columnKey] !== null
+            ? item[columnKey]
+            : '-';
+    }, []);
 
     return (
-        <Card className="max-w-[1000px] mx-auto">
-            <CardHeader className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold">Reporte de Compras</h1>
-            </CardHeader>
-            <CardBody>
-
-                <div className="flex flex-col items-center">
-                    <Input
-                        placeholder="Ingrese el código de barra"
-                        value={barcode}
-                        onChange={(e) => setBarcode(e.target.value)}
-                    />
-                    <Button className="m-4" onPress={handleBarcodeSubmit}>
-                        Confirmar Código de Barra
+        <Card className="max-w-5xl mx-auto my-8 p-6 rounded-lg shadow-lg">
+            <CardHeader className="flex justify-between items-center pb-4 border-b border-gray-300 ">
+                <h1 className="text-3xl font-semibold ">Gestión de Reportes</h1>
+                <div className="flex space-x-4">
+                    <Button
+                        onClick={exportToPDF}
+                        className="bg-blue-600 hover:bg-blue-700 text-white flex items-center space-x-2"
+                    >
+                        <FileText className="w-5 h-5" /> <span>PDF</span>
+                    </Button>
+                    <Button
+                        onClick={exportToExcel}
+                        className="bg-green-600 hover:bg-green-700 text-white flex items-center space-x-2"
+                    >
+                        <FileSpreadsheet className="w-5 h-5" /> <span>Excel</span>
                     </Button>
                 </div>
-                <>
-                    <div className="flex gap-4 mb-4">
-                        {/* Filtros */}
-                        <div>
-                            <Input
-                                placeholder="Código"
-                                autoComplete="off"
-                                value={filters.codigo}
-                                onChange={(e) => handleFilterChange('codigo', e.target.value)}
-                            />
-                        </div>
-                        <div>
-                            <Input
-                                placeholder="Cuenta"
-                                autoComplete="off"
-                                value={filters.cuenta}
-                                onChange={(e) => handleFilterChange('cuenta', e.target.value)}
-                            />
-                        </div>
-                        <div>
-                            <Input
-                                placeholder="Proveedor"
-                                autoComplete="off"
-                                value={filters.proveedor}
-                                onChange={(e) => handleFilterChange('proveedor', e.target.value)}
-                            />
-                        </div>
-                        <Input
-                            type="date"
-                            autoComplete="on"
-                            placeholder="Fecha de Emisión"
-                            value={filters.fechaEmision}
-                            onChange={(e) => handleFilterChange('fechaEmision', e.target.value)}
-                        />
-                    </div>
-                    <Table
-                        aria-label="Tabla de reportes de compras"
-                        sortDescriptor={list.sortDescriptor}
-                        onSortChange={list.sort}
-                        disableAnimation
+            </CardHeader>
+
+            <CardBody className="space-y-6">
+                <Tabs
+                    selectedKey={activeTab}
+                    onSelectionChange={handleTabChange}
+                    className="border-b border-gray-200 pb-4"
+                >
+                    <Tab key="ventas" className="bg-transparent" title="Reporte de Ventas" />
+                    <Tab key="compras" className="bg-transparent" title="Reporte de Compras" />
+                </Tabs>
+
+                <div className="flex space-x-4">
+                    <Input
+                        placeholder="Código de barras"
+                        value={barcode}
+                        onChange={(e) => setBarcode(e.target.value)}
+                        className="flex-grow"
+                    />
+                    <Button
+                        onClick={handleBarcodeSubmit}
+                        className="bg-blue-500 hover:bg-blue-600 text-white"
                     >
-                        <TableHeader>
-                            <TableColumn key="codigo" allowsSorting>Código</TableColumn>
-                            <TableColumn key="cuenta" allowsSorting>Cuenta</TableColumn>
-                            <TableColumn key="unidad" allowsSorting>Unidad</TableColumn>
-                            <TableColumn key="cantidad" allowsSorting>Cantidad</TableColumn>
-                            <TableColumn key="costo" allowsSorting>Costo</TableColumn>
-                            <TableColumn key="movID" allowsSorting>Mov ID</TableColumn>
-                            <TableColumn key="proveedor" allowsSorting>Proveedor</TableColumn>
-                            <TableColumn key="proveedor_Nombre" allowsSorting>Proveedor Nombre</TableColumn>
-                        </TableHeader>
-                        <TableBody items={filteredItems} isLoading={isLoading}>
-                            {(item: ReportItem) => (
-                                <TableRow key={item.compraD_ID}>
-                                    <TableCell>{item.codigo}</TableCell>
-                                    <TableCell>{item.cuenta}</TableCell>
-                                    <TableCell>{item.unidad}</TableCell>
-                                    <TableCell>{item.cantidad}</TableCell>
-                                    <TableCell>{item.costo.toFixed(2)}</TableCell>
-                                    <TableCell>{item.movID}</TableCell>
-                                    <TableCell>{item.proveedor}</TableCell>
-                                    <TableCell>{item.proveedor_Nombre}</TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </>
+                        Buscar
+                    </Button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={chartData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="cuenta" />
+                            <YAxis />
+                            <RechartsTooltip />
+                            <Legend />
+                            <Bar dataKey="totalVentas" fill="#3b82f6" />
+                        </BarChart>
+                    </ResponsiveContainer>
+
+                    <ResponsiveContainer width="100%" height={300}>
+                        <LineChart data={chartData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="cuenta" />
+                            <YAxis />
+                            <RechartsTooltip />
+                            <Legend />
+                            <Line type="monotone" dataKey="totalVentas" stroke="#10b981" />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
+
+                <Table className="rounded-lg shadow-md">
+                    <TableHeader>
+                        {columns.map((column: any) => (
+                            <TableColumn key={column.key}>{column.label}</TableColumn>
+                        ))}
+                    </TableHeader>
+                    <TableBody
+                        items={filterItems(reportData)}
+                        isLoading={isLoading}
+                        loadingContent={<Spinner label="Cargando..." />}
+                    >
+                        {(item: any) => (
+                            <TableRow key={item.id || item.compra_ID || item.compraD_ID}>
+                                {columns.map((column: any) => (
+                                    <TableCell key={column.key}>
+                                        {renderCell(item, column.key)}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
             </CardBody>
         </Card>
     );

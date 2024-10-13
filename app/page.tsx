@@ -1,4 +1,5 @@
 'use client'
+import ImprovedReportsScreen from '@/components/func/TableCompras';
 import ReportesScreenCompras from '@/components/func/TableCompras';
 import Filters from '@/components/ui/Filters';
 import Pagination from '@/components/ui/Pagination';
@@ -85,34 +86,8 @@ const ReportManagement = () => {
         </button>
       </div>
 
-      {/*  <Filters
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        filterType={filterType}
-        setFilterType={setFilterType}
-        filterStatus={filterStatus}
-        setFilterStatus={setFilterStatus}
-        filterDate={filterDate}
-        setFilterDate={setFilterDate}
-        resetFilters={() => {
-          setSearchTerm('');
-          setFilterType('');
-          setFilterStatus('');
-          setFilterDate('');
-        }}
-        reports={reports} // Aquí pasamos los reportes como prop
-      />
 
-      <div className="grid grid-cols-2 gap-6 mt-6 m-5">
-        <Summary summary={summary} />
-        <ReportStates reportStatus={reportStatus} />
-      </div>
- */}
-      {/* <ReportTable reports={filteredReports} /> */}
-      <ReportesScreen />
-
-      <ReportesScreenCompras />
-      {/* <Pagination /> */}
+      <ImprovedReportsScreen />
     </div>
   );
 };
