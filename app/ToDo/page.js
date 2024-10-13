@@ -150,7 +150,9 @@ export default function ToDoPage() {
           </ModalBody>
           <ModalFooter>
             <Button onClick={onClose}>Cancelar</Button>
-            <Button onClick={handleAddTask}>Agregar</Button>
+            <Button onClick={handleAddTask} color="secondary">
+              Agregar
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -182,7 +184,7 @@ function Container({
   };
 
   return (
-    <article className="bg-white p-4 rounded-lg shadow-lg w-1/4 ">
+    <article className="DragList p-4 rounded-lg shadow-lg w-1/4 ">
       <header className="mb-4">
         <h3 className="text-lg font-bold capitalize">{title}</h3>
       </header>
@@ -190,7 +192,7 @@ function Container({
         {items.map((item, index) => (
           <li
             key={index}
-            className={`bg-gray-100 p-4 rounded-lg shadow-md flex justify-between items-center cursor-move ${Classes.draggable}`}
+            className={`DragChield p-4 rounded-lg shadow-md flex justify-between items-center cursor-move ${Classes.draggable}`}
           >
             <span>{item}</span>
             <div
@@ -220,11 +222,14 @@ function Container({
           </li>
         ))}
       </ul>
-      <Button className="mt-4 bg-transparent" onClick={onAddTask}>
-        <Tooltip content="Agregar tarea" color="secondary">
+      <Tooltip content="Agregar tarea" color="secondary">
+        <Button
+          className="mt-4 bg-transparent hover:bg-slate-200 dark:hover:bg-zinc-900"
+          onClick={onAddTask}
+        >
           <CircleFadingPlus />
-        </Tooltip>
-      </Button>
+        </Button>
+      </Tooltip>
     </article>
   );
 }

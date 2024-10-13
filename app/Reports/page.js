@@ -190,11 +190,9 @@ export default function ReportsPage() {
   }, []);
 
   return (
-    <Card className="max-w-6xl mx-auto my-12 p-8 rounded-xl shadow-lg bg-white">
-      <CardHeader className="flex justify-between items-center pb-6 border-b border-gray-200">
-        <h1 className="text-3xl font-bold text-gray-800">
-          Gestión de Reportes
-        </h1>
+    <Card className="max-w-6xl mx-auto my-12 p-8 rounded-xl shadow-lg">
+      <CardHeader className="flex justify-between items-center pb-6 border-b">
+        <h1 className="text-3xl font-bold">Gestión de Reportes</h1>
         <div className="flex space-x-2">
           <Button
             onClick={exportToPDF}
@@ -215,7 +213,7 @@ export default function ReportsPage() {
         <Tabs
           selectedKey={activeTab}
           onSelectionChange={handleTabChange}
-          className="border-b border-gray-200 "
+          className="border-b "
         >
           <Tab key="ventas" title="Reporte de Ventas" />
           <Tab key="compras" title="Reporte de Compras" />
@@ -250,21 +248,21 @@ export default function ReportsPage() {
           )}
         </div>
 
-        <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-md">
+        <div className="overflow-x-auto rounded-lg border shadow-md">
           <table className="min-w-full divide-y divide-gray-300 overflow-x-auto">
-            <thead className="bg-gray-50 overflow-x-auto">
+            <thead className=" overflow-x-auto">
               <tr>
                 {columns.map((col) => (
                   <th
                     key={col.key}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                    className="px-6 py-3 text-left text-xs font-medium  uppercase"
                   >
                     {col.label}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white overflow-x-auto">
+            <tbody className="divide-y overflow-x-auto">
               {isLoading ? (
                 <tr>
                   <td colSpan={columns.length} className="text-center py-4">
@@ -273,12 +271,9 @@ export default function ReportsPage() {
                 </tr>
               ) : reportData.length > 0 ? (
                 reportData.map((item, index) => (
-                  <tr key={index} className="hover:bg-gray-100">
+                  <tr key={index} /* className="hover:bg-gray-100" */>
                     {columns.map((col) => (
-                      <td
-                        key={col.key}
-                        className="px-6 py-4 text-sm text-gray-900"
-                      >
+                      <td key={col.key} className="px-6 py-4 text-sm ">
                         {renderCell(item, col.key)}
                       </td>
                     ))}
@@ -286,10 +281,7 @@ export default function ReportsPage() {
                 ))
               ) : (
                 <tr>
-                  <td
-                    colSpan={columns.length}
-                    className="text-center py-4 text-gray-500"
-                  >
+                  <td colSpan={columns.length} className="text-center py-4">
                     No hay datos para mostrar.
                   </td>
                 </tr>

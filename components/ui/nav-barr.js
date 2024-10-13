@@ -14,8 +14,8 @@ const NavBar = () => {
 
   const links = [
     { href: "/", label: "Inicio" },
-    { href: "/Reports", label: "Reportes" },
-    { href: "/ToDo", label: "Tareas" },
+    { href: "/Reports", label: "Reports" },
+    { href: "/ToDo", label: "ToDo" },
   ];
 
   // Verificar si el componente se ha montado (para evitar errores SSR)
@@ -26,14 +26,11 @@ const NavBar = () => {
   if (!mounted) return null; // Prevenir renderizado SSR
 
   return (
-    <nav className="bg-background shadow-md dark:bg-gray-900">
+    <nav className="bg-background shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
-            <Link
-              href="/"
-              className="text-xl font-bold text-blue-600 dark:text-white"
-            >
+            <Link href="/" className="text-xl font-bold">
               Administracion
             </Link>
           </div>
@@ -43,8 +40,8 @@ const NavBar = () => {
                 <span
                   className={`px-3 py-2 rounded-md text-sm font-medium cursor-pointer ${
                     router.pathname === link.href
-                      ? "bg-blue-600 text-white"
-                      : "text-gray-600 hover:bg-gray-100 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                      ? "bg-blue-600 text-white hover:text-blue"
+                      : "hover:text-blue"
                   }`}
                 >
                   {link.label}
@@ -56,7 +53,7 @@ const NavBar = () => {
             <AuthModal />
             <button
               onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-              className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+              className="px-4 py-2 rounded-md"
             >
               {theme === "light" ? "🌙 Modo Oscuro" : "☀️ Modo Claro"}
             </button>
