@@ -224,7 +224,7 @@ function Container({
       </ul>
       <Tooltip content="Agregar tarea" color="secondary">
         <Button
-          className="mt-4 bg-transparent hover:bg-slate-200 dark:hover:bg-zinc-900"
+          className="mt-4 bg-transparent dark:hover:bg-zinc-900 hover:bg-slate-200"
           onClick={onAddTask}
         >
           <CircleFadingPlus />
