@@ -51,6 +51,10 @@ export default function ReportsPage() {
   const [columns, setColumns] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    fetchData(activeTab);
+  }, [activeTab]);
+
   const fetchData = async (tab) => {
     setIsLoading(true);
     setReportData([]); // Limpiamos el estado de los datos
