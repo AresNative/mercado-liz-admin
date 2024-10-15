@@ -15,7 +15,7 @@ const NavBar = () => {
   const links = [
     { href: "/", label: "Inicio" },
     { href: "/Reports", label: "Reports" },
-    { href: "/ToDo", label: "ToDo" },
+    { href: "/Tasks", label: "Tasks" },
   ];
 
   // Verificar si el componente se ha montado (para evitar errores SSR)

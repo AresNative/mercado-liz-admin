@@ -19,7 +19,7 @@ export default function Home() {
             Ver Reportes
           </Link>
           <Link
-            href="/ToDo"
+            href="/Tasks"
             className="block w-full text-center py-3 px-6 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition"
           >
             Gestionar Tareas
