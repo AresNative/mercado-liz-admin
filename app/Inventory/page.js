@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Button,
   Input,
@@ -14,7 +14,7 @@ import {
 } from "@nextui-org/react";
 import { FileText, FileSpreadsheet } from "lucide-react";
 import { Bar } from "react-chartjs-2";
-import { useGetReportQuery } from "@/store/server/reducers/api-reducer"; // Ajusta el path según tu configuración
+import { useGetReportQuery } from "@/store/server/reducers/api-reducer";
 
 import {
   Chart as ChartJS,
@@ -38,14 +38,68 @@ ChartJS.register(
 
 const ITEMS_PER_PAGE = 10; // Tamaño de página para la paginación
 
+const DataTable = React.memo(function DataTable({
+  columns,
+  data,
+  onSort,
+  sortConfig,
+}) {
+  return (
+    <div className="overflow-x-auto rounded-lg border shadow-md">
+      <table className="min-w-full divide-y divide-gray-300 table-auto">
+        <thead>
+          <tr>
+            {columns.map((col) => (
+              <th
+                key={col.key}
+                className="px-6 py-3 text-left text-xs font-medium uppercase whitespace-nowrap cursor-pointer"
+                onClick={() => onSort(col.key)}
+              >
+                {col.label}
+                {sortConfig.key === col.key
+                  ? sortConfig.direction === "ascending"
+                    ? " ▲"
+                    : " ▼"
+                  : null}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y">
+          {data.length > 0 ? (
+            data.map((item, index) => (
+              <tr key={index}>
+                {columns.map((col) => (
+                  <td
+                    key={col.key}
+                    className="px-6 py-4 text-sm whitespace-nowrap"
+                  >
+                    {item[col.key]}
+                  </td>
+                ))}
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={columns.length} className="text-center py-4">
+                No hay datos disponibles
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+});
+
 export default function GestionAlmacen() {
   const [activeTab, setActiveTab] = useState("inventario");
   const [barcode, setBarcode] = useState("");
-  const [chartData, setChartData] = useState({ labels: [], datasets: [] });
-  const [tableData, setTableData] = useState([]);
-  const [columns, setColumns] = useState([]); // Guardar las columnas dinámicamente
   const [page, setPage] = useState(1);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null }); // Configuración para ordenar
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: null,
+  });
 
   // Construir el queryParam basado en la existencia o no del código de barras
   const queryParam = barcode
@@ -60,35 +114,35 @@ export default function GestionAlmacen() {
     refetch,
   } = useGetReportQuery(queryParam);
 
-  useEffect(() => {
+  // Memoizar el procesamiento de datos
+  const { chartData, tableData, columns } = useMemo(() => {
     if (reportData && reportData.length > 0) {
-      // Procesar y actualizar los datos para la tabla y el gráfico
       const labels = reportData.map((item) => item.art);
       const data = reportData.map((item) => item.cant);
-
-      setChartData({
-        labels,
-        datasets: [
-          {
-            label: "Stock por Producto",
-            data,
-            backgroundColor: "rgba(59, 130, 246, 0.5)",
-          },
-        ],
-      });
-
-      // Guardar los datos de la tabla y definir dinámicamente las columnas
-      setTableData(reportData);
-      setColumns(
-        Object.keys(reportData[0]).map((key) => ({
-          key,
-          label: key.charAt(0).toUpperCase() + key.slice(1),
-        }))
-      );
+      const columns = Object.keys(reportData[0]).map((key) => ({
+        key,
+        label: key.charAt(0).toUpperCase() + key.slice(1),
+      }));
+      return {
+        chartData: {
+          labels,
+          datasets: [
+            {
+              label: "Stock por Producto",
+              data,
+              backgroundColor: "rgba(59, 130, 246, 0.5)",
+            },
+          ],
+        },
+        tableData: reportData,
+        columns,
+      };
     } else {
-      setTableData([]);
-      setChartData({ labels: [], datasets: [] });
-      setColumns([]);
+      return {
+        chartData: { labels: [], datasets: [] },
+        tableData: [],
+        columns: [],
+      };
     }
   }, [reportData]);
 
@@ -128,14 +182,6 @@ export default function GestionAlmacen() {
     const end = start + ITEMS_PER_PAGE;
     return sortedData.slice(start, end);
   }, [sortedData, page]);
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Spinner label="Cargando datos..." />
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -186,55 +232,12 @@ export default function GestionAlmacen() {
                       }}
                     />
                   </div>
-                  <div className="overflow-x-auto rounded-lg border shadow-md">
-                    {/* Renderizado de tabla HTML */}
-                    <table className="min-w-full divide-y divide-gray-300 table-auto">
-                      <thead>
-                        <tr>
-                          {columns.map((col) => (
-                            <th
-                              key={col.key}
-                              className="px-6 py-3 text-left text-xs font-medium uppercase whitespace-nowrap cursor-pointer"
-                              onClick={() => handleSort(col.key)}
-                            >
-                              {col.label}
-                              {sortConfig.key === col.key
-                                ? sortConfig.direction === "ascending"
-                                  ? " ▲"
-                                  : " ▼"
-                                : null}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y">
-                        {paginatedData.length > 0 ? (
-                          paginatedData.map((item, index) => (
-                            <tr key={index}>
-                              {columns.map((col) => (
-                                <td
-                                  key={col.key}
-                                  className="px-6 py-4 text-sm whitespace-nowrap"
-                                >
-                                  {item[col.key]}
-                                </td>
-                              ))}
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td
-                              colSpan={columns.length}
-                              className="text-center py-4"
-                            >
-                              No hay datos disponibles
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                  {/* Paginación de NextUI */}
+                  <DataTable
+                    columns={columns}
+                    data={paginatedData}
+                    onSort={handleSort}
+                    sortConfig={sortConfig}
+                  />
                   <div className="flex justify-center mt-4">
                     <Pagination
                       isCompact

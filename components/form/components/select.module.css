@@ -1,0 +1,106 @@
+.inputGroup {
+    position: relative;
+    margin: 1rem auto;
+    width: 90%;
+    display: flex;
+        align-items: center;
+}
+
+.inputGroup input {
+    font-size: 100%;
+    padding: 0.8em;
+    outline: none;
+    background: #fff;
+    width: 80%;
+    border-bottom: 1px solid #ccc;
+    flex: .9;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.inputGroup .label {
+    font-size: 100%;
+    position: absolute;
+    left: 0;
+    padding: 1em;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    color: #646464;
+}
+
+.inputGroup input:focus+.label,
+.inputGroup input:valid+.label {
+    transform: translateY(-50%) scale(0.9);
+    margin-left: 1em;
+    border-radius: 0.875rem;
+}
+
+.inputGroup input:focus,
+.inputGroup input:valid {
+    border-color: var(--color-2);
+}
+
+.inputGroup input:has(:invalid),
+.inputGroup input:has(:invalid)+.label {
+    color: #fe6e6e;
+    border-color: #fe6e6e;
+}
+
+.inputGroup button {
+    margin: 0;
+    padding: 10px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    box-shadow: none;
+    border: none;
+    border-radius: 10px;
+}
+
+.selectContainer {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    width: 100%;
+    z-index: 10;
+    overflow-y: auto;
+    max-height: 15rem;
+}
+
+.selectContainer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.selectContainer li {
+    padding: 0.5em;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.selectContainer li:hover {
+    background-color: #f0f0f0;
+}
+
+.clear__button {
+    background-color: transparent;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+}
+
+.clear__button:hover svg path {
+    fill: #444444;
+}
+
+/* .selectContainer li:not(:last-child) {
+    margin-bottom: 5px;
+} */
+/* 
+.selectContainer li:focus {
+    outline: none;
+} */

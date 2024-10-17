@@ -1,15 +1,16 @@
-import { forwardRef } from "react";
+// components/Item.js
+import { GripVertical } from "lucide-react";
+import React from "react";
 
-const Item = forwardRef(({ children, ...props }, ref) => (
-  <div
-    className="px-4 py-2 bg-cyan-600 text-white rounded-lg shadow cursor-pointer"
-    {...props}
-    ref={ref}
-  >
-    {children}
-  </div>
-));
+function Item({ id }) {
+  return (
+    <div className="min-h-15 flex items-center p-4 bg-white dark:bg-neutral-600 shadow-lg rounded border dark:border-neutral-500">
+      <GripVertical className="mr-2 text-neutral-500 dark:text-neutral-300" />
+      <span className="font-medium text-neutral-900 dark:text-neutral-100">
+        {id}
+      </span>
+    </div>
+  );
+}
 
-Item.displayName = "Item";
-
-export default Item;
+export default React.memo(Item);
