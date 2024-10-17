@@ -2,7 +2,7 @@
   --background: #f2f2f7;
   --text: #000000;
   --primary: #0070f3;
-  --secondary: #6c757d;
+  --secondary: #cecece;
   --input-bg: #f0f0f0;
   --input-border: #e0e0e0;
   --card-bg: #fff;
@@ -52,9 +52,9 @@ button {
   transition: background-color 0.3s ease;
 }
 
-button:hover {
+/* button:hover {
   background-color: var(--secondary);
-}
+} */
 
 /* Estilos para tarjetas */
 nav,

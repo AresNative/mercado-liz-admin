@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import AuthModal from "../func/log-in";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
 
 const NavBar = () => {
   const router = useRouter(); // Ruta activa
@@ -16,6 +17,7 @@ const NavBar = () => {
     { href: "/", label: "Inicio" },
     { href: "/Reports", label: "Reports" },
     { href: "/Tasks", label: "Tasks" },
+    { href: "/Inventory", label: "Inventory" },
   ];
 
   // Verificar si el componente se ha montado (para evitar errores SSR)
@@ -52,7 +54,11 @@ const NavBar = () => {
               onClick={() => setTheme(theme === "light" ? "dark" : "light")}
               className="px-4 py-2 rounded-md"
             >
-              {theme === "light" ? "🌙 Modo Oscuro" : "☀️ Modo Claro"}
+              {theme === "light" ? (
+                <Moon className="h-5 w-5" />
+              ) : (
+                <Sun className="h-5 w-5" />
+              )}
             </button>
             <AuthModal />
           </div>

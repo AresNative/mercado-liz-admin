@@ -1,21 +1,51 @@
-import { createSlice } from "@reduxjs/toolkit";
+"use client";
+import { getLocalStorageItem } from "@/store/hooks/localStorage";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const initialState = {
-  isAuthenticated: false,
-  user: null,
-};
+export const getUserData = () => getLocalStorageItem("user_data");
 
-export const auth = createSlice({
-  name: "auth",
-  initialState,
-  reducers: {
-    loginSuccess: (state, action) => {
-      state.isAuthenticated = true;
-      state.user = action.payload;
+export const authApi = createApi({
+  reducerPath: "authApi",
+  refetchOnFocus: true,
+  baseQuery: fetchBaseQuery({
+    baseUrl: process.env.apiUrl,
+    prepareHeaders: (headers, { getState }) => {
+      headers.set("Content-Type", "application/json");
+      const state = getState();
+      const token = state.authReducer.user || getLocalStorageItem("token");
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      return headers;
     },
-  },
+  }),
+  endpoints: (builder) => ({
+    postUserRegister: builder.mutation({
+      query: (data) => ({
+        url: "users/register",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    postUserLogin: builder.mutation({
+      query: (data) => ({
+        url: "users/login",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    postLogut: builder.mutation({
+      query: (data) => ({
+        url: `users/logout`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+  }),
 });
 
-export const { loginSuccess } = auth.actions;
-
-export default auth.reducer;
+export const {
+  usePostLogutMutation,
+  usePostUserLoginMutation,
+  usePostUserRegisterMutation,
+} = authApi;

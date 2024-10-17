@@ -4,7 +4,6 @@ const nextConfig = {
   experimental: {
     appDir: true, // Solo si usas la carpeta /app en tu proyecto
   },
-  "process.env": process.env,
 };
 
 export default nextConfig;

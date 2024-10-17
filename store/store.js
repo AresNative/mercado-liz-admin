@@ -1,10 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 
-import { userApi } from "@/store/server/reducers/user-reducer";
-import { adminApi } from "@/store/server/reducers/admin-reducers";
-
-import authReducer from "@/store/server/reducers/auth-reducer";
+import { api } from "@/store/server/reducers/api-reducer";
+import { authApi } from "@/store/server/reducers/auth-reducer";
 
 import modalReducer from "@/store/reducers/modal-reducer";
 import confirmReducer from "@/store/reducers/confirm-data";
@@ -17,19 +15,18 @@ const model = process.env.NODE_ENV;
 
 export const store = configureStore({
   reducer: {
-    authReducer,
     modal: modalReducer,
     searchReducer,
     filterReducer,
     reloadReducer,
     confirmReducer,
     cuestionReducer,
-    [userApi.reducerPath]: userApi.reducer,
-    [adminApi.reducerPath]: adminApi.reducer,
+    [api.reducerPath]: api.reducer,
+    [authApi.reducerPath]: authApi.reducer,
   },
   devTools: model !== "production",
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({}).concat([userApi.middleware, adminApi.middleware]),
+    getDefaultMiddleware({}).concat([api.middleware, authApi.middleware]),
 });
 
 setupListeners(store.dispatch);

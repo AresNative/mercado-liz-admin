@@ -1,13 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
   Input,
   Button,
   Card,
@@ -16,6 +10,7 @@ import {
   Tabs,
   Tab,
   Spinner,
+  Pagination,
 } from "@nextui-org/react";
 import { FileText, FileSpreadsheet } from "lucide-react";
 import jsPDF from "jspdf";
@@ -32,6 +27,7 @@ import {
   Tooltip as ChartTooltip,
   Legend,
 } from "chart.js";
+import { useGetReportQuery } from "@/store/server/reducers/api-reducer";
 
 ChartJS.register(
   CategoryScale,
@@ -43,69 +39,58 @@ ChartJS.register(
   Legend
 );
 
+const ITEMS_PER_PAGE = 10; // Tamaño de página para la paginación
+
 export default function ReportsPage() {
   const [activeTab, setActiveTab] = useState("ventas");
   const [barcode, setBarcode] = useState("");
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
-  const [reportData, setReportData] = useState([]);
   const [columns, setColumns] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [sortedData, setSortedData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1); // Estado para la página actual
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+
+  const queryParam =
+    activeTab === "compras"
+      ? `compras?codigo=${encodeURIComponent(barcode)}`
+      : activeTab;
+
+  const {
+    data: reportData,
+    error,
+    isLoading,
+    refetch,
+  } = useGetReportQuery(queryParam);
 
   useEffect(() => {
-    fetchData(activeTab);
-  }, [activeTab]);
-
-  const fetchData = async (tab) => {
-    setIsLoading(true);
-    setReportData([]); // Limpiamos el estado de los datos
-    setColumns([]); // Limpiamos las columnas
-
-    try {
-      const url = `http://matrizmercadoliz.dyndns.org:29010/api/v1/reporteria/${tab}`;
-      const query =
-        tab === "compras" ? `?codigo=${encodeURIComponent(barcode)}` : "";
-      const res = await fetch(`${url}${query}`);
-
-      if (!res.ok)
-        throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
-      const json = await res.json();
-      setReportData(json);
-      const isCompras = tab === "compras";
-      updateChartData(json, isCompras);
-    } catch (error) {
-      console.error("Error al cargar los datos:", error);
-      setReportData([]);
-    } finally {
-      setIsLoading(false);
+    if (reportData) {
+      updateChartData(reportData, activeTab === "compras");
+      setColumns(generateColumns(reportData));
+      setSortedData(reportData);
+      setCurrentPage(1); // Reiniciar la página al cambiar de reporte
+    } else {
+      setChartData({ labels: [], datasets: [] });
+      setColumns([]);
+      setSortedData([]);
     }
-  };
+  }, [reportData, activeTab]);
 
   const updateChartData = (items, isCompras = false) => {
     const aggregatedData = items.reduce((acc, item) => {
       const key = isCompras
         ? new Date(item.fechaEmision).toLocaleDateString()
-        : item.cuenta || item.art || item.codigo || "Desconocido";
+        : item.art || item.Articulo || "Desconocido";
 
       const total =
-        (item.cantidad || item.cant || 0) *
-        (item.precio || item.price || item.costo || 0);
+        (item.cant || item.cantidad || item.TotalCantidad || 0) *
+        (item.price || item.costo || item.TotalImporte || 0);
 
       acc[key] = (acc[key] || 0) + total;
       return acc;
     }, {});
 
-    // Formatear los valores con símbolo de moneda
-    const formatter = new Intl.NumberFormat("es-ES", {
-      style: "currency",
-      currency: "USD",
-    });
-
-    const formattedData = Object.values(aggregatedData).map((value) =>
-      formatter.format(value)
-    );
-
     setChartData({
-      labels: Object.keys(aggregatedData), // Fechas o cuentas
+      labels: Object.keys(aggregatedData),
       datasets: [
         {
           label: isCompras ? "Total Compras" : "Total Ventas",
@@ -116,8 +101,6 @@ export default function ReportsPage() {
         },
       ],
     });
-
-    console.log("Datos formateados:", formattedData);
   };
 
   const generateColumns = (data) =>
@@ -128,38 +111,35 @@ export default function ReportsPage() {
         }))
       : [];
 
-  useEffect(() => {
-    setColumns(generateColumns(reportData));
-  }, [reportData]);
+  const handleTabChange = (key) => {
+    setActiveTab(key);
+  };
 
   const exportToPDF = () => {
-    // Crear el documento con orientación 'landscape'
     const doc = new jsPDF({
-      orientation: "landscape", // Horizontal
-      unit: "px", // Unidades en pixeles para mayor control
-      format: "a4", // Formato de hoja A4
+      orientation: "landscape",
+      unit: "px",
+      format: "a4",
     });
 
     const tableColumn = columns.map((col) => col.label);
-    const tableRows = reportData.map((item) =>
+    const tableRows = sortedData.map((item) =>
       columns.map((col) => item[col.key] || "-")
     );
 
-    // Agregar tabla con autoTable
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
-      startY: 20, // Margen superior para que no choque con el borde
-      theme: "striped", // Tema opcional (puede ser 'grid', 'striped', 'plain')
-      headStyles: { fillColor: [41, 128, 185] }, // Estilo del encabezado
+      startY: 20,
+      theme: "striped",
+      headStyles: { fillColor: [41, 128, 185] },
     });
 
-    // Guardar el documento como PDF
     doc.save("reporte.pdf");
   };
 
   const exportToExcel = () => {
-    const dataToExport = reportData.map((item) =>
+    const dataToExport = sortedData.map((item) =>
       columns.reduce(
         (row, col) => ({ ...row, [col.label]: item[col.key] || "-" }),
         {}
@@ -171,30 +151,65 @@ export default function ReportsPage() {
     XLSX.writeFile(wb, "reporte.xlsx");
   };
 
-  const handleTabChange = (key) => {
-    setActiveTab(key);
-    fetchData(key); // Al cambiar de pestaña, se hace una nueva petición.
-  };
-
   const renderCell = useCallback((item, columnKey) => {
     const value = item?.[columnKey] || "-";
 
-    // Verificar si el campo es 'fechaEmision'
     if (columnKey === "fechaEmision" && value !== "-") {
       return new Date(value).toLocaleDateString();
     }
 
-    // Verificar si el campo es 'costo' o 'price'
-    if ((columnKey === "costo" || columnKey === "price") && value !== "-") {
-      return parseFloat(value).toFixed(2); // Formatear a 2 decimales
+    if (
+      (columnKey === "costo" ||
+        columnKey === "price" ||
+        columnKey === "TotalCantidad" ||
+        columnKey === "TotalImporte") &&
+      value !== "-"
+    ) {
+      return parseFloat(value).toFixed(2);
     }
 
-    // Retornar el valor tal cual para otros campos
     return value;
   }, []);
 
+  const handleSort = (columnKey) => {
+    let direction = "ascending";
+    if (sortConfig.key === columnKey && sortConfig.direction === "ascending") {
+      direction = "descending";
+    }
+
+    const sortedArray = [...reportData].sort((a, b) => {
+      if (a[columnKey] < b[columnKey]) {
+        return direction === "ascending" ? -1 : 1;
+      }
+      if (a[columnKey] > b[columnKey]) {
+        return direction === "ascending" ? 1 : -1;
+      }
+      return 0;
+    });
+
+    setSortConfig({ key: columnKey, direction });
+    setSortedData(sortedArray);
+    setCurrentPage(1); // Reiniciar la página al ordenar
+  };
+
+  // Función para obtener los datos paginados
+  const paginatedData = useMemo(() => {
+    return sortedData.slice(
+      (currentPage - 1) * ITEMS_PER_PAGE,
+      currentPage * ITEMS_PER_PAGE
+    );
+  }, [sortedData, currentPage]);
+
+  useEffect(() => {
+    if (paginatedData.length > 0) {
+      updateChartData(paginatedData, activeTab === "compras");
+    } else {
+      setChartData({ labels: [], datasets: [] });
+    }
+  }, [paginatedData, activeTab]);
+
   return (
-    <Card className="max-w-6xl mx-auto my-12 p-8 rounded-xl shadow-lg">
+    <Card className="max-w-6xl mx-auto my-12 p-8 rounded-xl shadow-lg pb-10">
       <CardHeader className="flex justify-between items-center pb-6 border-b">
         <h1 className="text-3xl font-bold">Gestión de Reportes</h1>
         <div className="flex space-x-2">
@@ -221,6 +236,7 @@ export default function ReportsPage() {
         >
           <Tab key="ventas" title="Reporte de Ventas" />
           <Tab key="compras" title="Reporte de Compras" />
+          <Tab key="mermas" title="Reporte de Mermas" />
         </Tabs>
 
         <div className="flex items-center space-x-4">
@@ -230,17 +246,12 @@ export default function ReportsPage() {
             onChange={(e) => setBarcode(e.target.value)}
             className="w-1/2"
           />
-          <Button
-            onClick={() => fetchData(activeTab)}
-            className="bg-black text-white"
-          >
-            Buscar
-          </Button>
         </div>
 
         <div className="h-80">
           {activeTab === "ventas" ? (
             <Bar
+              color="#9BD0F5"
               data={chartData}
               options={{ responsive: true, maintainAspectRatio: false }}
             />
@@ -253,48 +264,72 @@ export default function ReportsPage() {
         </div>
 
         <div className="overflow-x-auto rounded-lg border shadow-md">
-          <table className="min-w-full divide-y divide-gray-300 table-auto">
-            <thead>
-              <tr>
-                {columns.map((col) => (
-                  <th
-                    key={col.key}
-                    className="px-6 py-3 text-left text-xs font-medium uppercase whitespace-nowrap"
-                  >
-                    {col.label}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={columns.length} className="text-center py-4">
-                    <Spinner label="Cargando..." />
-                  </td>
-                </tr>
-              ) : reportData.length > 0 ? (
-                reportData.map((item, index) => (
-                  <tr key={index}>
+          {error ? (
+            <center className="p-5">No hay datos que mostrar</center>
+          ) : (
+            <>
+              <table className="min-w-full divide-y divide-gray-300 table-auto">
+                <thead>
+                  <tr>
                     {columns.map((col) => (
-                      <td
+                      <th
                         key={col.key}
-                        className="px-6 py-4 text-sm whitespace-nowrap"
+                        className="px-6 py-3 text-left text-xs font-medium uppercase whitespace-nowrap cursor-pointer"
+                        onClick={() => handleSort(col.key)}
                       >
-                        {renderCell(item, col.key)}
-                      </td>
+                        {col.label}
+                        {sortConfig.key === col.key
+                          ? sortConfig.direction === "ascending"
+                            ? " ▲"
+                            : " ▼"
+                          : null}
+                      </th>
                     ))}
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={columns.length} className="text-center py-4">
-                    No hay datos para mostrar.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody className="divide-y">
+                  {isLoading ? (
+                    <tr>
+                      <td colSpan={columns.length} className="text-center py-4">
+                        <Spinner label="Cargando..." />
+                      </td>
+                    </tr>
+                  ) : paginatedData.length > 0 ? (
+                    paginatedData.map((item, index) => (
+                      <tr key={index}>
+                        {columns.map((col) => (
+                          <td
+                            key={col.key}
+                            className="px-6 py-4 text-sm whitespace-nowrap"
+                          >
+                            {renderCell(item, col.key)}
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={columns.length} className="text-center py-4">
+                        No hay datos para mostrar.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </>
+          )}
+        </div>
+        {/* Componente de Paginación */}
+        <div className="flex justify-center mt-4">
+          <Pagination
+            isCompact
+            showControls
+            color="secondary"
+            total={Math.ceil(sortedData.length / ITEMS_PER_PAGE)}
+            page={currentPage}
+            onChange={(page) => setCurrentPage(page)}
+            size="lg"
+          />
         </div>
       </CardBody>
     </Card>
