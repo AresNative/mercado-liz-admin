@@ -5,9 +5,9 @@ import { DndContext, DragOverlay, closestCenter } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
+  rectSortingStrategy,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 
 export default function App() {
   const [columns, setColumns] = useState({
@@ -16,39 +16,30 @@ export default function App() {
     "column-C": ["C1", "C2", "C3"],
   });
 
-  const [activeItem, setActiveItem] = useState(null);
+  const [activeId, setActiveId] = useState(null);
 
+  // Start dragging
   function handleDragStart(event) {
     const { active } = event;
-    setActiveItem(active.id);
+    setActiveId(active.id);
   }
 
-  function handleDragEnd(event) {
+  // Dragging over a new position
+  function handleDragOver(event) {
     const { active, over } = event;
 
-    if (!over) {
-      setActiveItem(null);
-      return;
-    }
+    if (!over) return;
 
     const fromColumn = findColumn(active.id);
-    const toColumn = over.id.includes("column") ? over.id : findColumn(over.id);
+    const toColumn = findColumn(over.id);
 
-    if (fromColumn === toColumn) {
-      setColumns((prev) => ({
-        ...prev,
-        [fromColumn]: arrayMove(
-          prev[fromColumn],
-          prev[fromColumn].indexOf(active.id),
-          prev[fromColumn].indexOf(over.id)
-        ),
-      }));
-    } else {
+    // Si las columnas son diferentes, movemos el ítem entre columnas
+    if (fromColumn && toColumn && fromColumn !== toColumn) {
       setColumns((prev) => {
         const updatedFrom = prev[fromColumn].filter(
           (item) => item !== active.id
         );
-        const updatedTo = [...prev[toColumn], active.id];
+        const updatedTo = [...(prev[toColumn] || []), active.id]; // Aseguramos que prev[toColumn] sea iterable
 
         return {
           ...prev,
@@ -57,10 +48,35 @@ export default function App() {
         };
       });
     }
-
-    setActiveItem(null);
   }
 
+  // Drag end
+  function handleDragEnd(event) {
+    const { active, over } = event;
+
+    if (!over) {
+      setActiveId(null);
+      return;
+    }
+
+    const fromColumn = findColumn(active.id);
+    const toColumn = findColumn(over.id);
+
+    if (fromColumn && toColumn && fromColumn === toColumn) {
+      setColumns((prev) => ({
+        ...prev,
+        [fromColumn]: arrayMove(
+          prev[fromColumn],
+          prev[fromColumn].indexOf(active.id),
+          prev[fromColumn].indexOf(over.id)
+        ),
+      }));
+    }
+
+    setActiveId(null); // Clear activeId after dragging
+  }
+
+  // Find the column where the item belongs
   const findColumn = (id) => {
     for (const column in columns) {
       if (columns[column].includes(id)) {
@@ -79,35 +95,38 @@ export default function App() {
       <DndContext
         collisionDetection={closestCenter}
         onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
-        modifiers={[restrictToVerticalAxis]}
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {Object.keys(columns).map((columnId) => (
-            <SortableContext
-              key={columnId}
-              items={columns[columnId]}
-              strategy={verticalListSortingStrategy}
-            >
-              <Droppable id={columnId}>
-                <div className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
-                  <h2 className="text-lg font-bold mb-4">{`Column ${
-                    columnId.split("-")[1]
-                  }`}</h2>
-                  <ul className="space-y-2">
-                    {columns[columnId].map((item) => (
-                      <SortableItem key={item} id={item} />
-                    ))}
-                  </ul>
-                </div>
-              </Droppable>
-            </SortableContext>
-          ))}
+          {Object.keys(columns).map((columnId) => {
+            const columnNumber = columnId.split("-")[1] || "Unknown"; // Evitamos undefined
+            return (
+              <SortableContext
+                key={columnId}
+                items={columns[columnId]}
+                strategy={verticalListSortingStrategy}
+              >
+                <Droppable id={columnId}>
+                  <div className="bg-white min-h-full p-4 rounded-lg shadow-md border border-gray-200">
+                    <h2 className="text-lg font-bold mb-4">{`Column ${columnNumber}`}</h2>
+                    <ul className="space-y-2">
+                      {columns[columnId].map((item) => (
+                        <SortableItem
+                          key={item}
+                          id={item}
+                          isDragging={activeId === item}
+                        />
+                      ))}
+                    </ul>
+                  </div>
+                </Droppable>
+              </SortableContext>
+            );
+          })}
         </div>
 
-        <DragOverlay>
-          {activeItem ? <Item id={activeItem} /> : null}
-        </DragOverlay>
+        <DragOverlay>{activeId ? <Item id={activeId} /> : null}</DragOverlay>
       </DndContext>
     </div>
   );
@@ -118,21 +137,21 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
 
-function SortableItem({ id }) {
+function SortableItem({ id, isDragging }) {
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
     transition,
-    isDragging,
+    isDragging: dragging,
   } = useSortable({ id });
 
   const style = {
     transform: transform ? CSS.Transform.toString(transform) : undefined,
     transition: transition || undefined,
-    zIndex: isDragging ? 50 : "auto",
-    opacity: isDragging ? 0.5 : 1,
+    zIndex: dragging ? 50 : "auto",
+    opacity: isDragging ? 0.3 : 1, // Reduce opacity while dragging instead of hiding
     borderLeft: `4px solid ${getColor(id)}`,
   };
 
@@ -142,9 +161,12 @@ function SortableItem({ id }) {
       style={style}
       className="flex items-center p-4 bg-white shadow rounded border"
       {...attributes}
-      {...listeners}
     >
-      <GripVertical className="mr-2 text-gray-500 cursor-grab" />
+      {/* Los listeners se aplican solo al ícono de arrastre */}
+      <GripVertical
+        className="mr-2 text-gray-500 cursor-grab"
+        {...listeners} // Listeners de drag and drop solo en este ícono
+      />
       <span className="flex-grow font-medium">{id}</span>
     </li>
   );
