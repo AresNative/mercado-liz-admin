@@ -61,12 +61,13 @@ export default function ReportsPage() {
     isLoading,
     refetch,
   } = useGetReportQuery(queryParam);
+  console.log(reportData);
 
   useEffect(() => {
-    if (reportData) {
-      updateChartData(reportData, activeTab === "compras");
-      setColumns(generateColumns(reportData));
-      setSortedData(reportData);
+    if (reportData && reportData.data) {
+      updateChartData(reportData.data, activeTab === "compras");
+      setColumns(generateColumns(reportData.data));
+      setSortedData(reportData.data);
       setCurrentPage(1); // Reiniciar la página al cambiar de reporte
     } else {
       setChartData({ labels: [], datasets: [] });
@@ -75,7 +76,7 @@ export default function ReportsPage() {
     }
   }, [reportData, activeTab]);
 
-  const updateChartData = (items, isCompras = false) => {
+  const updateChartData = (items = [], isCompras = false) => {
     const aggregatedData = items.reduce((acc, item) => {
       const key = isCompras
         ? new Date(item.fechaEmision).toLocaleDateString()
@@ -177,7 +178,7 @@ export default function ReportsPage() {
       direction = "descending";
     }
 
-    const sortedArray = [...reportData].sort((a, b) => {
+    const sortedArray = [...sortedData].sort((a, b) => {
       if (a[columnKey] < b[columnKey]) {
         return direction === "ascending" ? -1 : 1;
       }
