@@ -64,10 +64,22 @@ export default function ReportsPage() {
   console.log(reportData);
 
   useEffect(() => {
-    if (reportData && reportData.data) {
-      updateChartData(reportData.data, activeTab === "compras");
-      setColumns(generateColumns(reportData.data));
-      setSortedData(reportData.data);
+    if (reportData) {
+      const dataToSet = Array.isArray(reportData.data) ? reportData.data : [];
+      if (activeTab === "ventas" && reportData.data) {
+        updateChartData(dataToSet, false); // false porque no es compras
+        setColumns(generateColumns(dataToSet));
+        setSortedData(dataToSet);
+      } else {
+        updateChartData(
+          Array.isArray(reportData) ? reportData : [],
+          activeTab === "compras"
+        );
+        setColumns(
+          generateColumns(Array.isArray(reportData) ? reportData : [])
+        );
+        setSortedData(Array.isArray(reportData) ? reportData : []);
+      }
       setCurrentPage(1); // Reiniciar la página al cambiar de reporte
     } else {
       setChartData({ labels: [], datasets: [] });
@@ -77,6 +89,11 @@ export default function ReportsPage() {
   }, [reportData, activeTab]);
 
   const updateChartData = (items = [], isCompras = false) => {
+    if (!Array.isArray(items)) {
+      console.error("Items no es un array:", items);
+      return; // Evita que siga el proceso si no es un array.
+    }
+
     const aggregatedData = items.reduce((acc, item) => {
       const key = isCompras
         ? new Date(item.fechaEmision).toLocaleDateString()

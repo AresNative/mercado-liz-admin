@@ -116,10 +116,10 @@ export default function GestionAlmacen() {
 
   // Memoizar el procesamiento de datos
   const { chartData, tableData, columns } = useMemo(() => {
-    if (reportData && reportData.length > 0) {
-      const labels = reportData.map((item) => item.art);
-      const data = reportData.map((item) => item.cant);
-      const columns = Object.keys(reportData[0]).map((key) => ({
+    if (reportData && reportData.data && reportData.data.length > 0) {
+      const labels = reportData.data.map((item) => item.art);
+      const data = reportData.data.map((item) => item.cant);
+      const columns = Object.keys(reportData.data[0]).map((key) => ({
         key,
         label: key.charAt(0).toUpperCase() + key.slice(1),
       }));
@@ -134,7 +134,7 @@ export default function GestionAlmacen() {
             },
           ],
         },
-        tableData: reportData,
+        tableData: reportData.data,
         columns,
       };
     } else {
