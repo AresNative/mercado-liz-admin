@@ -1,238 +1,201 @@
 "use client";
 
+import { useState } from "react";
+import { Button, Card } from "@nextui-org/react";
 import {
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  Link,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  Progress,
-  Chip,
-} from "@nextui-org/react";
-import { ShoppingCart, Package, Users, TrendingUp } from "lucide-react";
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+} from "@dnd-kit/core";
+
+import Filtros from "@/components/func/filtros";
+import ReportInputs from "@/components/func/report-inputs";
+import ReportTable from "@/components/ui/report-table";
+import DragOverlayColumn from "@/components/func/drag-overlay-column";
+
+import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
+  BarElement,
   CategoryScale,
   LinearScale,
-  BarElement,
-  Title,
   Tooltip,
   Legend,
 } from "chart.js";
-import Head from "next/head";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+// Registrar los componentes de Chart.js
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
+export default function GeneradorReportes() {
+  const [reportType, setReportType] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [filter, setFilter] = useState("");
+  const [columns, setColumns] = useState([
+    { id: "id", label: "ID" },
+    { id: "fecha", label: "Fecha" },
+    { id: "ventas", label: "Ventas" },
+    { id: "producto", label: "Producto" },
+  ]);
+  const [filteredColumns, setFilteredColumns] = useState([]);
+  const [draggedColumn, setDraggedColumn] = useState(null);
+  const [previewData, setPreviewData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
-const data = [
-  { name: "Ene", total: 3500 },
-  { name: "Feb", total: 4200 },
-  { name: "Mar", total: 3800 },
-  { name: "Abr", total: 4600 },
-  { name: "May", total: 5100 },
-  { name: "Jun", total: 4900 },
-];
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
 
-const chartData = {
-  labels: data.map((item) => item.name),
-  datasets: [
-    {
-      label: "Ventas",
-      data: data.map((item) => item.total),
-      backgroundColor: "rgba(75, 192, 192, 0.6)",
-    },
-  ],
-};
+  // Función para generar datos de muestra
+  const handleGenerateReport = () => {
+    const sampleData = Array.from({ length: 50 }, (_, i) => ({
+      id: i + 1,
+      fecha: `2023-05-${String(i + 1).padStart(2, "0")}`,
+      ventas: Math.floor(Math.random() * 5000) + 1000,
+      producto: `Producto ${String.fromCharCode(65 + (i % 26))}`,
+    }));
 
-const chartOptions = {
-  responsive: true,
-  scales: {
-    x: {
-      type: "category",
-    },
-    y: {
-      type: "linear",
-      beginAtZero: true,
-    },
-  },
-  plugins: {
-    legend: {
-      position: "top",
-    },
-    title: {
-      display: true,
-      text: "Resumen de Ventas Mensuales",
-    },
-  },
-};
+    setPreviewData(sampleData);
+    setCurrentPage(1);
+    alert("El reporte ha sido generado exitosamente.");
+  };
 
-export default function DashboardSupermercado() {
+  // Función de manejo de finalización de arrastre
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+
+    if (!over) {
+      const dragged = columns.find((col) => col.id === active.id);
+      if (dragged) {
+        setFilteredColumns((prev) => [...prev, dragged]);
+        setColumns((prev) => prev.filter((col) => col.id !== active.id));
+      }
+    } else if (active.id !== over.id) {
+      setColumns((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+
+    setDraggedColumn(null);
+  };
+
+  // Cálculo de datos paginados
+  const paginatedData = previewData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Manejo de cambio de página
+  const handlePageChange = (direction) => {
+    if (direction === "next") {
+      setCurrentPage((prev) =>
+        Math.min(prev + 1, Math.ceil(previewData.length / itemsPerPage))
+      );
+    } else {
+      setCurrentPage((prev) => Math.max(prev - 1, 1));
+    }
+  };
+  const chartData = {
+    labels: previewData.map((item) => item.fecha),
+    datasets: [
+      {
+        label: "Ventas",
+        data: previewData.map((item) => item.ventas),
+        backgroundColor: "rgba(75, 192, 192, 0.6)",
+        borderColor: "rgba(75, 192, 192, 1)",
+        borderWidth: 1,
+      },
+    ],
+  };
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <Head>
-        <title>Dashboard - SuperMercado</title>
-        <meta
-          name="description"
-          content="Dashboard del supermercado con ventas, inventario y más."
-        />
-      </Head>
-
-      <main className="flex-1 p-8 overflow-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Dashboard</h1>
-
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-          <Card>
-            <CardBody>
-              <div className="flex justify-between items-center">
-                <p className="text-md">Ventas Totales</p>
-                <ShoppingCart className="h-4 w-4 text-gray-400" />
-              </div>
-              <p className="text-2xl font-bold">$45,231.89</p>
-              <p className="text-sm text-green-500">+20.1% del mes pasado</p>
-            </CardBody>
-          </Card>
-          <Card>
-            <CardBody>
-              <div className="flex justify-between items-center">
-                <p className="text-md">Nuevos Clientes</p>
-                <Users className="h-4 w-4 text-gray-400" />
-              </div>
-              <p className="text-2xl font-bold">+2350</p>
-              <p className="text-sm text-green-500">+180.1% del mes pasado</p>
-            </CardBody>
-          </Card>
-          <Card>
-            <CardBody>
-              <div className="flex justify-between items-center">
-                <p className="text-md">Productos Vendidos</p>
-                <Package className="h-4 w-4 text-gray-400" />
-              </div>
-              <p className="text-2xl font-bold">+12,234</p>
-              <p className="text-sm text-green-500">+19% del mes pasado</p>
-            </CardBody>
-          </Card>
-          <Card>
-            <CardBody>
-              <div className="flex justify-between items-center">
-                <p className="text-md">Tasa de Conversión</p>
-                <TrendingUp className="h-4 w-4 text-gray-400" />
-              </div>
-              <p className="text-2xl font-bold">+573</p>
-              <p className="text-sm text-green-500">
-                +201 desde la última hora
-              </p>
-            </CardBody>
-          </Card>
-        </div>
-
-        <Card className="mb-8">
-          <CardBody className=" h-80">
-            <Bar options={chartOptions} data={chartData} />
-          </CardBody>
+    <div className="max-w-6xl mx-auto p-4">
+      <section className="flex flex-col lg:flex-row gap-4">
+        <Card className="flex-1 mt-2 mx-auto p-8">
+          <h2 className="text-2xl font-bold mb-6">Generador de Reportes</h2>
+          <ReportInputs
+            reportType={reportType}
+            setReportType={setReportType}
+            filter={filter}
+            setFilter={setFilter}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+            handleGenerateReport={handleGenerateReport}
+          />
         </Card>
+        <Card className="flex-1 mt-2 mx-auto p-8">
+          {previewData.length > 0 && (
+            <Bar data={chartData} options={{ responsive: true }} />
+          )}
+        </Card>
+      </section>
 
-        <Card className="mb-8">
-          <CardHeader>
-            <h3 className="text-xl font-bold">Estado del Inventario</h3>
-            <p className="text-sm text-gray-500">
-              Productos con bajo stock que necesitan reabastecimiento
-            </p>
-          </CardHeader>
-          <CardBody>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span>Manzanas</span>
-                  <span>20%</span>
-                </div>
-                <Progress color="warning" value={20} className="h-2" />
-              </div>
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span>Leche</span>
-                  <span>35%</span>
-                </div>
-                <Progress color="warning" value={35} className="h-2" />
-              </div>
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span>Pan</span>
-                  <span>15%</span>
-                </div>
-                <Progress color="danger" value={15} className="h-2" />
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+        onDragStart={(event) => setDraggedColumn(event.active.id)}
+      >
+        <section className="flex flex-col lg:flex-row gap-4 mt-6">
+          <Filtros
+            columns={columns}
+            setFilteredColumns={setFilteredColumns}
+            setColumns={setColumns}
+          />
+          <Card className="flex-1 p-4 shadow-md">
+            <ReportTable
+              columns={columns}
+              paginatedData={paginatedData}
+              isDragging={!!draggedColumn}
+            />
+
+            {/* Información y controles de paginación */}
+            <div className="flex justify-between items-center mt-4">
+              <span>
+                Mostrando {(currentPage - 1) * itemsPerPage + 1} -{" "}
+                {Math.min(currentPage * itemsPerPage, previewData.length)} de{" "}
+                {previewData.length}
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => handlePageChange("prev")}
+                  disabled={currentPage === 1}
+                  bordered
+                >
+                  Anterior
+                </Button>
+                <Button
+                  onClick={() => handlePageChange("next")}
+                  disabled={
+                    currentPage === Math.ceil(previewData.length / itemsPerPage)
+                  }
+                  bordered
+                >
+                  Siguiente
+                </Button>
               </div>
             </div>
-          </CardBody>
-        </Card>
+          </Card>
+        </section>
 
-        <Card>
-          <CardHeader>
-            <h3 className="text-xl font-bold">Pedidos Recientes</h3>
-            <p className="text-sm text-gray-500">
-              Has recibido 32 pedidos este mes
-            </p>
-          </CardHeader>
-          <CardBody>
-            <Table aria-label="Pedidos recientes">
-              <TableHeader>
-                <TableColumn>PEDIDO</TableColumn>
-                <TableColumn>ESTADO</TableColumn>
-                <TableColumn>CLIENTE</TableColumn>
-                <TableColumn>MONTO</TableColumn>
-              </TableHeader>
-              <TableBody>
-                <TableRow key="1">
-                  <TableCell>#3210</TableCell>
-                  <TableCell>
-                    <Chip color="success" variant="flat">
-                      Completado
-                    </Chip>
-                  </TableCell>
-                  <TableCell>María García</TableCell>
-                  <TableCell>$123.45</TableCell>
-                </TableRow>
-                <TableRow key="2">
-                  <TableCell>#3209</TableCell>
-                  <TableCell>
-                    <Chip color="warning" variant="flat">
-                      Pendiente
-                    </Chip>
-                  </TableCell>
-                  <TableCell>Juan Pérez</TableCell>
-                  <TableCell>$87.65</TableCell>
-                </TableRow>
-                <TableRow key="3">
-                  <TableCell>#3208</TableCell>
-                  <TableCell>
-                    <Chip color="danger" variant="flat">
-                      Cancelado
-                    </Chip>
-                  </TableCell>
-                  <TableCell>Ana Martínez</TableCell>
-                  <TableCell>$54.32</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </CardBody>
-        </Card>
-      </main>
+        <DragOverlay>
+          {draggedColumn && (
+            <DragOverlayColumn
+              column={columns.find((col) => col.id === draggedColumn)}
+            />
+          )}
+        </DragOverlay>
+      </DndContext>
     </div>
   );
 }
