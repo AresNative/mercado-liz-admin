@@ -33,29 +33,9 @@ export const MainForm = ({ message_button, dataForm, functionForm }) => {
   async function onSubmit(submitData) {
     setLoading(true);
 
-    if (submitData.confirmation) {
-      const validation = validatePassword(
-        submitData.password,
-        submitData.confirmation
-      );
-      if (validation !== null) {
-        setLoading(false);
-        setError("password", { message: validation });
-        setError("confirmation", { message: validation });
-        return;
-      }
-      setLoading(false);
-    }
     try {
-      if (submitData.crmId === "") {
-        const { confirmation, conditions, captcha, estimate, crmId, ...data } =
-          submitData;
-        await functionForm({ dataForm: data });
-      } else {
-        const { confirmation, conditions, captcha, estimate, ...data } =
-          submitData;
-        await functionForm({ dataForm: data });
-      }
+      const res = await functionForm({ dataForm: submitData });
+      console.log(submitData, res);
     } catch (error) {
       console.error(error);
     } finally {
