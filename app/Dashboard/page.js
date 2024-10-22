@@ -149,6 +149,7 @@ export default function GeneradorReportes() {
         <section className="flex flex-col lg:flex-row gap-4 mt-6">
           <Filtros
             columns={columns}
+            filteredColumns={filteredColumns}
             setFilteredColumns={setFilteredColumns}
             setColumns={setColumns}
           />

@@ -16,7 +16,6 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, ChevronDown, ChevronRight } from "lucide-react";
 
-// Estructura inicial
 const initialItems = [
   { id: "Home", children: [] },
   {
@@ -42,23 +41,20 @@ const initialItems = [
   },
 ];
 
-// Componente de ítem sortable
-const SortableItem = ({
-  id,
-  depth,
-  isDragging,
-  hasChildren,
-  isExpanded,
-  onToggle,
-}) => {
-  const { attributes, listeners, setNodeRef, transform, transition, isOver } =
-    useSortable({ id });
+const SortableItem = ({ id, depth, hasChildren, isExpanded, onToggle }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     marginLeft: depth * 20,
     opacity: isDragging ? 0.5 : 1,
-    backgroundColor: isOver ? "bg-gray-100" : "bg-white",
   };
 
   return (
@@ -67,7 +63,7 @@ const SortableItem = ({
       style={style}
       {...attributes}
       className={`flex items-center p-2 border rounded mb-2 cursor-pointer hover:bg-gray-100 shadow-sm ${
-        isOver ? "bg-gray-100" : "bg-white"
+        isDragging ? "bg-gray-100" : "bg-white"
       }`}
     >
       <button
@@ -95,47 +91,88 @@ const SortableItem = ({
   );
 };
 
-// Mover ítems y manejar la anidación
 const moveItem = (items, activeId, overId) => {
-  const { item: activeItem, parent: activeParent } = findItem(items, activeId);
-  const { item: overItem, parent: overParent } = findItem(items, overId);
+  const activeItem = findItemById(items, activeId);
+  const overItem = findItemById(items, overId);
 
-  if (!activeItem || !overItem) return items;
+  if (!activeItem) return items;
 
-  // Remover ítem activo de su ubicación actual
-  if (activeParent) {
-    activeParent.children = activeParent.children.filter(
-      (child) => child.id !== activeId
-    );
-  } else {
-    items = items.filter((item) => item.id !== activeId);
+  // Remove the active item from its current position
+  const newItems = removeItem(items, activeId);
+
+  if (!overItem) {
+    // If dropping onto blank space (root level), add to the end of the main items array
+    return [...newItems, activeItem];
   }
 
-  // Añadir ítem activo como hermano del ítem sobre el que se posó
+  // Find the parent of the over item
+  const { parent: overParent } = findItemWithParent(items, overId);
+
   if (overParent) {
-    const index = overParent.children.findIndex((child) => child.id === overId);
-    overParent.children.splice(index + 1, 0, activeItem);
+    // If the over item has a parent, insert the active item as a sibling
+    return insertItem(newItems, activeItem, overId, overParent.id);
   } else {
-    const index = items.findIndex((item) => item.id === overId);
-    items.splice(index + 1, 0, activeItem);
+    // If the over item is at the root level, insert the active item at the root level
+    const index = newItems.findIndex((item) => item.id === overId);
+    return [
+      ...newItems.slice(0, index + 1),
+      activeItem,
+      ...newItems.slice(index + 1),
+    ];
   }
-
-  return [...items];
 };
 
-// Buscar ítem y su padre
-const findItem = (items, id, parent = null) => {
-  for (let item of items) {
+const findItemById = (items, id) => {
+  for (const item of items) {
+    if (item.id === id) return item;
+    if (item.children.length > 0) {
+      const found = findItemById(item.children, id);
+      if (found) return found;
+    }
+  }
+  return null;
+};
+
+const findItemWithParent = (items, id, parent = null) => {
+  for (const item of items) {
     if (item.id === id) return { item, parent };
     if (item.children.length > 0) {
-      const result = findItem(item.children, id, item);
+      const result = findItemWithParent(item.children, id, item);
       if (result.item) return result;
     }
   }
   return { item: null, parent: null };
 };
 
-// Componente recursivo para renderizar el árbol
+const removeItem = (items, id) => {
+  return items.reduce((acc, item) => {
+    if (item.id === id) return acc;
+    const newItem = { ...item, children: removeItem(item.children, id) };
+    return [...acc, newItem];
+  }, []);
+};
+
+const insertItem = (items, itemToInsert, targetId, parentId) => {
+  return items.map((item) => {
+    if (item.id === parentId) {
+      const index = item.children.findIndex((child) => child.id === targetId);
+      const newChildren = [
+        ...item.children.slice(0, index + 1),
+        itemToInsert,
+        ...item.children.slice(index + 1),
+      ];
+      return { ...item, children: newChildren };
+    }
+    if (item.children.length > 0) {
+      return {
+        ...item,
+        children: insertItem(item.children, itemToInsert, targetId, parentId),
+      };
+    }
+    return item;
+  });
+};
+
 const Tree = ({ items, depth = 0 }) => {
   const [expandedItems, setExpandedItems] = useState({});
 
@@ -165,14 +202,15 @@ const Tree = ({ items, depth = 0 }) => {
   );
 };
 
-// Componente principal
-export default function Home() {
+export default function MenuStructureEditor() {
   const [items, setItems] = useState(initialItems);
   const sensors = useSensors(useSensor(PointerSensor));
 
-  const handleDragEnd = ({ active, over }) => {
-    if (!over || active.id === over.id) return;
-    setItems((prevItems) => moveItem([...prevItems], active.id, over.id));
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (active.id !== over?.id) {
+      setItems((prevItems) => moveItem(prevItems, active.id, over?.id));
+    }
   };
 
   return (
@@ -184,22 +222,22 @@ export default function Home() {
         onDragEnd={handleDragEnd}
       >
         <SortableContext
-          items={flattenItems(items)}
+          items={items
+            .flatMap((item) => [item, ...item.children])
+            .map((item) => item.id)}
           strategy={verticalListSortingStrategy}
         >
           <Tree items={items} />
         </SortableContext>
       </DndContext>
+      <div className="mt-4 p-4 border-2 border-dashed border-gray-300 rounded-lg">
+        <p className="text-center text-gray-500">
+          Drop here to add as a parent item
+        </p>
+      </div>
     </div>
   );
 }
-
-// Función para aplanar la estructura de ítems para el contexto
-const flattenItems = (items) => {
-  return items.reduce((acc, item) => {
-    return acc.concat(item, flattenItems(item.children));
-  }, []);
-};
 /* export default function Page() {
   return (
     <figure class="md:flex bg-slate-100 rounded-xl p-8 md:p-0 dark:bg-slate-800">

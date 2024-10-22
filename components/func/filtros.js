@@ -44,9 +44,8 @@ function DraggableItem({ column }) {
   );
 }
 
-function Filtros({ columns, setFilteredColumns, setColumns }) {
+function Filtros({ columns, filteredColumns, setFilteredColumns, setColumns }) {
   const { setNodeRef, isOver } = useDroppable({ id: "filtros" });
-  const [filteredColumns, setFiltered] = useState(columns);
 
   // Handle the drop event
   const handleDrop = (event) => {
@@ -56,20 +55,20 @@ function Filtros({ columns, setFilteredColumns, setColumns }) {
     ) {
       const column = columns.find((col) => col.id === event.active.id);
       if (column) {
-        setFiltered((prev) => [...prev, column]);
+        setFilteredColumns((prev) => [...prev, column]);
       }
     }
   };
 
   const handleRemoveFilter = (column) => {
-    setFiltered((prev) => prev.filter((col) => col.id !== column.id));
+    setFilteredColumns((prev) => prev.filter((col) => col.id !== column.id));
   };
 
   const handleSortEnd = (activeId, overId) => {
     const oldIndex = filteredColumns.findIndex((col) => col.id === activeId);
     const newIndex = filteredColumns.findIndex((col) => col.id === overId);
 
-    setFiltered((prev) => arrayMove(prev, oldIndex, newIndex));
+    setFilteredColumns((prev) => arrayMove(prev, oldIndex, newIndex));
   };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -108,7 +107,7 @@ function Filtros({ columns, setFilteredColumns, setColumns }) {
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalContent>
-          {(onClose) => (
+          {() => (
             <>
               <ModalHeader className="flex flex-col gap-1">
                 Modal Title
