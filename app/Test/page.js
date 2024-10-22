@@ -7,6 +7,7 @@ import {
   useSensors,
   PointerSensor,
   closestCenter,
+  DragOverlay,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -14,7 +15,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, ChevronDown, ChevronRight } from "lucide-react";
+import { GripVertical, ChevronDown, ChevronRight, Plus } from "lucide-react";
 
 const initialItems = [
   { id: "Home", children: [] },
@@ -40,87 +41,6 @@ const initialItems = [
     ],
   },
 ];
-
-const SortableItem = ({ id, depth, hasChildren, isExpanded, onToggle }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    marginLeft: depth * 20,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      className={`flex items-center p-2 border rounded mb-2 cursor-pointer hover:bg-gray-100 shadow-sm ${
-        isDragging ? "bg-gray-100" : "bg-white"
-      }`}
-    >
-      <button
-        className="mr-2 text-gray-500 hover:text-gray-700 focus:outline-none"
-        {...listeners}
-        aria-label="Drag handle"
-      >
-        <GripVertical className="w-4 h-4" />
-      </button>
-      {hasChildren && (
-        <button
-          onClick={onToggle}
-          className="mr-2 text-gray-500 hover:text-gray-700 focus:outline-none"
-          aria-label={isExpanded ? "Collapse" : "Expand"}
-        >
-          {isExpanded ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
-      )}
-      <div className="flex-1">{id}</div>
-    </div>
-  );
-};
-
-const moveItem = (items, activeId, overId) => {
-  const activeItem = findItemById(items, activeId);
-  const overItem = findItemById(items, overId);
-
-  if (!activeItem) return items;
-
-  // Remove the active item from its current position
-  const newItems = removeItem(items, activeId);
-
-  if (!overItem) {
-    // If dropping onto blank space (root level), add to the end of the main items array
-    return [...newItems, activeItem];
-  }
-
-  // Find the parent of the over item
-  const { parent: overParent } = findItemWithParent(items, overId);
-
-  if (overParent) {
-    // If the over item has a parent, insert the active item as a sibling
-    return insertItem(newItems, activeItem, overId, overParent.id);
-  } else {
-    // If the over item is at the root level, insert the active item at the root level
-    const index = newItems.findIndex((item) => item.id === overId);
-    return [
-      ...newItems.slice(0, index + 1),
-      activeItem,
-      ...newItems.slice(index + 1),
-    ];
-  }
-};
 
 const findItemById = (items, id) => {
   for (const item of items) {
@@ -173,7 +93,102 @@ const insertItem = (items, itemToInsert, targetId, parentId) => {
   });
 };
 
-const Tree = ({ items, depth = 0 }) => {
+const moveItem = (items, activeId, overId) => {
+  const activeItem = findItemById(items, activeId);
+  const overItem = findItemById(items, overId);
+
+  if (!activeItem) return items;
+
+  // Remove the active item from its current position
+  const newItems = removeItem(items, activeId);
+
+  if (!overItem) {
+    // If dropping onto blank space (root level), add to the end of the main items array
+    return [...newItems, activeItem];
+  }
+
+  // Find the parent of the over item
+  const { parent: overParent } = findItemWithParent(items, overId);
+
+  if (overParent) {
+    // If the over item has a parent, insert the active item as a sibling
+    return insertItem(newItems, activeItem, overId, overParent.id);
+  } else {
+    // If the over item is at the root level, insert the active item at the root level
+    const index = newItems.findIndex((item) => item.id === overId);
+    return [
+      ...newItems.slice(0, index + 1),
+      activeItem,
+      ...newItems.slice(index + 1),
+    ];
+  }
+};
+
+const SortableItem = ({
+  id,
+  depth,
+  hasChildren,
+  isExpanded,
+  onToggle,
+  onAddChild,
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    marginLeft: depth * 20,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      className={`flex items-center p-2 border rounded mb-2 cursor-pointer hover:bg-gray-100 shadow-sm ${
+        isDragging ? "bg-gray-100" : "bg-white"
+      }`}
+    >
+      <button
+        className="mr-2 text-gray-500 hover:text-gray-700 focus:outline-none"
+        {...listeners}
+        aria-label="Drag handle"
+      >
+        <GripVertical className="w-4 h-4" />
+      </button>
+      {hasChildren && (
+        <button
+          onClick={onToggle}
+          className="mr-2 text-gray-500 hover:text-gray-700 focus:outline-none"
+          aria-label={isExpanded ? "Collapse" : "Expand"}
+        >
+          {isExpanded ? (
+            <ChevronDown className="w-4 h-4" />
+          ) : (
+            <ChevronRight className="w-4 h-4" />
+          )}
+        </button>
+      )}
+      <div className="flex-1">{id}</div>
+      <button
+        onClick={onAddChild}
+        className="ml-2 text-gray-500 hover:text-gray-700 focus:outline-none"
+        aria-label="Add child"
+      >
+        <Plus className="w-4 h-4" />
+      </button>
+    </div>
+  );
+};
+
+const Tree = ({ items, depth = 0, onAddChild }) => {
   const [expandedItems, setExpandedItems] = useState({});
 
   const toggleExpand = (id) => {
@@ -190,10 +205,15 @@ const Tree = ({ items, depth = 0 }) => {
             hasChildren={item.children.length > 0}
             isExpanded={expandedItems[item.id]}
             onToggle={() => toggleExpand(item.id)}
+            onAddChild={() => onAddChild(item.id)}
           />
           {item.children.length > 0 && expandedItems[item.id] && (
             <div className="ml-4 border-l-2 border-gray-200 pl-2 mt-2">
-              <Tree items={item.children} depth={depth + 1} />
+              <Tree
+                items={item.children}
+                depth={depth + 1}
+                onAddChild={onAddChild}
+              />
             </div>
           )}
         </div>
@@ -202,15 +222,53 @@ const Tree = ({ items, depth = 0 }) => {
   );
 };
 
+const addChildToItem = (items, parentId, newChild) => {
+  return items.map((item) => {
+    if (item.id === parentId) {
+      return { ...item, children: [...item.children, newChild] };
+    }
+    if (item.children.length > 0) {
+      return {
+        ...item,
+        children: addChildToItem(item.children, parentId, newChild),
+      };
+    }
+    return item;
+  });
+};
+
 export default function MenuStructureEditor() {
   const [items, setItems] = useState(initialItems);
+  const [activeId, setActiveId] = useState(null);
   const sensors = useSensors(useSensor(PointerSensor));
+
+  const handleDragStart = (event) => {
+    setActiveId(event.active.id);
+  };
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
+    setActiveId(null);
+
     if (active.id !== over?.id) {
-      setItems((prevItems) => moveItem(prevItems, active.id, over?.id));
+      if (over?.id === "root-drop-area") {
+        // Handle dropping into the root drop area
+        setItems((prevItems) => {
+          const activeItem = findItemById(prevItems, active.id);
+          const newItems = removeItem(prevItems, active.id);
+          return [...newItems, { ...activeItem, children: [] }];
+        });
+      } else {
+        setItems((prevItems) => moveItem(prevItems, active.id, over?.id));
+      }
     }
+  };
+
+  const handleAddChild = (parentId) => {
+    const newChildId = `New Item ${Date.now()}`;
+    setItems((prevItems) =>
+      addChildToItem(prevItems, parentId, { id: newChildId, children: [] })
+    );
   };
 
   return (
@@ -219,6 +277,7 @@ export default function MenuStructureEditor() {
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
         <SortableContext
@@ -227,42 +286,24 @@ export default function MenuStructureEditor() {
             .map((item) => item.id)}
           strategy={verticalListSortingStrategy}
         >
-          <Tree items={items} />
+          <Tree items={items} onAddChild={handleAddChild} />
         </SortableContext>
+        <DragOverlay>
+          {activeId ? (
+            <div className="p-2 border rounded bg-white shadow-md">
+              {activeId}
+            </div>
+          ) : null}
+        </DragOverlay>
+        <div
+          id="root-drop-area"
+          className="mt-4 p-4 border-2 border-dashed border-gray-300 rounded-lg"
+        >
+          <p className="text-center text-gray-500">
+            Drop here to add as a parent item
+          </p>
+        </div>
       </DndContext>
-      <div className="mt-4 p-4 border-2 border-dashed border-gray-300 rounded-lg">
-        <p className="text-center text-gray-500">
-          Drop here to add as a parent item
-        </p>
-      </div>
     </div>
   );
 }
-/* export default function Page() {
-  return (
-    <figure class="md:flex bg-slate-100 rounded-xl p-8 md:p-0 dark:bg-slate-800">
-      <img
-        class="w-24 h-24 md:w-48 md:h-auto md:rounded-none rounded-full mx-auto"
-        src="https://yt3.googleusercontent.com/2M4WpEKIJkVbLcp0_WT1fICBre9SxHJQ7x7YjGFsWC_xu81sPMORY9GT3Y-akEB4mpRgyvWwsA=s160-c-k-c0x00ffffff-no-rj"
-        alt=""
-        width="384"
-        height="512"
-      />
-      <div class="pt-6 md:p-8 text-center md:text-left space-y-4">
-        <blockquote>
-          <p class="text-lg font-medium">
-            “Tailwind CSS is the only framework that I've seen scale on large
-            teams. It’s easy to customize, adapts to any design, and the build
-            size is tiny.”
-          </p>
-        </blockquote>
-        <figcaption class="font-medium">
-          <div class="text-sky-500 dark:text-sky-400">Sarah Dayan</div>
-          <div class="text-slate-700 dark:text-slate-500">
-            Staff Engineer, Algolia
-          </div>
-        </figcaption>
-      </div>
-    </figure>
-  );
-} */
