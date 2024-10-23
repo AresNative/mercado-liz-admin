@@ -11,7 +11,7 @@ export default function PageScrum() {
   /* 
   ! añadir estados de proyecto
   ! añadir miembros de cada proyecto
-  // dividir las areas por colores
+  // dividir las areas por colores || al igual que plantillas por proyetos
   */
   return (
     <main className="flex p-3 gap-2">
