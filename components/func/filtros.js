@@ -19,6 +19,7 @@ import {
 } from "@nextui-org/react";
 import { useState } from "react";
 import { MainForm } from "../form/main-form";
+import MenuStructureEditor from "@/app/Test/page";
 
 function DraggableItem({ column }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
@@ -60,17 +61,6 @@ function Filtros({ columns, filteredColumns, setFilteredColumns, setColumns }) {
     }
   };
 
-  const handleRemoveFilter = (column) => {
-    setFilteredColumns((prev) => prev.filter((col) => col.id !== column.id));
-  };
-
-  const handleSortEnd = (activeId, overId) => {
-    const oldIndex = filteredColumns.findIndex((col) => col.id === activeId);
-    const newIndex = filteredColumns.findIndex((col) => col.id === overId);
-
-    setFilteredColumns((prev) => arrayMove(prev, oldIndex, newIndex));
-  };
-
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
@@ -87,22 +77,7 @@ function Filtros({ columns, filteredColumns, setFilteredColumns, setColumns }) {
             Open
           </Button>
         </div>
-
-        <SortableContext
-          strategy={verticalListSortingStrategy}
-          items={filteredColumns.map((col) => col.id)}
-        >
-          <div className="max-w-64 flex flex-wrap gap-2">
-            {filteredColumns.map((column) => (
-              <DraggableItem
-                key={column.id}
-                column={column}
-                onRemove={() => handleRemoveFilter(column)}
-                onSortEnd={handleSortEnd}
-              />
-            ))}
-          </div>
-        </SortableContext>
+        <MenuStructureEditor />
       </Card>
 
       <Modal isOpen={isOpen} onClose={onClose}>

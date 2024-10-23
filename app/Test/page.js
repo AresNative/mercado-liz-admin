@@ -272,8 +272,7 @@ export default function MenuStructureEditor() {
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto bg-gray-50 rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-4 text-gray-800">Menu Structure</h1>
+    <div className="p-4 max-w-md">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}

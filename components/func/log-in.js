@@ -13,6 +13,7 @@ import {
   Tab,
   useDisclosure,
 } from "@nextui-org/react";
+import { LogIn } from "lucide-react";
 
 const AuthModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -59,7 +60,7 @@ const AuthModal = () => {
   return (
     <>
       <Button onClick={onOpen} color="secondary">
-        Iniciar Sesión / Registrarse
+        Iniciar Sesión <LogIn />
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
