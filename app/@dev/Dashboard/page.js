@@ -1,6 +1,5 @@
 "use client";
-
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button, Card } from "@nextui-org/react";
 import {
   DndContext,
@@ -18,7 +17,6 @@ import ReportTable from "@/components/ui/report-table";
 import DragOverlayColumn from "@/components/func/drag-overlay-column";
 
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -29,9 +27,10 @@ import {
   Legend,
 } from "chart.js";
 
-// Registrar los componentes de Chart.js
-ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
-export default function GeneradorReportes() {
+function Dashboard() {
+  // Registrar componentes de Chart.js
+  ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
+
   const [reportType, setReportType] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -53,7 +52,6 @@ export default function GeneradorReportes() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
-  // Función para generar datos de muestra
   const handleGenerateReport = () => {
     const sampleData = Array.from({ length: 50 }, (_, i) => ({
       id: i + 1,
@@ -67,7 +65,6 @@ export default function GeneradorReportes() {
     alert("El reporte ha sido generado exitosamente.");
   };
 
-  // Función de manejo de finalización de arrastre
   const handleDragEnd = (event) => {
     const { active, over } = event;
 
@@ -88,13 +85,11 @@ export default function GeneradorReportes() {
     setDraggedColumn(null);
   };
 
-  // Cálculo de datos paginados
   const paginatedData = previewData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
-  // Manejo de cambio de página
   const handlePageChange = (direction) => {
     if (direction === "next") {
       setCurrentPage((prev) =>
@@ -104,6 +99,7 @@ export default function GeneradorReportes() {
       setCurrentPage((prev) => Math.max(prev - 1, 1));
     }
   };
+
   const chartData = {
     labels: previewData.map((item) => item.fecha),
     datasets: [
@@ -116,8 +112,9 @@ export default function GeneradorReportes() {
       },
     ],
   };
+
   return (
-    <div className="max-w-6xl mx-auto p-4">
+    <main className="max-w-6xl mx-auto p-4">
       <section className="flex flex-col lg:flex-row gap-4">
         <Card className="flex-1 mt-2 mx-auto p-8">
           <h2 className="text-2xl font-bold mb-6">Generador de Reportes</h2>
@@ -160,7 +157,6 @@ export default function GeneradorReportes() {
               isDragging={!!draggedColumn}
             />
 
-            {/* Información y controles de paginación */}
             <div className="flex justify-between items-center mt-4">
               <span>
                 Mostrando {(currentPage - 1) * itemsPerPage + 1} -{" "}
@@ -197,6 +193,8 @@ export default function GeneradorReportes() {
           )}
         </DragOverlay>
       </DndContext>
-    </div>
+    </main>
   );
 }
+
+export default Dashboard;

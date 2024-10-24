@@ -19,7 +19,7 @@ import {
 } from "@nextui-org/react";
 import { useState } from "react";
 import { MainForm } from "../form/main-form";
-import MenuStructureEditor from "@/app/Test/page";
+import MenuStructureEditor from "@/app/@dev/Test/page";
 
 function DraggableItem({ column }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
