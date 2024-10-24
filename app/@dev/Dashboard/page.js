@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Button, Card } from "@nextui-org/react";
 import {
   DndContext,
@@ -17,6 +18,8 @@ import ReportTable from "@/components/ui/report-table";
 import DragOverlayColumn from "@/components/func/drag-overlay-column";
 
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import { useGetTestQueryQuery } from "@/store/server/reducers/api-reducer";
+
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -27,24 +30,36 @@ import {
   Legend,
 } from "chart.js";
 
-function Dashboard() {
-  // Registrar componentes de Chart.js
-  ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
+// Registrar los componentes de Chart.js
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
+export default function GeneradorReportes() {
   const [reportType, setReportType] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [filter, setFilter] = useState("");
   const [columns, setColumns] = useState([
-    { id: "id", label: "ID" },
-    { id: "fecha", label: "Fecha" },
-    { id: "ventas", label: "Ventas" },
-    { id: "producto", label: "Producto" },
+    { id: "Codigo", label: "Código" },
+    { id: "Articulo", label: "Artículo" },
+    { id: "Nombre", label: "Nombre" },
+    { id: "Estatus", label: "Estatus" },
+    { id: "Unidad", label: "Unidad" },
+    { id: "Equivalente", label: "Equivalente" },
+    { id: "CompraID", label: "Compra ID" },
+    { id: "Cantidad", label: "Cantidad" },
+    { id: "Costo", label: "Costo" },
+    { id: "Sucursal", label: "Sucursal" },
+    { id: "MovID", label: "Mov ID" },
+    { id: "FechaEmision", label: "Fecha Emisión" },
+    { id: "Proveedor", label: "Proveedor" },
+    { id: "ProveedorNombre", label: "Nombre del Proveedor" },
+    { id: "Impuestos", label: "Impuestos" },
   ]);
   const [filteredColumns, setFilteredColumns] = useState([]);
   const [draggedColumn, setDraggedColumn] = useState(null);
   const [previewData, setPreviewData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
   const itemsPerPage = 10;
 
   const sensors = useSensors(
@@ -52,19 +67,48 @@ function Dashboard() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
-  const handleGenerateReport = () => {
-    const sampleData = Array.from({ length: 50 }, (_, i) => ({
-      id: i + 1,
-      fecha: `2023-05-${String(i + 1).padStart(2, "0")}`,
-      ventas: Math.floor(Math.random() * 5000) + 1000,
-      producto: `Producto ${String.fromCharCode(65 + (i % 26))}`,
-    }));
-
-    setPreviewData(sampleData);
-    setCurrentPage(1);
-    alert("El reporte ha sido generado exitosamente.");
+  // Función para manejar el cambio de página
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= Math.ceil(totalRecords / itemsPerPage)) {
+      setCurrentPage(newPage);
+    }
   };
 
+  // Obtener datos usando el hook de RTK Query
+  const { data, error, isLoading, refetch } = useGetTestQueryQuery(
+    `?page=${currentPage}&pageSize=${itemsPerPage}`, // Corrección del query string
+    { refetchOnMountOrArgChange: true } // Permite refetch cuando cambian los argumentos
+  );
+
+  // Maneja los datos recibidos
+  useEffect(() => {
+    if (data && Array.isArray(data.data)) {
+      setPreviewData(data.data); // Asignar la data a previewData
+      setTotalRecords(data.totalRecords); // Establecer el total de registros
+    } else {
+      setPreviewData([]);
+    }
+  }, [data]);
+
+  // Volver a cargar los datos al cambiar la página
+  useEffect(() => {
+    refetch(); // Volver a ejecutar la consulta al cambiar de página
+  }, [currentPage, refetch]);
+
+  const chartData = {
+    labels: previewData.map((item) => item.FechaEmision),
+    datasets: [
+      {
+        label: "Cantidad",
+        data: previewData.map((item) => item.Cantidad),
+        backgroundColor: "rgba(75, 192, 192, 0.6)",
+        borderColor: "rgba(75, 192, 192, 1)",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  // Función de manejo de finalización de arrastre
   const handleDragEnd = (event) => {
     const { active, over } = event;
 
@@ -85,36 +129,8 @@ function Dashboard() {
     setDraggedColumn(null);
   };
 
-  const paginatedData = previewData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const handlePageChange = (direction) => {
-    if (direction === "next") {
-      setCurrentPage((prev) =>
-        Math.min(prev + 1, Math.ceil(previewData.length / itemsPerPage))
-      );
-    } else {
-      setCurrentPage((prev) => Math.max(prev - 1, 1));
-    }
-  };
-
-  const chartData = {
-    labels: previewData.map((item) => item.fecha),
-    datasets: [
-      {
-        label: "Ventas",
-        data: previewData.map((item) => item.ventas),
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
-        borderColor: "rgba(75, 192, 192, 1)",
-        borderWidth: 1,
-      },
-    ],
-  };
-
   return (
-    <main className="max-w-6xl mx-auto p-4">
+    <div className="max-w-6xl mx-auto p-4">
       <section className="flex flex-col lg:flex-row gap-4">
         <Card className="flex-1 mt-2 mx-auto p-8">
           <h2 className="text-2xl font-bold mb-6">Generador de Reportes</h2>
@@ -127,12 +143,17 @@ function Dashboard() {
             setStartDate={setStartDate}
             endDate={endDate}
             setEndDate={setEndDate}
-            handleGenerateReport={handleGenerateReport}
           />
         </Card>
         <Card className="flex-1 mt-2 mx-auto p-8">
-          {previewData.length > 0 && (
-            <Bar data={chartData} options={{ responsive: true }} />
+          {isLoading ? (
+            <p>Cargando...</p>
+          ) : error ? (
+            <p>Error al cargar los datos</p>
+          ) : (
+            previewData.length > 0 && (
+              <Bar data={chartData} options={{ responsive: true }} />
+            )
           )}
         </Card>
       </section>
@@ -153,28 +174,28 @@ function Dashboard() {
           <Card className="flex-1 p-4 shadow-md">
             <ReportTable
               columns={columns}
-              paginatedData={paginatedData}
+              paginatedData={previewData}
               isDragging={!!draggedColumn}
             />
 
             <div className="flex justify-between items-center mt-4">
               <span>
                 Mostrando {(currentPage - 1) * itemsPerPage + 1} -{" "}
-                {Math.min(currentPage * itemsPerPage, previewData.length)} de{" "}
-                {previewData.length}
+                {Math.min(currentPage * itemsPerPage, totalRecords)} de{" "}
+                {totalRecords}
               </span>
               <div className="flex gap-2">
                 <Button
-                  onClick={() => handlePageChange("prev")}
+                  onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
                   bordered
                 >
                   Anterior
                 </Button>
                 <Button
-                  onClick={() => handlePageChange("next")}
+                  onClick={() => handlePageChange(currentPage + 1)}
                   disabled={
-                    currentPage === Math.ceil(previewData.length / itemsPerPage)
+                    currentPage === Math.ceil(totalRecords / itemsPerPage)
                   }
                   bordered
                 >
@@ -193,8 +214,6 @@ function Dashboard() {
           )}
         </DragOverlay>
       </DndContext>
-    </main>
+    </div>
   );
 }
-
-export default Dashboard;

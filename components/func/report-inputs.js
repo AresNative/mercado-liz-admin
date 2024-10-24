@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Input, Select } from "@nextui-org/react";
+import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 
 function ReportInputs({
   reportType,
@@ -13,18 +13,23 @@ function ReportInputs({
   setEndDate,
   handleGenerateReport,
 }) {
+  const filters = [
+    { label: "Reporte de Ventas", value: "ventas" },
+    { label: "Reporte de Inventario", value: "inventario" },
+    { label: "Reporte de Clientes", value: "clientes" },
+  ];
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
       <Select
-        placeholder="Seleccionar tipo de reporte"
+        label="Select an filter"
         value={reportType}
         onChange={setReportType}
-        options={[
-          { label: "Reporte de Ventas", value: "ventas" },
-          { label: "Reporte de Inventario", value: "inventario" },
-          { label: "Reporte de Clientes", value: "clientes" },
-        ]}
-      />
+        className="max-w-xs"
+      >
+        {filters.map((animal) => (
+          <SelectItem key={animal.value}>{animal.label}</SelectItem>
+        ))}
+      </Select>
       <Input
         placeholder="Ej: Categoría, Región, etc."
         value={filter}

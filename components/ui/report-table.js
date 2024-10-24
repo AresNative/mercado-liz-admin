@@ -8,8 +8,8 @@ import SortableHeader from "../func/sortable-header";
 
 function ReportTable({ columns, paginatedData, isDragging }) {
   return (
-    <div className="overflow-auto rounded-lg border">
-      <table className="min-w-full border-collapse border border-gray-200">
+    <div className="overflow-x-auto rounded-lg border shadow-md">
+      <table className="min-w-full divide-y divide-gray-300 table-auto">
         <thead className="bg-gray-200">
           <SortableContext
             items={columns}
@@ -27,10 +27,13 @@ function ReportTable({ columns, paginatedData, isDragging }) {
           </SortableContext>
         </thead>
         <tbody>
-          {paginatedData.map((row) => (
-            <tr key={row.id} className="border-b">
+          {paginatedData.map((row, key) => (
+            <tr key={key} className="border-b">
               {columns.map((column) => (
-                <td key={`${row.id}-${column.id}`} className="p-2">
+                <td
+                  key={`${row.id}-${column.id}`}
+                  className="px-6 py-4 text-sm whitespace-nowrap"
+                >
                   {row[column.id]}
                 </td>
               ))}

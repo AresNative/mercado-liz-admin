@@ -20,7 +20,7 @@ function SortableHeader({ column, isDragging }) {
       style={style}
       {...attributes}
       {...listeners}
-      className="p-2 text-left cursor-move bg-gray-100"
+      className="px-6 py-3 text-left text-xs font-medium uppercase whitespace-nowrap cursor-pointer"
     >
       {column.label}
     </th>

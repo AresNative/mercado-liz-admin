@@ -29,6 +29,9 @@ export const api = createApi({
     getReport: builder.query({
       query: (params) => `reporteria/${params}`,
     }),
+    getTestQuery: builder.query({
+      query: (params) => `testQuery/compras${params}`,
+    }),
     /* 
     TODO las opciones de enpoint son las siguientes ↡
     getUserById: builder.query({
@@ -54,4 +57,4 @@ export const api = createApi({
   }),
 });
 
-export const { useGetReportQuery } = api;
+export const { useGetReportQuery, useGetTestQueryQuery } = api;
