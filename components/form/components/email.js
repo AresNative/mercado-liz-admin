@@ -1,29 +1,28 @@
-import styles from "./inputs.module.css";
+import { Input } from "@nextui-org/react";
+
 export function Email(props) {
   const { cuestion } = props;
-  const handleInputChange = () => {
+
+  const handleInputChange = (e) => {
     props.setError(cuestion.name, {});
+    props.setValue(cuestion.name, e.target.value);
   };
+
   return (
-    <div className={styles.inputGroup}>
-      <input
+    <div className="space-y-2">
+      <Input
         type="email"
-        required={cuestion.require}
+        fullWidth
+        placeholder={cuestion.placeholder}
         value={cuestion.valueDefined}
+        required={cuestion.require}
         onChange={handleInputChange}
         {...props.register(cuestion.name, {
           required: cuestion.require && "The field is required.",
         })}
+        helperText={props.errors[cuestion.name]?.message}
+        color={props.errors[cuestion.name] ? "error" : "default"}
       />
-
-      <label className={styles.label}>{cuestion.placeholder}</label>
-      {props.errors[cuestion.name] && props.errors[cuestion.name].message && (
-        <div>
-          <span className={styles.danger}>
-            {props.errors[cuestion.name].message}
-          </span>
-        </div>
-      )}
     </div>
   );
 }

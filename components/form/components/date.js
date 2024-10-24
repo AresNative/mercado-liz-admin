@@ -1,4 +1,4 @@
-import styles from "./inputs.module.css";
+import { Input } from "@nextui-org/react";
 
 export function DateInput(props) {
   const { cuestion } = props;
@@ -11,33 +11,28 @@ export function DateInput(props) {
 
     if (selectedDateTime <= toDay) {
       props.setError(cuestion.name, {
-        message: `value must be ${toDay} or later`,
+        message: `Value must be ${toDay} or later`,
       });
     } else {
-      props.register(cuestion.name, {
-        value: selectedDateTime.toISOString(),
-        required: cuestion.require && "The field is required.",
-      });
+      props.setValue(cuestion.name, selectedDateTime.toISOString());
       props.setError(cuestion.name, {});
     }
   };
 
   return (
-    <div className={styles.inputGroup}>
-      <input
+    <div className="space-y-2">
+      <Input
         type="datetime-local"
+        fullWidth
+        placeholder={cuestion.placeholder}
+        required={cuestion.require}
         onChange={handleInputChange}
+        {...props.register(cuestion.name, {
+          required: cuestion.require && "The field is required.",
+        })}
+        helperText={props.errors[cuestion.name]?.message}
+        color={props.errors[cuestion.name] ? "error" : "default"}
       />
-
-      <label className={styles.label}>{cuestion.placeholder}</label>
-
-      {props.errors[cuestion.name] && props.errors[cuestion.name].message && (
-        <div>
-          <span className={styles.danger}>
-            {props.errors[cuestion.name].message}
-          </span>
-        </div>
-      )}
     </div>
   );
 }

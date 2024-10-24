@@ -50,17 +50,18 @@ export default function ReportsPage() {
   const [currentPage, setCurrentPage] = useState(1); // Estado para la página actual
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
-  // Construcción dinámica de los parámetros de consulta
-  const queryParam = `${activeTab}?codigo=${encodeURIComponent(
-    barcode
-  )}&page=${currentPage}&pageSize=${ITEMS_PER_PAGE}`;
+  const queryParam =
+    activeTab === "compras"
+      ? `compras?codigo=${encodeURIComponent(barcode)}`
+      : activeTab;
 
   const {
     data: reportData,
     error,
     isLoading,
     refetch,
-  } = useGetReportQuery(queryParam, { refetchOnMountOrArgChange: true }); // Agregar refetch dinámico
+  } = useGetReportQuery(queryParam);
+  console.log(reportData);
 
   useEffect(() => {
     if (reportData) {
@@ -79,6 +80,7 @@ export default function ReportsPage() {
         );
         setSortedData(Array.isArray(reportData) ? reportData : []);
       }
+      setCurrentPage(1); // Reiniciar la página al cambiar de reporte
     } else {
       setChartData({ labels: [], datasets: [] });
       setColumns([]);
@@ -86,15 +88,10 @@ export default function ReportsPage() {
     }
   }, [reportData, activeTab]);
 
-  // Refetch de datos cuando cambia la página
-  useEffect(() => {
-    refetch(); // Re-fetch de datos al cambiar la página
-  }, [currentPage, refetch]);
-
   const updateChartData = (items = [], isCompras = false) => {
     if (!Array.isArray(items)) {
       console.error("Items no es un array:", items);
-      return;
+      return; // Evita que siga el proceso si no es un array.
     }
 
     const aggregatedData = items.reduce((acc, item) => {
@@ -134,13 +131,86 @@ export default function ReportsPage() {
 
   const handleTabChange = (key) => {
     setActiveTab(key);
-    setCurrentPage(1); // Reiniciar la página al cambiar de tab
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page); // Cambiar la página actual
+  const exportToPDF = () => {
+    const doc = new jsPDF({
+      orientation: "landscape",
+      unit: "px",
+      format: "a4",
+    });
+
+    const tableColumn = columns.map((col) => col.label);
+    const tableRows = sortedData.map((item) =>
+      columns.map((col) => item[col.key] || "-")
+    );
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+      theme: "striped",
+      headStyles: { fillColor: [41, 128, 185] },
+    });
+
+    doc.save("reporte.pdf");
   };
 
+  const exportToExcel = () => {
+    const dataToExport = sortedData.map((item) =>
+      columns.reduce(
+        (row, col) => ({ ...row, [col.label]: item[col.key] || "-" }),
+        {}
+      )
+    );
+    const ws = XLSX.utils.json_to_sheet(dataToExport);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Reporte");
+    XLSX.writeFile(wb, "reporte.xlsx");
+  };
+
+  const renderCell = useCallback((item, columnKey) => {
+    const value = item?.[columnKey] || "-";
+
+    if (columnKey === "fechaEmision" && value !== "-") {
+      return new Date(value).toLocaleDateString();
+    }
+
+    if (
+      (columnKey === "costo" ||
+        columnKey === "price" ||
+        columnKey === "TotalCantidad" ||
+        columnKey === "TotalImporte") &&
+      value !== "-"
+    ) {
+      return parseFloat(value).toFixed(2);
+    }
+
+    return value;
+  }, []);
+
+  const handleSort = (columnKey) => {
+    let direction = "ascending";
+    if (sortConfig.key === columnKey && sortConfig.direction === "ascending") {
+      direction = "descending";
+    }
+
+    const sortedArray = [...sortedData].sort((a, b) => {
+      if (a[columnKey] < b[columnKey]) {
+        return direction === "ascending" ? -1 : 1;
+      }
+      if (a[columnKey] > b[columnKey]) {
+        return direction === "ascending" ? 1 : -1;
+      }
+      return 0;
+    });
+
+    setSortConfig({ key: columnKey, direction });
+    setSortedData(sortedArray);
+    setCurrentPage(1); // Reiniciar la página al ordenar
+  };
+
+  // Función para obtener los datos paginados
   const paginatedData = useMemo(() => {
     return sortedData.slice(
       (currentPage - 1) * ITEMS_PER_PAGE,
@@ -215,57 +285,59 @@ export default function ReportsPage() {
           {error ? (
             <center className="p-5">No hay datos que mostrar</center>
           ) : (
-            <table className="min-w-full divide-y divide-gray-300 table-auto">
-              <thead>
-                <tr>
-                  {columns.map((col) => (
-                    <th
-                      key={col.key}
-                      className="px-6 py-3 text-left text-xs font-medium uppercase whitespace-nowrap cursor-pointer"
-                      onClick={() => handleSort(col.key)}
-                    >
-                      {col.label}
-                      {sortConfig.key === col.key
-                        ? sortConfig.direction === "ascending"
-                          ? " ▲"
-                          : " ▼"
-                        : null}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {isLoading ? (
+            <>
+              <table className="min-w-full divide-y divide-gray-300 table-auto">
+                <thead>
                   <tr>
-                    <td colSpan={columns.length} className="text-center py-4">
-                      <Spinner label="Cargando..." />
-                    </td>
+                    {columns.map((col) => (
+                      <th
+                        key={col.key}
+                        className="px-6 py-3 text-left text-xs font-medium uppercase whitespace-nowrap cursor-pointer"
+                        onClick={() => handleSort(col.key)}
+                      >
+                        {col.label}
+                        {sortConfig.key === col.key
+                          ? sortConfig.direction === "ascending"
+                            ? " ▲"
+                            : " ▼"
+                          : null}
+                      </th>
+                    ))}
                   </tr>
-                ) : paginatedData.length > 0 ? (
-                  paginatedData.map((item, index) => (
-                    <tr key={index}>
-                      {columns.map((col) => (
-                        <td
-                          key={col.key}
-                          className="px-6 py-4 text-sm whitespace-nowrap"
-                        >
-                          {renderCell(item, col.key)}
-                        </td>
-                      ))}
+                </thead>
+                <tbody className="divide-y">
+                  {isLoading ? (
+                    <tr>
+                      <td colSpan={columns.length} className="text-center py-4">
+                        <Spinner label="Cargando..." />
+                      </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={columns.length} className="text-center py-4">
-                      No hay datos para mostrar.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  ) : paginatedData.length > 0 ? (
+                    paginatedData.map((item, index) => (
+                      <tr key={index}>
+                        {columns.map((col) => (
+                          <td
+                            key={col.key}
+                            className="px-6 py-4 text-sm whitespace-nowrap"
+                          >
+                            {renderCell(item, col.key)}
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={columns.length} className="text-center py-4">
+                        No hay datos para mostrar.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </>
           )}
         </div>
-
+        {/* Componente de Paginación */}
         <div className="flex justify-center mt-4">
           <Pagination
             isCompact
@@ -273,7 +345,7 @@ export default function ReportsPage() {
             color="secondary"
             total={Math.ceil(sortedData.length / ITEMS_PER_PAGE)}
             page={currentPage}
-            onChange={handlePageChange}
+            onChange={(page) => setCurrentPage(page)}
             size="lg"
           />
         </div>

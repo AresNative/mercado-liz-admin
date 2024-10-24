@@ -1,41 +1,35 @@
-"use client";
 import { useEffect } from "react";
-import styles from "./inputs.module.css";
+import { Input } from "@nextui-org/react";
+
 export function Number(props) {
   const { cuestion } = props;
-  const handleInputChange = (event) => {
-    props.setError(cuestion.name, {});
-    const { value } = event.target;
-    props.setValue(cuestion.name, value);
-  };
+
   useEffect(() => {
     if (cuestion.valueDefined) {
       props.setValue(cuestion.name, cuestion.valueDefined);
     }
   }, [cuestion.valueDefined]);
+
+  const handleInputChange = (event) => {
+    props.setError(cuestion.name, {});
+    props.setValue(cuestion.name, event.target.value);
+  };
+
   return (
-    <div className={styles.inputGroup}>
-      <input
-        required={cuestion.require}
+    <div className="space-y-2">
+      <Input
         type="number"
-        id="name"
-        name="name"
+        fullWidth
         step="any"
-        pattern="[0-9]*[.,]?[0-9]+"
-        onChange={(event) => handleInputChange(event)}
+        placeholder={cuestion.placeholder}
+        required={cuestion.require}
+        onChange={handleInputChange}
         {...props.register(cuestion.name, {
           required: cuestion.require && "The field is required.",
         })}
+        helperText={props.errors[cuestion.name]?.message}
+        color={props.errors[cuestion.name] ? "error" : "default"}
       />
-
-      <label className={styles.label}>{cuestion.placeholder}</label>
-      {props.errors[cuestion.name] && props.errors[cuestion.name].message && (
-        <div>
-          <span className={styles.danger}>
-            {props.errors[cuestion.name].message}
-          </span>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,8 +1,5 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import styles from "./inputs.module.css";
-import { XSvg } from "@/assets/svgs/x";
-import { SvgPlus } from "@/assets/svgs/plus";
+import { useState, useEffect } from "react";
+import { Input, Button } from "@nextui-org/react";
 
 export function MultipleParagraphInput({
   register,
@@ -34,99 +31,51 @@ export function MultipleParagraphInput({
   };
 
   useEffect(() => {
-    const newIndex = paragraphs.length;
-    const newParagraphs = cuestion.valueDefined
-      ? cuestion.valueDefined.$values.map((text, key) => ({
-          name: `${newIndex + key}`,
-          valueDefined: text.text,
-          placeholder: "Paragraph...",
-          require: cuestion.require,
-        }))
-      : [
-          {
-            name: `${newIndex}`,
-            valueDefined: "",
-            placeholder: "Paragraph...",
-            require: cuestion.require,
-          },
-        ];
-
-    setParagraphs([...newParagraphs]);
-  }, []);
+    if (cuestion.valueDefined) {
+      const newParagraphs = cuestion.valueDefined.$values.map((text, key) => ({
+        name: `${key}`,
+        valueDefined: text.text,
+        placeholder: "Paragraph...",
+        require: cuestion.require,
+      }));
+      setParagraphs([...newParagraphs]);
+    }
+  }, [cuestion.valueDefined]);
 
   const handleRemoveParagraph = (index) => {
-    const newParagraphs = [...paragraphs];
-    newParagraphs.splice(index, 1);
+    const newParagraphs = paragraphs.filter((_, i) => i !== index);
     setParagraphs(newParagraphs);
   };
 
   return (
-    <div>
+    <div className="space-y-4">
       {paragraphs.map((cuestion, index) => (
-        <div key={index} className={styles.inputGroup}>
+        <div key={index} className="flex items-center space-x-2">
           <Input
-            cuestion={cuestion}
-            register={register}
-            errors={errors}
-            setError={setError}
-            setValue={setValue}
+            fullWidth
+            placeholder={cuestion.placeholder}
+            value={cuestion.valueDefined}
+            required={cuestion.require}
+            onChange={(e) => setValue(cuestion.name, e.target.value)}
+            {...register(cuestion.name, {
+              required: cuestion.require && "The field is required.",
+            })}
+            helperText={errors[cuestion.name]?.message}
+            color={errors[cuestion.name] ? "error" : "default"}
           />
-          <button
-            type="button"
-            style={{ marginRight: "-2rem" }}
+          <Button
+            auto
+            flat
+            color="error"
             onClick={() => handleRemoveParagraph(index)}
           >
-            {index}
-            <XSvg />
-          </button>
+            Remove
+          </Button>
         </div>
       ))}
-      <center style={{ marginBottom: "1rem" }}>
-        <button
-          onClick={handleAddParagraph}
-          style={{ padding: ".5rem", borderRadius: "14px" }}
-        >
-          <SvgPlus style={{ fill: "#7F7F7F" }} />
-        </button>
-      </center>
-    </div>
-  );
-}
-
-export function Input(props) {
-  const { cuestion } = props;
-
-  const handleInputChange = (event) => {
-    const { value } = event.target;
-    props.setError(cuestion.name, {});
-    props.setValue(cuestion.name, value);
-    props.onInputChange(cuestion.name, value);
-  };
-
-  useEffect(() => {
-    if (cuestion.valueDefined) {
-      props.setValue(cuestion.name, cuestion.valueDefined);
-    }
-  }, [cuestion.valueDefined]);
-
-  return (
-    <div className={styles.inputGroup}>
-      <input
-        required={cuestion.require}
-        type="text"
-        onChange={handleInputChange}
-        {...props.register(cuestion.name, {
-          required: cuestion.require && "The field is required.",
-        })}
-      />
-      <label className={styles.label}>{cuestion.placeholder}</label>
-      {props.errors[cuestion.name] && props.errors[cuestion.name].message && (
-        <div>
-          <span className={styles.danger}>
-            {props.errors[cuestion.name].message}
-          </span>
-        </div>
-      )}
+      <Button auto onClick={handleAddParagraph}>
+        Add Paragraph
+      </Button>
     </div>
   );
 }

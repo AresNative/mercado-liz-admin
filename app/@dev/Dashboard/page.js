@@ -60,7 +60,7 @@ export default function GeneradorReportes() {
   const [previewData, setPreviewData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
-  const itemsPerPage = 10;
+  const itemsPerPage = 8;
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -96,7 +96,9 @@ export default function GeneradorReportes() {
   }, [currentPage, refetch]);
 
   const chartData = {
-    labels: previewData.map((item) => item.FechaEmision),
+    labels: previewData.map((item) =>
+      new Date(item.FechaEmision).toLocaleDateString()
+    ),
     datasets: [
       {
         label: "Cantidad",
@@ -135,8 +137,6 @@ export default function GeneradorReportes() {
         <Card className="flex-1 mt-2 mx-auto p-8">
           <h2 className="text-2xl font-bold mb-6">Generador de Reportes</h2>
           <ReportInputs
-            reportType={reportType}
-            setReportType={setReportType}
             filter={filter}
             setFilter={setFilter}
             startDate={startDate}

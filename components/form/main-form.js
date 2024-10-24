@@ -2,9 +2,9 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Tel } from "./components/tel";
-import { Input } from "./components/input";
+import { InputComponent as Input } from "./components/input"; // Ajustado el nombre del import
 import { Email } from "./components/email";
-import { Radio } from "./components/radio";
+import { RadioComponent as Radio } from "./components/radio"; // Ajustado el nombre del import
 import { Number } from "./components/number";
 import { DateInput } from "./components/date";
 import { MonthInput } from "./components/month";
@@ -44,7 +44,7 @@ export const MainForm = ({ message_button, dataForm, functionForm }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={styles["form"]}>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
       {dataForm.map((field, key) => (
         <SwitchTypeInputRender
           key={key}
