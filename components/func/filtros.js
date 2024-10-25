@@ -1,23 +1,16 @@
 "use client";
 
-import { useDroppable, useDraggable } from "@dnd-kit/core";
-import {
-  SortableContext,
-  arrayMove,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import { useDroppable } from "@dnd-kit/core";
+import { useSortable } from "@dnd-kit/sortable";
 import {
   Button,
   Card,
   Modal,
   ModalBody,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
-import { useState } from "react";
 import { MainForm } from "../form/main-form";
 import MenuStructureEditor from "@/app/@dev/Test/page";
 
@@ -74,7 +67,7 @@ function Filtros({ columns, filteredColumns, setFilteredColumns, setColumns }) {
         <div className="flex items-center mb-2">
           <h3 className="text-lg font-bold mb-2">Filtros Aplicados</h3>
           <Button className="ml-auto" onPress={onOpen}>
-            Open
+            Nuevo filtro
           </Button>
         </div>
         <MenuStructureEditor />
@@ -85,7 +78,7 @@ function Filtros({ columns, filteredColumns, setFilteredColumns, setColumns }) {
           {() => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Modal Title
+                Nuevo Filtro
               </ModalHeader>
               <ModalBody>
                 <MainForm

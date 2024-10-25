@@ -34,10 +34,15 @@ import {
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 export default function GeneradorReportes() {
-  const [reportType, setReportType] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [filter, setFilter] = useState("");
+  const [filter, setFilter] = useState({
+    codigo: "",
+    articulo: "",
+    proveedor: "",
+    descripcion: "",
+  });
+  const [filterType, setFilterType] = useState("codigo"); // Tipo de filtro seleccionado
   const [columns, setColumns] = useState([
     { id: "Codigo", label: "Código" },
     { id: "Articulo", label: "Artículo" },
@@ -67,17 +72,25 @@ export default function GeneradorReportes() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
-  // Función para manejar el cambio de página
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= Math.ceil(totalRecords / itemsPerPage)) {
-      setCurrentPage(newPage);
-    }
+  // Construir el query string basado en los filtros
+  const buildQueryString = () => {
+    const query = new URLSearchParams();
+
+    // Agregar el filtro seleccionado al query string
+    if (filter[filterType]) query.append(filterType, filter[filterType]);
+    if (startDate) query.append("startDate", startDate);
+    if (endDate) query.append("endDate", endDate);
+
+    query.append("page", currentPage);
+    query.append("pageSize", itemsPerPage);
+
+    return query.toString();
   };
 
-  // Obtener datos usando el hook de RTK Query
+  // Obtener datos usando el hook de RTK Query con el query string construido
   const { data, error, isLoading, refetch } = useGetTestQueryQuery(
-    `?page=${currentPage}&pageSize=${itemsPerPage}`, // Corrección del query string
-    { refetchOnMountOrArgChange: true } // Permite refetch cuando cambian los argumentos
+    buildQueryString(),
+    { refetchOnMountOrArgChange: true }
   );
 
   // Maneja los datos recibidos
@@ -90,11 +103,33 @@ export default function GeneradorReportes() {
     }
   }, [data]);
 
-  // Volver a cargar los datos al cambiar la página
+  // Volver a cargar los datos al cambiar la página o los filtros
   useEffect(() => {
-    refetch(); // Volver a ejecutar la consulta al cambiar de página
-  }, [currentPage, refetch]);
+    refetch(); // Volver a ejecutar la consulta al cambiar de página o filtro
+  }, [currentPage, filter, startDate, endDate, refetch]);
 
+  const handleFilterTypeChange = (e) => {
+    setFilterType(e.target.value);
+    setFilter(""); // Reiniciar el filtro al cambiar de tipo
+  };
+
+  // Función para manejar el cambio del valor del filtro
+  const handleFilterChange = (e) => {
+    const value = e.target.value;
+    setFilter((prev) => ({
+      ...prev,
+      [filterType]: value,
+    }));
+  };
+
+  // Función para manejar el cambio de página
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= Math.ceil(totalRecords / itemsPerPage)) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  // Datos para la gráfica de barras
   const chartData = {
     labels: previewData.map((item) =>
       new Date(item.FechaEmision).toLocaleDateString()
@@ -134,25 +169,33 @@ export default function GeneradorReportes() {
   return (
     <div className="max-w-6xl mx-auto p-4">
       <section className="flex flex-col lg:flex-row gap-4">
-        <Card className="flex-1 mt-2 mx-auto p-8">
-          <h2 className="text-2xl font-bold mb-6">Generador de Reportes</h2>
+        <Card className="flex-1 w-full mt-2 mx-auto p-8">
+          <h2 className="text-2xl font-bold mb-6">Búsqueda rápida</h2>
           <ReportInputs
             filter={filter}
-            setFilter={setFilter}
+            setFilter={handleFilterChange}
+            filterType={filterType}
+            setFilterType={setFilterType}
             startDate={startDate}
             setStartDate={setStartDate}
             endDate={endDate}
             setEndDate={setEndDate}
+            handleFilterTypeChange={handleFilterTypeChange}
+            handleFilterChange={handleFilterChange}
           />
         </Card>
-        <Card className="flex-1 mt-2 mx-auto p-8">
+        <Card className="flex-1 w-full mt-2 mx-auto p-8">
           {isLoading ? (
             <p>Cargando...</p>
           ) : error ? (
             <p>Error al cargar los datos</p>
           ) : (
             previewData.length > 0 && (
-              <Bar data={chartData} options={{ responsive: true }} />
+              <Bar
+                data={chartData}
+                options={{ responsive: true }}
+                className="w-full"
+              />
             )
           )}
         </Card>

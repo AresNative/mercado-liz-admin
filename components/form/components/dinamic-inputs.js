@@ -17,6 +17,15 @@ export function MultipleParagraphInput({
     },
   ]);
 
+  // Añadido para sincronizar el estado local con react-hook-form
+  const handleInputChange = (index, value) => {
+    const updatedParagraphs = paragraphs.map((paragraph, i) =>
+      i === index ? { ...paragraph, valueDefined: value } : paragraph
+    );
+    setParagraphs(updatedParagraphs);
+    setValue(paragraphs[index].name, value); // Actualiza el valor en react-hook-form
+  };
+
   const handleAddParagraph = () => {
     const newIndex = paragraphs.length;
     setParagraphs([
@@ -54,9 +63,8 @@ export function MultipleParagraphInput({
           <Input
             fullWidth
             placeholder={cuestion.placeholder}
-            value={cuestion.valueDefined}
             required={cuestion.require}
-            onChange={(e) => setValue(cuestion.name, e.target.value)}
+            onChange={(e) => handleInputChange(index, e.target.value)}
             {...register(cuestion.name, {
               required: cuestion.require && "The field is required.",
             })}

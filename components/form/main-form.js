@@ -15,7 +15,6 @@ import { Password } from "./components/password";
 import { SearchableSelect } from "./components/select";
 import { OptionMultiple } from "./components/optionmultiple";
 import { Button } from "@nextui-org/react";
-import styles from "@/assets/styles/main-form.module.css";
 import { MultipleParagraphInput } from "./components/dinamic-inputs";
 
 export const MainForm = ({ message_button, dataForm, functionForm }) => {
@@ -57,12 +56,10 @@ export const MainForm = ({ message_button, dataForm, functionForm }) => {
           setValue={setValue}
         />
       ))}
-      <section className={styles["btn-submit"]}>
-        <Button
-          label={loading ? "Loading..." : message_button}
-          type="submit"
-          disabled={loading}
-        />
+      <section>
+        <Button type="submit" disabled={loading}>
+          {loading ? "Loading..." : message_button}
+        </Button>
       </section>
     </form>
   );

@@ -30,7 +30,7 @@ export const api = createApi({
       query: (params) => `reporteria/${params}`,
     }),
     getTestQuery: builder.query({
-      query: (params) => `testQuery/compras${params}`,
+      query: (params) => `testQuery/compras?${params}`,
     }),
     /* 
     TODO las opciones de enpoint son las siguientes ↡
