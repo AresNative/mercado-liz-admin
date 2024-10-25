@@ -43,15 +43,20 @@ function ReportInputs({
       <Input
         type="date"
         placeholder="Fecha de inicio"
-        value={startDate}
-        onChange={(e) => setStartDate(e.target.value)}
+        onChange={(e) => {
+          const date = new Date(e.target.value);
+          setStartDate(date.toISOString().split("Z")[0]);
+        }}
         className="w-full"
       />
+
       <Input
         type="date"
         placeholder="Fecha de fin"
-        value={endDate}
-        onChange={(e) => setEndDate(e.target.value)}
+        onChange={(e) => {
+          const date = new Date(e.target.value);
+          setEndDate(date.toISOString().split("Z")[0]);
+        }}
         className="w-full"
       />
       <Button className="bg-green-400 text-white">EXCEL</Button>

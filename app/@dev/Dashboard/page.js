@@ -65,6 +65,23 @@ export default function GeneradorReportes() {
   const [previewData, setPreviewData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+
+  const handleSort = (columnId) => {
+    let direction = "asc";
+    if (sortConfig.key === columnId && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key: columnId, direction });
+
+    const sortedData = [...previewData].sort((a, b) => {
+      if (a[columnId] < b[columnId]) return direction === "asc" ? -1 : 1;
+      if (a[columnId] > b[columnId]) return direction === "asc" ? 1 : -1;
+      return 0;
+    });
+    setPreviewData(sortedData);
+  };
+
   const itemsPerPage = 8;
 
   const sensors = useSensors(
@@ -219,6 +236,8 @@ export default function GeneradorReportes() {
               columns={columns}
               paginatedData={previewData}
               isDragging={!!draggedColumn}
+              onSort={handleSort}
+              sortConfig={sortConfig}
             />
 
             <div className="flex justify-between items-center mt-4">

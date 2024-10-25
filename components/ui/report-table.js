@@ -6,7 +6,13 @@ import {
 } from "@dnd-kit/sortable";
 import SortableHeader from "../func/sortable-header";
 
-function ReportTable({ columns, paginatedData, isDragging }) {
+function ReportTable({
+  columns,
+  paginatedData,
+  isDragging,
+  onSort,
+  sortConfig,
+}) {
   return (
     <div className="overflow-x-auto rounded-lg border shadow-md">
       <table className="min-w-full divide-y divide-gray-300 table-auto">
@@ -21,6 +27,8 @@ function ReportTable({ columns, paginatedData, isDragging }) {
                   key={column.id}
                   column={column}
                   isDragging={isDragging}
+                  onSort={onSort}
+                  sortConfig={sortConfig}
                 />
               ))}
             </tr>
