@@ -224,13 +224,16 @@ export default function GeneradorReportes() {
         onDragEnd={handleDragEnd}
         onDragStart={(event) => setDraggedColumn(event.active.id)}
       >
-        <section className="flex flex-col lg:flex-row gap-4 mt-6">
+        <section className="mt-3">
           <Filtros
             columns={columns}
             filteredColumns={filteredColumns}
             setFilteredColumns={setFilteredColumns}
             setColumns={setColumns}
           />
+        </section>
+
+        <section className="flex flex-col lg:flex-row gap-4 mt-3">
           <Card className="flex-1 p-4 shadow-md">
             <ReportTable
               columns={columns}
@@ -267,7 +270,6 @@ export default function GeneradorReportes() {
             </div>
           </Card>
         </section>
-
         <DragOverlay>
           {draggedColumn && (
             <DragOverlayColumn
