@@ -32,6 +32,27 @@ export const api = createApi({
     getTestQuery: builder.query({
       query: (params) => `testQuery/compras?${params}`,
     }),
+    postProjects: builder.mutation({
+      query: (data) => ({
+        url: "projects",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    postSprints: builder.mutation({
+      query: (data) => ({
+        url: `projects/${data.projectId}/sprints`,
+        method: "POST",
+        body: data.form,
+      }),
+    }),
+    postTasks: builder.mutation({
+      query: (data) => ({
+        url: "sprints/tasks",
+        method: "POST",
+        body: data,
+      }),
+    }),
     /* 
     TODO las opciones de enpoint son las siguientes ↡
     getUserById: builder.query({
