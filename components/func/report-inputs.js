@@ -1,27 +1,19 @@
 "use client";
 
 import { Button, Input } from "@nextui-org/react";
-import { useState } from "react";
 
 function ReportInputs({
-  filter,
-  setFilter,
-  startDate,
+  filterType,
   setStartDate,
-  endDate,
   setEndDate,
   handleFilterTypeChange,
   handleFilterChange,
 }) {
-  // Estado para manejar el tipo de búsqueda seleccionado
-  const [filterType, setFilterType] = useState("codigo");
-
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
       <div className="flex col-span-2 gap-2">
         <select
-          className="w-1/3 p-2 border rounded"
-          value={filterType}
+          className="w-1/3 p-2 border rounded outline-none"
           onChange={handleFilterTypeChange}
         >
           <option value="codigo">Código</option>

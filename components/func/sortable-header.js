@@ -23,7 +23,7 @@ function SortableHeader({ column, isDragging, onSort, sortConfig }) {
       {...attributes}
       {...listeners}
       onClick={handleClick}
-      className={`px-6 py-3 text-left text-xs font-medium uppercase whitespace-nowrap cursor-pointer ${
+      className={`px-1 py-3 text-left text-xs font-medium uppercase whitespace-nowrap cursor-pointer ${
         sortConfig.key === column.id ? "bg-gray-300" : ""
       }`}
     >

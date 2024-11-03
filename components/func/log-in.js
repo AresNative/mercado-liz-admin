@@ -12,8 +12,10 @@ import {
   Tabs,
   Tab,
   useDisclosure,
+  Checkbox,
 } from "@nextui-org/react";
-import { LogIn } from "lucide-react";
+import { Eye, EyeOff, LogIn, MailIcon } from "lucide-react";
+import Link from "next/link";
 
 const AuthModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -21,13 +23,15 @@ const AuthModal = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isVisible, setIsVisible] = useState(false);
+
+  const toggleVisibility = () => setIsVisible(!isVisible);
 
   // Manejador de cambio de valores en los inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
   // Enviar los datos de autenticación a la API
   const handleSubmit = async () => {
     setLoading(true);
@@ -76,6 +80,9 @@ const AuthModal = () => {
 
             <div className="space-y-4 mt-4">
               <Input
+                endContent={
+                  <MailIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                }
                 type="email"
                 name="email"
                 value={formData.email}
@@ -84,13 +91,47 @@ const AuthModal = () => {
                 fullWidth
               />
               <Input
-                type="password"
+                endContent={
+                  <button
+                    className="focus:outline-none flex gap-2"
+                    type="button"
+                    onClick={toggleVisibility}
+                    aria-label="toggle password visibility"
+                  >
+                    {!isVisible ? (
+                      <Eye
+                        size={20}
+                        absoluteStrokeWidth
+                        className="text-2xl text-default-400 pointer-events-none flex-shrink-0"
+                      />
+                    ) : (
+                      <EyeOff
+                        size={20}
+                        absoluteStrokeWidth
+                        className="text-2xl text-default-400 pointer-events-none flex-shrink-0"
+                      />
+                    )}
+                  </button>
+                }
+                type={isVisible ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Contraseña"
                 fullWidth
               />
+            </div>
+            <div className="flex py-2 px-1 justify-between">
+              <Checkbox
+                classNames={{
+                  label: "text-small",
+                }}
+              >
+                Remember me
+              </Checkbox>
+              <Link color="primary" href="#" size="sm">
+                Forgot password?
+              </Link>
             </div>
             {error && <p className="text-red-500 mt-2">{error}</p>}
           </ModalBody>

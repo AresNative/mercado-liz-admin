@@ -7,12 +7,12 @@ export function UserRoleRenderer({ user, admin, dev, fallback }) {
   const [loadingRole, setLoadingRole] = useState(true);
   const [error, setError] = useState(null);
   const userState =
-    "dev"; /* useAppSelector((state) => state.authReducer.user); */
+    "user"; /* useAppSelector((state) => state.authReducer.user); */
 
   const fetchUserRole = async () => {
     setLoadingRole(true);
     try {
-      setRole("dev");
+      setRole(userState);
     } catch (error) {
       setRole(null);
       setError(error.message || "Error fetching user role");

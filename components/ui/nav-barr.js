@@ -8,20 +8,13 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { Menu, X } from "lucide-react"; // Iconos de hamburguesa
+import { links } from "@/constant/router";
 
 const NavBar = () => {
   const router = useRouter(); // Ruta activa
   const { theme, setTheme } = useTheme(); // Configurar tema
   const [mounted, setMounted] = useState(false); // Control del montaje
   const [isOpen, setIsOpen] = useState(false); // Control del menú móvil
-
-  const links = [
-    { href: "/", label: "Inicio" },
-    { href: "/Reports", label: "Reports" },
-    { href: "/Tasks", label: "Tasks" },
-    { href: "/Inventory", label: "Inventory" },
-    { href: "/Scrum", label: "Scrum" },
-  ];
 
   // Verificar si el componente se ha montado (para evitar errores SSR)
   useEffect(() => {
