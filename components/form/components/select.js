@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Select } from "@nextui-org/react";
+import { Select, SelectItem } from "@nextui-org/react";
 
 export function SearchableSelect(props) {
   const { cuestion, setValue } = props;
@@ -20,15 +20,17 @@ export function SearchableSelect(props) {
     <div className="space-y-2">
       <Select
         placeholder={cuestion.placeholder}
-        options={cuestion.options}
-        value={selected}
-        onChange={handleSelectChange}
+        items={cuestion.options}
+        selectedKey={selected}
+        onSelectionChange={(key) => handleSelectChange(key)}
         {...props.register(cuestion.name, {
           required: cuestion.require && "The field is required.",
         })}
-        helperText={props.errors[cuestion.name]?.message}
+        errorMessage={props.errors[cuestion.name]?.message}
         color={props.errors[cuestion.name] ? "error" : "default"}
-      />
+      >
+        {(item) => <SelectItem key={item.value}>{item.label}</SelectItem>}
+      </Select>
     </div>
   );
 }

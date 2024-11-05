@@ -78,4 +78,10 @@ export const api = createApi({
   }),
 });
 
-export const { useGetReportQuery, useGetTestQueryQuery } = api;
+export const {
+  useGetReportQuery,
+  useGetTestQueryQuery,
+  usePostProjectsMutation,
+  usePostSprintsMutation,
+  usePostTasksMutation,
+} = api;

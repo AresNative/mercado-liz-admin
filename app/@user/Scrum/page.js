@@ -1,10 +1,12 @@
 "use client";
+import { ModalComponent } from "@/components/ui/modal";
 import { DefaultPage } from "@/template/default-page";
-import { Avatar, AvatarGroup } from "@nextui-org/react";
+import { Avatar, AvatarGroup, useDisclosure } from "@nextui-org/react";
 import { Clock8, DiamondPlus, FolderGit2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function ScrumPage() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
 
   const handleNavigation = (ruta) => {
@@ -48,6 +50,7 @@ export default function ScrumPage() {
               <section
                 className="w-[15rem] min-h-[7rem] bg-slate-200 rounded-lg  p-4 flex items-center justify-center hover:bg-opacity-85 cursor-pointer transform active:scale-105 transition-transform duration-150 ease-in-out"
                 role="button"
+                onClick={onOpen}
               >
                 <span className="flex gap-3">
                   Crear nuevo proyecto <DiamondPlus />
@@ -87,6 +90,8 @@ export default function ScrumPage() {
           </section>
         </div>
       </section>
+
+      <ModalComponent isOpen={isOpen} onClose={onClose} />
     </DefaultPage>
   );
 }

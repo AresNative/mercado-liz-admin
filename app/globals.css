@@ -9,7 +9,9 @@
   --table-header-bg: #e9ecef;
   --tr-hover: #f2f2f7;
 }
-
+*::-webkit-scrollbar {
+  width: 0px;
+}
 /* Variables CSS para el tema oscuro */
 .dark {
   --background: #121212;

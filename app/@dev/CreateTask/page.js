@@ -58,10 +58,10 @@ export default function DocumentEditor() {
     let formattedContent = "";
     switch (command) {
       case "h1":
-        formattedContent = `<h1 class="text-2xl font-bold mb-4">${selectedText}</h1>`;
+        formattedContent = `<h1 className="text-2xl font-bold mb-4">${selectedText}</h1>`;
         break;
       case "h2":
-        formattedContent = `<h2 class="text-xl font-bold mb-3">${selectedText}</h2>`;
+        formattedContent = `<h2 className="text-xl font-bold mb-3">${selectedText}</h2>`;
         break;
       case "bold":
         formattedContent = `<strong>${selectedText}</strong>`;
@@ -77,18 +77,20 @@ export default function DocumentEditor() {
           .split("\n")
           .map((item) => item.trim())
           .filter((item) => item)
-          .map((item) => `<li class="ml-4">• ${item}</li>`)
+          .map((item) => `<li className="ml-4">• ${item}</li>`)
           .join("\n");
-        formattedContent = `<ul class="list-none space-y-2">\n${formattedContent}\n</ul>`;
+        formattedContent = `<ul className="list-none space-y-2">\n${formattedContent}\n</ul>`;
         break;
       case "insertOrderedList":
         formattedContent = selectedText
           .split("\n")
           .map((item) => item.trim())
           .filter((item) => item)
-          .map((item, index) => `<li class="ml-4">${index + 1}. ${item}</li>`)
+          .map(
+            (item, index) => `<li className="ml-4">${index + 1}. ${item}</li>`
+          )
           .join("\n");
-        formattedContent = `<ol class="list-none space-y-2">\n${formattedContent}\n</ol>`;
+        formattedContent = `<ol className="list-none space-y-2">\n${formattedContent}\n</ol>`;
         break;
       default:
         formattedContent = selectedText;
@@ -183,13 +185,13 @@ export default function DocumentEditor() {
               key="taskTemplate"
               onClick={() =>
                 insertTemplate(
-                  `<h1 class="text-2xl font-bold mb-4">Description</h1>
-                  <p class="mb-4">Enter your description here...</p>
-                  <h2 class="text-xl font-bold mb-3">Acceptance Criteria</h2>
-                  <ul class="list-none space-y-2">
-                    <li class="ml-4">• First criteria</li>
-                    <li class="ml-4">• Second criteria</li>
-                    <li class="ml-4">• Third criteria</li>
+                  `<h1 className="text-2xl font-bold mb-4">Description</h1>
+                  <p className="mb-4">Enter your description here...</p>
+                  <h2 className="text-xl font-bold mb-3">Acceptance Criteria</h2>
+                  <ul className="list-none space-y-2">
+                    <li className="ml-4">• First criteria</li>
+                    <li className="ml-4">• Second criteria</li>
+                    <li className="ml-4">• Third criteria</li>
                   </ul>`
                 )
               }
@@ -200,17 +202,17 @@ export default function DocumentEditor() {
               key="meetingNotes"
               onClick={() =>
                 insertTemplate(
-                  `<h1 class="text-2xl font-bold mb-4">Meeting Notes</h1>
-                  <p class="mb-4">Date: ${new Date().toLocaleDateString()}</p>
-                  <h2 class="text-xl font-bold mb-3">Attendees</h2>
-                  <ul class="list-none space-y-2">
-                    <li class="ml-4">• Person 1</li>
-                    <li class="ml-4">• Person 2</li>
+                  `<h1 className="text-2xl font-bold mb-4">Meeting Notes</h1>
+                  <p className="mb-4">Date: ${new Date().toLocaleDateString()}</p>
+                  <h2 className="text-xl font-bold mb-3">Attendees</h2>
+                  <ul className="list-none space-y-2">
+                    <li className="ml-4">• Person 1</li>
+                    <li className="ml-4">• Person 2</li>
                   </ul>
-                  <h2 class="text-xl font-bold mb-3">Discussion Points</h2>
-                  <ul class="list-none space-y-2">
-                    <li class="ml-4">• Point 1</li>
-                    <li class="ml-4">• Point 2</li>
+                  <h2 className="text-xl font-bold mb-3">Discussion Points</h2>
+                  <ul className="list-none space-y-2">
+                    <li className="ml-4">• Point 1</li>
+                    <li className="ml-4">• Point 2</li>
                   </ul>`
                 )
               }
