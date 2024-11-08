@@ -122,10 +122,7 @@ export default function Component() {
               <div className="flex-1">
                 <div className="bg-gray-100 p-4 rounded-lg">
                   <div className="font-semibold mb-1">user2</div>
-                  <p>
-                    Great progress! I've started working on the password reset
-                    feature.
-                  </p>
+                  <p>test</p>
                 </div>
                 <div className="text-sm text-gray-500 mt-2">1 day ago</div>
               </div>
