@@ -31,7 +31,6 @@ export const MainForm = ({ message_button, dataForm, functionForm }) => {
 
   async function onSubmit(submitData) {
     setLoading(true);
-
     try {
       const res = await functionForm({ dataForm: submitData });
       console.log(submitData, res);
