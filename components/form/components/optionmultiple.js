@@ -16,8 +16,6 @@ export function OptionMultiple(props) {
         isSelected={isAtLeastOneChecked}
         onChange={handleCheckboxChange}
         required={cuestion.require}
-        color={props.errors[cuestion.name] ? "error" : "default"}
-        helperText={props.errors[cuestion.name]?.message}
       >
         {cuestion.placeholder}
       </Checkbox>

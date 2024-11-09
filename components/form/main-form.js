@@ -32,8 +32,8 @@ export const MainForm = ({ message_button, dataForm, functionForm }) => {
   async function onSubmit(submitData) {
     setLoading(true);
     try {
-      const res = await functionForm({ dataForm: submitData });
-      console.log(submitData, res);
+      const { ...data } = submitData;
+      await functionForm({ dataForm: data });
     } catch (error) {
       console.error(error);
     } finally {
@@ -55,11 +55,13 @@ export const MainForm = ({ message_button, dataForm, functionForm }) => {
           setValue={setValue}
         />
       ))}
-      <section>
-        <Button type="submit" disabled={loading}>
-          {loading ? "Loading..." : message_button}
-        </Button>
-      </section>
+      <Button
+        type="submit"
+        disabled={loading}
+        aria-label="boton formulario dinamico"
+      >
+        {loading ? "Loading..." : message_button}
+      </Button>
     </form>
   );
 };

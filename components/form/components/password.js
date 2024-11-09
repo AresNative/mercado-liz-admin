@@ -26,8 +26,6 @@ export function Password(props) {
         {...props.register(cuestion.name, {
           required: cuestion.require && "The field is required.",
         })}
-        helperText={props.errors[cuestion.name]?.message}
-        color={props.errors[cuestion.name] ? "error" : "default"}
         clearable
       />
       <button

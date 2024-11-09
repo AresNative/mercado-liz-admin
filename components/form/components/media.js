@@ -41,13 +41,16 @@ export function InputMedia(props) {
         readOnly
         value={selectedFileName}
         placeholder={cuestion.placeholder}
-        color={props.errors[cuestion.name] ? "error" : "default"}
-        helperText={props.errors[cuestion.name]?.message}
       />
       {selectedFileName && (
         <Button auto flat color="error" onClick={handleRemoveFile}>
           Remove
         </Button>
+      )}
+      {props.errors[cuestion.name] && props.errors[cuestion.name].message && (
+        <span className="text-red-400 p-1">
+          {props.errors[cuestion.name].message}
+        </span>
       )}
     </div>
   );

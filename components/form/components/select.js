@@ -27,10 +27,14 @@ export function SearchableSelect(props) {
           required: cuestion.require && "The field is required.",
         })}
         errorMessage={props.errors[cuestion.name]?.message}
-        color={props.errors[cuestion.name] ? "error" : "default"}
       >
         {(item) => <SelectItem key={item.value}>{item.label}</SelectItem>}
       </Select>
+      {props.errors[cuestion.name] && props.errors[cuestion.name].message && (
+        <span className="text-red-400 p-1">
+          {props.errors[cuestion.name].message}
+        </span>
+      )}
     </div>
   );
 }

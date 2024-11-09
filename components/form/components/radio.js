@@ -19,7 +19,6 @@ export function RadioComponent(props) {
         {...props.register(cuestion.name, {
           required: cuestion.require && "The field is required.",
         })}
-        color={props.errors[cuestion.name] ? "error" : "default"}
       >
         {cuestion.options.map((option, index) => (
           <Radio key={index} value={option}>

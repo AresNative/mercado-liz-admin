@@ -20,9 +20,12 @@ export function Email(props) {
         {...props.register(cuestion.name, {
           required: cuestion.require && "The field is required.",
         })}
-        helperText={props.errors[cuestion.name]?.message}
-        color={props.errors[cuestion.name] ? "error" : "default"}
       />
+      {props.errors[cuestion.name] && props.errors[cuestion.name].message && (
+        <span className="text-red-400 p-1">
+          {props.errors[cuestion.name].message}
+        </span>
+      )}
     </div>
   );
 }

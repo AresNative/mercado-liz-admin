@@ -184,7 +184,7 @@ export default function Dashboard() {
             </p>
           </CardHeader>
           <CardBody>
-            <Table aria-label="Pedidos recientes">
+            <Table>
               <TableHeader>
                 <TableColumn>PEDIDO</TableColumn>
                 <TableColumn>ESTADO</TableColumn>

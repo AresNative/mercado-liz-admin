@@ -2,6 +2,15 @@ import { Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
 import { MainForm } from "../form/main-form";
 import { usePostProjectsMutation } from "@/store/server/reducers/api-reducer";
 export function ModalComponent({ isOpen, onClose }) {
+  const [postProjects] = usePostProjectsMutation(); // Ajuste para el hook de consulta
+
+  async function handleForm({ dataForm }) {
+    try {
+      await postProjects(dataForm).unwrap();
+    } catch (error) {
+      console.error("Error al enviar el formulario:", error);
+    }
+  }
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalContent>
@@ -31,14 +40,14 @@ export function ModalComponent({ isOpen, onClose }) {
                   {
                     id: 2,
                     type: "DATE",
-                    name: "fecha_inicio",
+                    name: "fechaInicio",
                     placeholder: "Fecha Inicio",
                     require: true,
                   },
                   {
                     id: 3,
                     type: "DATE",
-                    name: "fecha_fin",
+                    name: "fechaFin",
                     placeholder: "Fecha Fin",
                     require: true,
                   },
@@ -48,7 +57,7 @@ export function ModalComponent({ isOpen, onClose }) {
                     options: ["Activo"],
                     name: "activo",
                     placeholder: "Estado",
-                    require: true,
+                    require: false,
                   },
                   {
                     id: 5,
@@ -60,7 +69,7 @@ export function ModalComponent({ isOpen, onClose }) {
                     multi: false,
                   },
                 ]}
-                functionForm={usePostProjectsMutation}
+                functionForm={handleForm}
               />
             </ModalBody>
           </>

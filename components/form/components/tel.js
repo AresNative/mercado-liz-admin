@@ -24,8 +24,6 @@ export function Tel(props) {
             message: "Only numeric values are allowed.",
           },
         })}
-        helperText={props.errors[cuestion.name]?.message}
-        color={props.errors[cuestion.name] ? "error" : "default"}
       />
     </div>
   );
