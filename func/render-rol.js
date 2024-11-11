@@ -26,28 +26,7 @@ export function UserRoleRenderer({ user, admin, dev, fallback }) {
   }, [userState]);
 
   if (loadingRole) {
-    return (
-      <main>
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          cargando...
-        </div>
-      </main>
-    );
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
+    return <main></main>;
   }
 
   if (role === "admin") {

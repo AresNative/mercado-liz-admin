@@ -143,7 +143,7 @@ export default function DashboardSupermercado() {
         </div>
 
         <Card className="mb-8">
-          <CardBody className=" h-80">
+          <CardBody className="h-80">
             <Bar options={chartOptions} data={chartData} />
           </CardBody>
         </Card>
