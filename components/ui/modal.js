@@ -1,16 +1,7 @@
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
 import { MainForm } from "../form/main-form";
-import { usePostProjectsMutation } from "@/store/server/reducers/api-reducer";
-export function ModalComponent({ isOpen, onClose }) {
-  const [postProjects] = usePostProjectsMutation(); // Ajuste para el hook de consulta
 
-  async function handleForm({ dataForm }) {
-    try {
-      await postProjects(dataForm).unwrap();
-    } catch (error) {
-      console.error("Error al enviar el formulario:", error);
-    }
-  }
+export function ModalComponent({ isOpen, onClose }) {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalContent>
@@ -22,34 +13,35 @@ export function ModalComponent({ isOpen, onClose }) {
             <ModalBody>
               <MainForm
                 message_button={"test"}
+                actionType={"add-project"}
                 dataForm={[
                   {
                     id: 0,
                     type: "INPUT",
                     name: "nombre",
                     placeholder: "Nombre",
-                    require: true,
+                    require: false,
                   },
                   {
                     id: 1,
                     type: "INPUT",
                     name: "descripcion",
                     placeholder: "Descripción",
-                    require: true,
+                    require: false,
                   },
                   {
                     id: 2,
                     type: "DATE",
                     name: "fechaInicio",
                     placeholder: "Fecha Inicio",
-                    require: true,
+                    require: false,
                   },
                   {
                     id: 3,
                     type: "DATE",
                     name: "fechaFin",
                     placeholder: "Fecha Fin",
-                    require: true,
+                    require: false,
                   },
                   {
                     id: 4,
@@ -65,11 +57,10 @@ export function ModalComponent({ isOpen, onClose }) {
                     options: [{ value: "urgencia", label: "Urgencia" }],
                     name: "state",
                     placeholder: "Prioridad",
-                    require: true,
+                    require: false,
                     multi: false,
                   },
                 ]}
-                functionForm={handleForm}
               />
             </ModalBody>
           </>

@@ -16,8 +16,14 @@ import { SearchableSelect } from "./components/select";
 import { OptionMultiple } from "./components/optionmultiple";
 import { Button } from "@nextui-org/react";
 import { MultipleParagraphInput } from "./components/dinamic-inputs";
+import { usePostProjectsMutation } from "@/store/server/reducers/api-reducer";
 
-export const MainForm = ({ message_button, dataForm, functionForm }) => {
+export const MainForm = ({
+  message_button,
+  dataForm,
+  actionType,
+  functionForm,
+}) => {
   const [loading, setLoading] = useState(false);
   const {
     handleSubmit,
@@ -29,13 +35,25 @@ export const MainForm = ({ message_button, dataForm, functionForm }) => {
     formState: { errors },
   } = useForm();
 
+  const [postProjects] = usePostProjectsMutation();
+
+  function getMutationFunction(actionType) {
+    switch (actionType) {
+      case "add-project":
+        return postProjects;
+
+      default:
+        return () => {}; // Retorna una función vacía para manejar el caso predeterminado
+    }
+  }
+
   async function onSubmit(submitData) {
     setLoading(true);
+    const mutationFunction = getMutationFunction(actionType);
     try {
-      const { ...data } = submitData;
-      await functionForm({ dataForm: data });
+      await mutationFunction(submitData);
     } catch (error) {
-      console.error(error);
+      console.error("Error en el envío del formulario:", error);
     } finally {
       setLoading(false);
     }
