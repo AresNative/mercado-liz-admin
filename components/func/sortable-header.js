@@ -27,6 +27,7 @@ function SortableHeader({ column, isDragging, onSort, sortConfig }) {
     >
       <span className="flex">
         <GripVertical
+          size={16}
           className="flex mr-2 text-neutral-500 cursor-grab dark:text-neutral-300"
           {...listeners} // Solo se puede arrastrar al hacer clic en el icono
         />

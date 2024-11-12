@@ -1,7 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Button, Card } from "@nextui-org/react";
+import { useState, useEffect, useMemo } from "react";
+import {
+  Button,
+  Card,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+} from "@nextui-org/react";
 import {
   DndContext,
   closestCenter,
@@ -184,6 +191,13 @@ export default function GeneradorReportes() {
     setDraggedColumn(null);
   };
 
+  const [selectedKeys, setSelectedKeys] = useState(new Set(["compras"]));
+
+  const selectedValue = useMemo(
+    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
+    [selectedKeys]
+  );
+
   return (
     <DefaultPage>
       <section className="flex flex-col lg:flex-row gap-4">
@@ -222,6 +236,31 @@ export default function GeneradorReportes() {
       >
         <section className="flex flex-col lg:flex-row gap-4 mt-3">
           <Card className="flex-1 p-4 shadow-md">
+            <section className="max-w-16 m-1">
+              <Dropdown>
+                <DropdownTrigger>
+                  <Button variant="bordered" className="capitalize">
+                    {selectedValue}
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu
+                  aria-label="Multiple selection example"
+                  variant="flat"
+                  closeOnSelect={false}
+                  disallowEmptySelection
+                  selectionMode="multiple"
+                  selectedKeys={selectedKeys}
+                  onSelectionChange={setSelectedKeys}
+                >
+                  <DropdownItem key="compras">Compras</DropdownItem>
+                  <DropdownItem key="ventas">Ventas</DropdownItem>
+                  <DropdownItem key="mermas">Mermas</DropdownItem>
+                  <DropdownItem key="movimientos">Movimientos</DropdownItem>
+                  <DropdownItem key="almacen">Almacen</DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </section>
+
             <ReportTable
               columns={columns}
               paginatedData={previewData}

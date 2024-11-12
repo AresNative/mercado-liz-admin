@@ -16,7 +16,11 @@ import { SearchableSelect } from "./components/select";
 import { OptionMultiple } from "./components/optionmultiple";
 import { Button } from "@nextui-org/react";
 import { MultipleParagraphInput } from "./components/dinamic-inputs";
-import { usePostProjectsMutation } from "@/store/server/reducers/api-reducer";
+import {
+  usePostProjectsMutation,
+  usePostSprintsMutation,
+  usePostTasksMutation,
+} from "@/store/server/reducers/api-reducer";
 
 export const MainForm = ({
   message_button,
@@ -36,12 +40,17 @@ export const MainForm = ({
   } = useForm();
 
   const [postProjects] = usePostProjectsMutation();
+  const [postSprint] = usePostSprintsMutation();
+  const [postTask] = usePostTasksMutation();
 
   function getMutationFunction(actionType) {
     switch (actionType) {
       case "add-project":
         return postProjects;
-
+      case "add-sprints":
+        return postSprint;
+      case "add-task":
+        return postTask;
       default:
         return () => {}; // Retorna una función vacía para manejar el caso predeterminado
     }
