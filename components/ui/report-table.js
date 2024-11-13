@@ -56,14 +56,29 @@ function ReportTable({
         <tbody>
           {paginatedData.map((row, key) => (
             <tr key={key} className="border border-gray-200">
-              {columns.map((column) => (
-                <td
-                  key={`${row.id}-${column.id}`}
-                  className="px-1 py-2 border border-gray-200 text-sm whitespace-nowrap"
-                >
-                  {formatValue(row[column.id])}
-                </td>
-              ))}
+              {columns.map((column) => {
+                const cellData = formatValue(row[column.id]);
+                if (column.id === "Impuestos") {
+                  // Divide los impuestos y renderiza cada uno en un <td> separado
+                  return cellData.split(",").map((impuesto, i) => (
+                    <td
+                      key={`${row.id}-${column.id}-${i}`}
+                      className={`${row.id}-${column.id}-${i} px-1 py-2 border border-gray-200 text-sm whitespace-nowrap`}
+                    >
+                      {impuesto.trim()}
+                    </td>
+                  ));
+                } else {
+                  return (
+                    <td
+                      key={`${row.id}-${column.id}`}
+                      className={`${row.id}-${column.id} px-1 py-2 border border-gray-200 text-sm whitespace-nowrap`}
+                    >
+                      {cellData}
+                    </td>
+                  );
+                }
+              })}
             </tr>
           ))}
         </tbody>

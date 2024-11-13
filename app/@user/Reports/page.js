@@ -37,6 +37,7 @@ import {
   Legend,
 } from "chart.js";
 import { DefaultPage } from "@/template/default-page";
+import { Filter } from "lucide-react";
 
 // Registrar los componentes de Chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
@@ -202,7 +203,12 @@ export default function GeneradorReportes() {
     <DefaultPage>
       <section className="flex flex-col lg:flex-row gap-4">
         <Card className="flex-1 w-full mt-2 mx-auto p-8">
-          <h2 className="text-2xl font-bold mb-6">Búsqueda rápida</h2>
+          <section className="flex justify-between">
+            <h2 className="text-2xl font-bold mb-6">Búsqueda rápida</h2>
+            <Button size="sm" variant="bordered">
+              <Filter size={16} strokeWidth={0.75} />
+            </Button>
+          </section>
           <ReportInputs
             filterType={filterType}
             setStartDate={setStartDate}
@@ -253,7 +259,7 @@ export default function GeneradorReportes() {
                   onSelectionChange={setSelectedKeys}
                 >
                   <DropdownItem key="compras">Compras</DropdownItem>
-                  <DropdownItem key="ventas">Ventas</DropdownItem>
+                  {/* <DropdownItem key="ventas">Ventas</DropdownItem> */}
                   <DropdownItem key="mermas">Mermas</DropdownItem>
                   <DropdownItem key="movimientos">Movimientos</DropdownItem>
                   <DropdownItem key="almacen">Almacen</DropdownItem>

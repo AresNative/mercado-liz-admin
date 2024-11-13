@@ -9,8 +9,29 @@
   --table-header-bg: #e9ecef;
   --tr-hover: #f2f2f7;
 }
+/* Ocultar el scrollbar en Chrome, Safari y Edge */
 *::-webkit-scrollbar {
-  width: 0px;
+  width: 8px;
+  /* Ajusta el ancho del scrollbar */
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+  /* Color de fondo del track */
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #3a3a3a80;
+  /* Color y transparencia del scrollbar */
+  border-radius: 4px;
+  /* Bordes redondeados */
+  transition: background-color 0.3s ease;
+  /* Suavizar la transición del color */
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #333333b3;
+  /* Color del scrollbar al hacer hover */
 }
 /* Variables CSS para el tema oscuro */
 .dark {
