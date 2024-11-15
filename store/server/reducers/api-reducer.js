@@ -29,9 +29,26 @@ export const api = createApi({
     getReport: builder.query({
       query: (params) => `reporteria/${params}`,
     }),
-    getTestQuery: builder.query({
+    getTest: builder.query({
       query: (params) => `testQuery/compras?${params}`,
     }),
+
+    getCompras: builder.query({
+      query: (params) => `reporteria/compras?${params}`,
+    }),
+    getVentas: builder.query({
+      query: (params) => `reporteria/ventas?${params}`,
+    }),
+    getAlmacen: builder.query({
+      query: (params) => `reporteria/almacen?${params}`,
+    }),
+    getMermas: builder.query({
+      query: (params) => `reporteria/mermas?${params}`,
+    }),
+    getMovimientos: builder.query({
+      query: (params) => `reporteria/movimientos?${params}`,
+    }),
+
     postProjects: builder.mutation({
       query: (data) => ({
         url: "projects",
@@ -80,7 +97,14 @@ export const api = createApi({
 
 export const {
   useGetReportQuery,
-  useGetTestQueryQuery,
+  useGetTestQuery,
+
+  useGetComprasQuery,
+  useGetVentasQuery,
+  useGetAlmacenQuery,
+  useGetMermasQuery,
+  useGetMovimientosQuery,
+
   usePostProjectsMutation,
   usePostSprintsMutation,
   usePostTasksMutation,

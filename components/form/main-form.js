@@ -22,12 +22,7 @@ import {
   usePostTasksMutation,
 } from "@/store/server/reducers/api-reducer";
 
-export const MainForm = ({
-  message_button,
-  dataForm,
-  actionType,
-  functionForm,
-}) => {
+export const MainForm = ({ message_button, dataForm, actionType }) => {
   const [loading, setLoading] = useState(false);
   const {
     handleSubmit,

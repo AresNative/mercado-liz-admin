@@ -121,9 +121,6 @@ function Filtros({ columns, filteredColumns, setFilteredColumns, setColumns }) {
                       require: true,
                     },
                   ]}
-                  functionForm={(data) => {
-                    console.log(data);
-                  }}
                 />
               </ModalBody>
             </>

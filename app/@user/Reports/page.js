@@ -25,7 +25,14 @@ import ReportTable from "@/components/ui/report-table";
 import DragOverlayColumn from "@/components/func/drag-overlay-column";
 
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import { useGetTestQueryQuery } from "@/store/server/reducers/api-reducer";
+import {
+  useGetAlmacenQuery,
+  useGetComprasQuery,
+  useGetMermasQuery,
+  useGetMovimientosQuery,
+  useGetTestQuery,
+  useGetVentasQuery,
+} from "@/store/server/reducers/api-reducer";
 
 import { Bar } from "react-chartjs-2";
 import {
@@ -75,6 +82,12 @@ export default function GeneradorReportes() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [selectedKeys, setSelectedKeys] = useState(new Set(["get-compras"]));
+
+  const selectedValue = useMemo(
+    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
+    [selectedKeys]
+  );
 
   const handleSort = (columnId) => {
     let direction = "asc";
@@ -97,7 +110,6 @@ export default function GeneradorReportes() {
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
-
   // Construir el query string basado en los filtros
   const buildQueryString = () => {
     const query = new URLSearchParams();
@@ -113,8 +125,99 @@ export default function GeneradorReportes() {
     return query.toString();
   };
 
+  const {
+    data: comprasData,
+    error: comprasError,
+    isLoading: comprasLoading,
+    refetch: refetchCompras,
+  } = useGetComprasQuery(buildQueryString(), {
+    refetchOnMountOrArgChange: true,
+  });
+
+  const {
+    data: ventasData,
+    error: ventasError,
+    isLoading: ventasLoading,
+    refetch: refetchVentas,
+  } = useGetVentasQuery(buildQueryString(), {
+    refetchOnMountOrArgChange: true,
+  });
+
+  const {
+    data: almacenData,
+    error: almacenError,
+    isLoading: almacenLoading,
+    refetch: refetchAlmacen,
+  } = useGetAlmacenQuery(buildQueryString(), {
+    refetchOnMountOrArgChange: true,
+  });
+
+  const {
+    data: mermasData,
+    error: mermasError,
+    isLoading: mermasLoading,
+    refetch: refetchMermas,
+  } = useGetMermasQuery(buildQueryString(), {
+    refetchOnMountOrArgChange: true,
+  });
+
+  const {
+    data: movimientosData,
+    error: movimientosError,
+    isLoading: movimientosLoading,
+    refetch: refetchMovimientos,
+  } = useGetMovimientosQuery(buildQueryString(), {
+    refetchOnMountOrArgChange: true,
+  });
+
+  function getQueryFunction(actionType) {
+    switch (actionType) {
+      case "get-compras":
+        return {
+          data: comprasData,
+          error: comprasError,
+          isLoading: comprasLoading,
+          refetch: refetchCompras,
+        };
+      case "get-ventas":
+        return {
+          data: ventasData,
+          error: ventasError,
+          isLoading: ventasLoading,
+          refetch: refetchVentas,
+        };
+      case "get-almacen":
+        return {
+          data: almacenData,
+          error: almacenError,
+          isLoading: almacenLoading,
+          refetch: refetchAlmacen,
+        };
+      case "get-mermas":
+        return {
+          data: mermasData,
+          error: mermasError,
+          isLoading: mermasLoading,
+          refetch: refetchMermas,
+        };
+      case "get-movimientos":
+        return {
+          data: movimientosData,
+          error: movimientosError,
+          isLoading: movimientosLoading,
+          refetch: refetchMovimientos,
+        };
+      default:
+        return { data: null, error: null, isLoading: false, refetch: () => {} }; // Valores predeterminados
+    }
+  }
+
+  //const { data, error, isLoading, refetch } = getQueryFunction(selectedKeys);
+
+  // Aquí puedes manejar los datos, errores o el estado de carga en base a `data`, `error`, `isLoading`
+
   // Obtener datos usando el hook de RTK Query con el query string construido
-  const { data, error, isLoading, refetch } = useGetTestQueryQuery(
+  const { data, error, isLoading, refetch } = useGetTestQuery(
     buildQueryString(),
     { refetchOnMountOrArgChange: true }
   );
@@ -127,6 +230,7 @@ export default function GeneradorReportes() {
     } else {
       setPreviewData([]);
     }
+    console.log(data);
   }, [data]);
 
   // Volver a cargar los datos al cambiar la página o los filtros
@@ -135,6 +239,7 @@ export default function GeneradorReportes() {
   }, [currentPage, filter, startDate, endDate, refetch]);
 
   const handleFilterTypeChange = (e) => {
+    setCurrentPage(1);
     setFilterType(e.target.value);
     setFilter(""); // Reiniciar el filtro al cambiar de tipo
   };
@@ -191,13 +296,6 @@ export default function GeneradorReportes() {
 
     setDraggedColumn(null);
   };
-
-  const [selectedKeys, setSelectedKeys] = useState(new Set(["compras"]));
-
-  const selectedValue = useMemo(
-    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
-    [selectedKeys]
-  );
 
   return (
     <DefaultPage>
@@ -258,11 +356,11 @@ export default function GeneradorReportes() {
                   selectedKeys={selectedKeys}
                   onSelectionChange={setSelectedKeys}
                 >
-                  <DropdownItem key="compras">Compras</DropdownItem>
+                  <DropdownItem key="get-compras">Compras</DropdownItem>
                   {/* <DropdownItem key="ventas">Ventas</DropdownItem> */}
-                  <DropdownItem key="mermas">Mermas</DropdownItem>
-                  <DropdownItem key="movimientos">Movimientos</DropdownItem>
-                  <DropdownItem key="almacen">Almacen</DropdownItem>
+                  <DropdownItem key="get-mermas">Mermas</DropdownItem>
+                  <DropdownItem key="get-movimientos">Movimientos</DropdownItem>
+                  <DropdownItem key="get-almacen">Almacen</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </section>
