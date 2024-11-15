@@ -17,13 +17,10 @@ import {
   useSensor,
   useSensors,
   DragOverlay,
+  sortableKeyboardCoordinates,
 } from "@dnd-kit/core";
-
 import ReportInputs from "@/components/func/report-inputs";
 import ReportTable from "@/components/ui/report-table";
-import DragOverlayColumn from "@/components/func/drag-overlay-column";
-
-import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import {
   useGetAlmacenQuery,
   useGetComprasQuery,
@@ -31,7 +28,6 @@ import {
   useGetMovimientosQuery,
   useGetVentasQuery,
 } from "@/store/server/reducers/api-reducer";
-
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -56,35 +52,13 @@ export default function GeneradorReportes() {
     proveedor: "",
     descripcion: "",
   });
-  const [filterType, setFilterType] = useState("codigo"); // Tipo de filtro seleccionado
-
-  //const [filteredColumns, setFilteredColumns] = useState([]);
+  const [filterType, setFilterType] = useState("codigo");
   const [draggedColumn, setDraggedColumn] = useState(null);
   const [previewData, setPreviewData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
-  const [selectedKeys, setSelectedKeys] = useState(new Set(["get-compras"]));
-
-  const selectedValue = useMemo(
-    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
-    [selectedKeys]
-  );
-
-  const handleSort = (columnId) => {
-    let direction = "asc";
-    if (sortConfig.key === columnId && sortConfig.direction === "asc") {
-      direction = "desc";
-    }
-    setSortConfig({ key: columnId, direction });
-
-    const sortedData = [...previewData].sort((a, b) => {
-      if (a[columnId] < b[columnId]) return direction === "asc" ? -1 : 1;
-      if (a[columnId] > b[columnId]) return direction === "asc" ? 1 : -1;
-      return 0;
-    });
-    setPreviewData(sortedData);
-  };
+  const [selectedKeys, setSelectedKeys] = useState("get-compras");
 
   const itemsPerPage = 8;
 
@@ -93,153 +67,72 @@ export default function GeneradorReportes() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
-  const selectedQueryType = Array.from(selectedKeys)[0];
-  // Construir el query string basado en los filtros
   const buildQueryString = () => {
     const query = new URLSearchParams();
-
-    // Agregar el filtro seleccionado al query string
     if (filter[filterType]) query.append(filterType, filter[filterType]);
     if (startDate) query.append("startDate", startDate);
     if (endDate) query.append("endDate", endDate);
-
     query.append("page", currentPage);
     query.append("pageSize", itemsPerPage);
-
     return query.toString();
   };
+  const handleSort = (columnId) => {
+    // Determinar la dirección del ordenamiento: alterna entre "asc" y "desc"
+    const direction =
+      sortConfig.key === columnId && sortConfig.direction === "asc"
+        ? "desc"
+        : "asc";
 
-  const {
-    data: comprasData,
-    error: comprasError,
-    isLoading: comprasLoading,
-    refetch: refetchCompras,
-  } = useGetComprasQuery(
-    selectedQueryType === "get-compras" ? buildQueryString() : "",
-    {
-      refetchOnMountOrArgChange: true,
+    // Actualizar la configuración del ordenamiento
+    setSortConfig({ key: columnId, direction });
+
+    // Verifica si los datos están disponibles
+    if (Array.isArray(previewData) && previewData.length > 0) {
+      // Ordena los datos basados en la columna seleccionada
+      const sortedData = [...previewData].sort((a, b) => {
+        if (a[columnId] < b[columnId]) return direction === "asc" ? -1 : 1;
+        if (a[columnId] > b[columnId]) return direction === "asc" ? 1 : -1;
+        return 0;
+      });
+
+      // Actualiza el estado con los datos ordenados
+      setPreviewData(sortedData);
     }
-  );
-
-  const {
-    data: ventasData,
-    error: ventasError,
-    isLoading: ventasLoading,
-    refetch: refetchVentas,
-  } = useGetVentasQuery(
-    selectedQueryType === "get-ventas" ? buildQueryString() : "",
-    {
-      refetchOnMountOrArgChange: true,
-    }
-  );
-
-  const {
-    data: almacenData,
-    error: almacenError,
-    isLoading: almacenLoading,
-    refetch: refetchAlmacen,
-  } = useGetAlmacenQuery(
-    selectedQueryType === "get-almacen" ? buildQueryString() : "",
-    {
-      refetchOnMountOrArgChange: true,
-    }
-  );
-
-  const {
-    data: mermasData,
-    error: mermasError,
-    isLoading: mermasLoading,
-    refetch: refetchMermas,
-  } = useGetMermasQuery(
-    selectedQueryType === "get-mermas" ? buildQueryString() : "",
-    {
-      refetchOnMountOrArgChange: true,
-    }
-  );
-
-  const {
-    data: movimientosData,
-    error: movimientosError,
-    isLoading: movimientosLoading,
-    refetch: refetchMovimientos,
-  } = useGetMovimientosQuery(
-    selectedQueryType === "get-movimientos" ? buildQueryString() : "",
-    {
-      refetchOnMountOrArgChange: true,
-    }
-  );
-
-  function getQueryFunction(actionType) {
-    switch (actionType) {
-      case "get-compras":
-        return {
-          data: comprasData,
-          error: comprasError,
-          isLoading: comprasLoading,
-          refetch: refetchCompras,
-        };
-      case "get-ventas":
-        return {
-          data: ventasData,
-          error: ventasError,
-          isLoading: ventasLoading,
-          refetch: refetchVentas,
-        };
-      case "get-almacen":
-        return {
-          data: almacenData,
-          error: almacenError,
-          isLoading: almacenLoading,
-          refetch: refetchAlmacen,
-        };
-      case "get-mermas":
-        return {
-          data: mermasData,
-          error: mermasError,
-          isLoading: mermasLoading,
-          refetch: refetchMermas,
-        };
-      case "get-movimientos":
-        return {
-          data: movimientosData,
-          error: movimientosError,
-          isLoading: movimientosLoading,
-          refetch: refetchMovimientos,
-        };
-      default:
-        return { data: null, error: null, isLoading: false, refetch: () => {} };
-    }
-  }
-
-  // Aquí puedes manejar los datos, errores o el estado de carga en base a `data`, `error`, `isLoading`
-  const { data, error, isLoading, refetch } =
-    getQueryFunction(selectedQueryType);
-
-  // Maneja los datos recibidos
-  useEffect(() => {
-    if (data && Array.isArray(data.data)) {
-      setPreviewData(data.data);
-      setTotalRecords(data.totalRecords);
-    } else {
-      setPreviewData([]);
-    }
-  }, [data]);
-
-  // Volver a cargar los datos al cambiar la página o los filtros
-  useEffect(() => {
-    // Refrescar datos al cambiar de página, filtros o selección
-    if (selectedKeys.size) {
-      refetch();
-    }
-  }, [currentPage, filter, startDate, endDate, selectedKeys, refetch]);
-
-  const handleFilterTypeChange = (e) => {
-    setCurrentPage(1);
-    setFilterType(e.target.value);
-    setFilter(""); // Reiniciar el filtro al cambiar de tipo
   };
 
-  // Función para manejar el cambio del valor del filtro
+  const useDataQuery = (actionType, buildQueryString) => {
+    const queryOptions = { refetchOnMountOrArgChange: true };
+    const queryMap = {
+      "get-compras": useGetComprasQuery,
+      "get-ventas": useGetVentasQuery,
+      "get-almacen": useGetAlmacenQuery,
+      "get-mermas": useGetMermasQuery,
+      "get-movimientos": useGetMovimientosQuery,
+    };
+
+    const queryFunction =
+      queryMap[actionType] ||
+      (() => ({
+        data: null,
+        error: null,
+        isLoading: false,
+        refetch: () => {},
+      }));
+
+    return queryFunction(buildQueryString(), queryOptions);
+  };
+
+  const { data, error, isLoading, refetch } = useDataQuery(
+    selectedKeys,
+    buildQueryString
+  );
+
+  const handleFilterTypeChange = (e) => {
+    setCurrentPage(1); // Reiniciar la página al cambiar el tipo de filtro
+    setFilterType(e.target.value); // Cambiar el tipo de filtro
+    setFilter(""); // Reiniciar el valor del filtro
+  };
+
   const handleFilterChange = (e) => {
     const value = e.target.value;
     setFilter((prev) => ({
@@ -248,14 +141,12 @@ export default function GeneradorReportes() {
     }));
   };
 
-  // Función para manejar el cambio de página
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= Math.ceil(totalRecords / itemsPerPage)) {
       setCurrentPage(newPage);
     }
   };
 
-  // Datos para la gráfica de barras
   const chartData = {
     labels: previewData.map((item) =>
       new Date(item.FechaEmision).toLocaleDateString()
@@ -271,26 +162,41 @@ export default function GeneradorReportes() {
     ],
   };
 
-  // Función de manejo de finalización de arrastre
   const handleDragEnd = (event) => {
     const { active, over } = event;
-
-    /* if (!over) {
-      const dragged = columns.find((col) => col.id === active.id);
-      if (dragged) {
-        //setFilteredColumns((prev) => [...prev, dragged]);
-        setColumns((prev) => prev.filter((col) => col.id !== active.id));
-      }
-    } else if (active.id !== over.id) {
-      setColumns((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
- */
     setDraggedColumn(null);
   };
+
+  useMemo(() => {
+    // Limpiar todos los estados al cambiar selectedKeys
+    setPreviewData([]); // Limpiar los datos previos
+    setTotalRecords(0); // Limpiar el total de registros
+    setCurrentPage(1); // Reiniciar a la primera página
+
+    // Realizar el refetch si selectedKeys es válido
+    if (selectedKeys && data !== undefined) {
+      refetch(); // Solo refetch si hay una selección válida
+    }
+  }, [
+    selectedKeys,
+    filterType,
+    currentPage,
+    filter,
+    startDate,
+    endDate,
+    refetch,
+  ]);
+
+  useEffect(() => {
+    // Unificar lógica de actualización de datos
+    if (data && Array.isArray(data.data)) {
+      setPreviewData(data.data); // Asignar solo si data.data es un array
+      setTotalRecords(data.totalRecords || 0); // Asignar totalRecords o 0 si no existe
+    } else {
+      setPreviewData([]); // Si data no es un array o no existe, asignar array vacío
+      setTotalRecords(0); // Asegurar que totalRecords sea 0 en caso de error
+    }
+  }, [data]);
 
   return (
     <DefaultPage>
@@ -339,7 +245,7 @@ export default function GeneradorReportes() {
               <Dropdown>
                 <DropdownTrigger>
                   <Button variant="bordered" className="capitalize">
-                    {selectedValue}
+                    {selectedKeys}
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu
@@ -359,12 +265,18 @@ export default function GeneradorReportes() {
               </Dropdown>
             </section>
 
-            <ReportTable
-              paginatedData={previewData}
-              isDragging={!!draggedColumn}
-              onSort={handleSort}
-              sortConfig={sortConfig}
-            />
+            {isLoading ? (
+              <p>Cargando...</p>
+            ) : error ? (
+              <p>Error al cargar los datos</p>
+            ) : (
+              <ReportTable
+                paginatedData={previewData}
+                isDragging={!!draggedColumn}
+                onSort={handleSort}
+                sortConfig={sortConfig}
+              />
+            )}
 
             <div className="flex justify-between items-center mt-4">
               <span>
@@ -393,13 +305,6 @@ export default function GeneradorReportes() {
             </div>
           </Card>
         </section>
-        {/* <DragOverlay>
-          {draggedColumn && (
-            <DragOverlayColumn
-              column={columns.find((col) => col.id === draggedColumn)}
-            />
-          )}
-        </DragOverlay> */}
       </DndContext>
     </DefaultPage>
   );

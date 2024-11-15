@@ -14,7 +14,6 @@ function ReportTable({
   sortConfig,
 }) {
   const formatValue = (value) => {
-    // Verifica si el valor es un número
     if (!isNaN(value) && /^\d+\.\d+$/.test(value)) {
       return new Intl.NumberFormat(undefined, {
         minimumFractionDigits: 2,
@@ -22,28 +21,30 @@ function ReportTable({
       }).format(value);
     }
 
-    // Verifica si el valor es una fecha válida
     const dateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/;
     if (typeof value === "string" && dateRegex.test(value)) {
       return new Date(value).toLocaleDateString();
     }
 
-    // Si no es ni número ni fecha, regresa el valor tal cual
     return value;
   };
+
+  const dataKeys =
+    paginatedData.length > 0 ? Object.keys(paginatedData[0]) : [];
+
   return (
     <div className="overflow-x-auto border">
       <table className="min-w-full divide-y divide-gray-300 border border-gray-300">
         <thead className="bg-gray-200">
           <SortableContext
-            items={columns}
+            items={dataKeys}
             strategy={verticalListSortingStrategy}
           >
             <tr>
-              {columns.map((column) => (
+              {dataKeys.map((key) => (
                 <SortableHeader
-                  key={column.id}
-                  column={column}
+                  key={key}
+                  column={{ id: key, label: key }}
                   isDragging={isDragging}
                   onSort={onSort}
                   sortConfig={sortConfig}
@@ -54,16 +55,15 @@ function ReportTable({
           </SortableContext>
         </thead>
         <tbody>
-          {paginatedData.map((row, key) => (
-            <tr key={key} className="border border-gray-200">
-              {columns.map((column) => {
-                const cellData = formatValue(row[column.id]);
-                if (column.id === "Impuestos") {
-                  // Divide los impuestos y renderiza cada uno en un <td> separado
-                  return cellData.split(",").map((impuesto, i) => (
+          {paginatedData.map((row, rowIndex) => (
+            <tr key={rowIndex} className="border border-gray-200">
+              {dataKeys.map((key, cellIndex) => {
+                const value = row[key];
+                if (key === "Impuestos") {
+                  return value.split(",").map((impuesto, idx) => (
                     <td
-                      key={`${row.id}-${column.id}-${i}`}
-                      className={`${row.id}-${column.id}-${i} px-1 py-2 border border-gray-200 text-sm whitespace-nowrap`}
+                      key={`${cellIndex}-${idx}`}
+                      className="px-1 py-2 border border-gray-200 text-sm whitespace-nowrap"
                     >
                       {impuesto.trim()}
                     </td>
@@ -71,10 +71,10 @@ function ReportTable({
                 } else {
                   return (
                     <td
-                      key={`${row.id}-${column.id}`}
-                      className={`${row.id}-${column.id} px-1 py-2 border border-gray-200 text-sm whitespace-nowrap`}
+                      key={cellIndex}
+                      className="px-1 py-2 border border-gray-200 text-sm whitespace-nowrap"
                     >
-                      {cellData}
+                      {formatValue(value)}
                     </td>
                   );
                 }
