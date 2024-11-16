@@ -33,16 +33,16 @@ export default function ScrumPage() {
   }, [proyectsData]);
   return (
     <DefaultPage>
-      <section className="flex gap-2">
+      <section className="flex">
         <nav className="flex bg-transparent m-3">
           <ul className="flex flex-col decoration-clone p-3 gap-3 font-bold border-r-1 border-r-stone-300">
-            <li className="w-24 hover:text-purple-500 cursor-pointer active:scale-105 transition-transform duration-150 ease-in-out">
+            <li className="w-20 hover:text-purple-500 cursor-pointer active:scale-105 transition-transform duration-150 ease-in-out">
               Sistemas
             </li>
-            <li className="w-24 hover:text-purple-500 cursor-pointer active:scale-105 transition-transform duration-150 ease-in-out">
+            <li className="w-20 hover:text-purple-500 cursor-pointer active:scale-105 transition-transform duration-150 ease-in-out">
               Recibo
             </li>
-            <li className="w-24 hover:text-purple-500 cursor-pointer active:scale-105 transition-transform duration-150 ease-in-out">
+            <li className="w-20 hover:text-purple-500 cursor-pointer active:scale-105 transition-transform duration-150 ease-in-out">
               Almacen
             </li>
           </ul>
@@ -83,7 +83,7 @@ export default function ScrumPage() {
               {data.map((row, key) => (
                 <section
                   key={key}
-                  className="w-[15rem] min-h-[7rem] p-4 rounded-lg bg-purple-700 text-neutral-100 hover:bg-opacity-85 cursor-pointer transform active:scale-105 transition-transform duration-150 ease-in-out"
+                  className="flex flex-col gap-4 w-[15rem] min-h-[7rem] p-4 rounded-lg bg-purple-700 text-neutral-100 hover:bg-opacity-85 cursor-pointer transform active:scale-105 transition-transform duration-150 ease-in-out"
                   role="button"
                   onClick={() => handleNavigation(`/Scrum/${row.id}`)}
                 >
