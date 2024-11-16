@@ -4,6 +4,7 @@ import { Providers } from "@/store/provider";
 import "tailwindcss/tailwind.css";
 import NavBar from "@/components/ui/nav-barr";
 import { UserRoleRenderer } from "@/func/render-rol";
+import DynamicAlert from "@/components/func/dynamic-alert";
 
 export const metadata = {
   title: "Create Next App",
@@ -27,6 +28,7 @@ export default function RootLayout({ user, admin, dev, children }) {
               dev={dev}
               fallback={children}
             />
+            <DynamicAlert />
           </ThemeProvider>
         </Providers>
       </body>

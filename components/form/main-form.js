@@ -21,8 +21,12 @@ import {
   usePostSprintsMutation,
   usePostTasksMutation,
 } from "@/store/server/reducers/api-reducer";
+import { useAppDispatch } from "@/store/hooks/hooks";
+import { openAlertReducer } from "@/store/reducers/alert-reducer";
+import { closeModalReducer } from "@/store/reducers/modal-reducer";
 
 export const MainForm = ({ message_button, dataForm, actionType }) => {
+  const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
   const {
     handleSubmit,
@@ -56,8 +60,23 @@ export const MainForm = ({ message_button, dataForm, actionType }) => {
     const mutationFunction = getMutationFunction(actionType);
     try {
       await mutationFunction(submitData);
+
+      dispatch(
+        openAlertReducer({
+          message: "Éxito! Operación realizada",
+          type: "success", //"info" |  "success" | "warning" | "error"
+        })
+      );
+
+      dispatch(closeModalReducer({ actionType }));
     } catch (error) {
       console.error("Error en el envío del formulario:", error);
+      dispatch(
+        openAlertReducer({
+          message: "Error! Algo salió mal",
+          type: "error",
+        })
+      );
     } finally {
       setLoading(false);
     }

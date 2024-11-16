@@ -49,6 +49,19 @@ export const api = createApi({
       query: (params) => `reporteria/movimientos?${params}`,
     }),
 
+    getProjects: builder.query({
+      query: () => `projects`,
+    }),
+    getSprints: builder.query({
+      query: (params) => `projects/${params}/sprints`,
+    }),
+    getTasks: builder.query({
+      query: (params) => `sprints/${params}/tasks`,
+    }),
+    getHsitoryTask: builder.query({
+      query: (params) => `tasks/${params}/hsitory`,
+    }),
+
     postProjects: builder.mutation({
       query: (data) => ({
         url: "projects",
@@ -70,18 +83,9 @@ export const api = createApi({
         body: data,
       }),
     }),
+
     /* 
-    TODO las opciones de enpoint son las siguientes ↡
-    getUserById: builder.query({
-      query: (id) => `Users/${id}`,
-    }),
-    postUserRegister: builder.mutation({
-      query: (data) => ({
-        url: "Users/Register",
-        method: "POST",
-        body: data,
-      }),
-    }),
+    ? Formato de update ↡
     putEditUser: builder.mutation({
       query: ({ dataForm, idEdit }) => {
         return {
@@ -104,6 +108,11 @@ export const {
   useGetAlmacenQuery,
   useGetMermasQuery,
   useGetMovimientosQuery,
+
+  useGetProjectsQuery,
+  useGetSprintsQuery,
+  useGetTasksQuery,
+  useGetHsitoryTaskQuery,
 
   usePostProjectsMutation,
   usePostSprintsMutation,

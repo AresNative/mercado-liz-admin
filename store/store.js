@@ -10,6 +10,7 @@ import filterReducer from "@/store/reducers/filter-reducer";
 import reloadReducer from "@/store/reducers/reload-reducer";
 import searchReducer from "@/store/reducers/search-reducer";
 import cuestionReducer from "@/store/reducers/cuestion-reducer";
+import alertReducer from "@/store/reducers/alert-reducer";
 
 const model = process.env.NODE_ENV;
 
@@ -21,6 +22,7 @@ export const store = configureStore({
     reloadReducer,
     confirmReducer,
     cuestionReducer,
+    alertReducer,
     [api.reducerPath]: api.reducer,
     [authApi.reducerPath]: authApi.reducer,
   },
