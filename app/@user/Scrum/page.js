@@ -120,6 +120,7 @@ export default function ScrumPage() {
 
       <ModalComponent
         title={"Nuevo Proyecto"}
+        message_button={"Agregar"}
         modalName={"add-project"}
         functionString={"add-project"}
       />

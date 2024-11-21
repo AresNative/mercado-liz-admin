@@ -41,10 +41,10 @@ function ReportTable({
             strategy={verticalListSortingStrategy}
           >
             <tr>
-              {dataKeys.map((key) => (
+              {columns.map((row, index) => (
                 <SortableHeader
-                  key={key}
-                  column={{ id: key, label: key }}
+                  key={`${row.id}-${index}`} // Combina el id con el índice para hacerlo único
+                  column={row}
                   isDragging={isDragging}
                   onSort={onSort}
                   sortConfig={sortConfig}
@@ -57,12 +57,13 @@ function ReportTable({
         <tbody>
           {paginatedData.map((row, rowIndex) => (
             <tr key={rowIndex} className="border border-gray-200">
-              {dataKeys.map((key, cellIndex) => {
+              {columns.map((column, colIndex) => {
+                const key = column.id;
                 const value = row[key];
                 if (key === "Impuestos") {
                   return value.split(",").map((impuesto, idx) => (
                     <td
-                      key={`${cellIndex}-${idx}`}
+                      key={`${column.id}-${rowIndex}-${idx}`} // Combina el id con el índice de fila y el índice de impuesto
                       className="px-1 py-2 border border-gray-200 text-sm whitespace-nowrap"
                     >
                       {impuesto.trim()}
@@ -71,10 +72,10 @@ function ReportTable({
                 } else {
                   return (
                     <td
-                      key={cellIndex}
+                      key={`${column.id}-${rowIndex}-${colIndex}`} // Combina el id de la columna con los índices de fila y columna
                       className="px-1 py-2 border border-gray-200 text-sm whitespace-nowrap"
                     >
-                      {formatValue(value)}
+                      {formatValue(row[column.id])}
                     </td>
                   );
                 }

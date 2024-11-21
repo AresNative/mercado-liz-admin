@@ -64,7 +64,7 @@ export const MainForm = ({ message_button, dataForm, actionType }) => {
       dispatch(
         openAlertReducer({
           message: "Éxito! Operación realizada",
-          type: "success", //"info" |  "success" | "warning" | "error"
+          type: "success", //? "info" |  "success" | "warning" | "error"
         })
       );
 

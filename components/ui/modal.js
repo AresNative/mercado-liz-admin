@@ -4,7 +4,12 @@ import { MainForm } from "../form/main-form";
 import FormJson from "@/constant/new-project-scrum.json";
 import { useAppDispatch, useAppSelector } from "@/store/hooks/hooks";
 import { closeModalReducer } from "@/store/reducers/modal-reducer";
-export function ModalComponent({ title, modalName, functionString }) {
+export function ModalComponent({
+  title,
+  message_button,
+  modalName,
+  functionString,
+}) {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state) => state.modal.modals[modalName]);
 
@@ -19,7 +24,7 @@ export function ModalComponent({ title, modalName, functionString }) {
             <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
             <ModalBody>
               <MainForm
-                message_button={"test"}
+                message_button={message_button}
                 actionType={functionString}
                 dataForm={FormJson}
               />

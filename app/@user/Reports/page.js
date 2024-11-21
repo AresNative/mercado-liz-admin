@@ -65,6 +65,7 @@ export default function GeneradorReportes() {
   const [totalRecords, setTotalRecords] = useState(0);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [selectedKeys, setSelectedKeys] = useState(new Set(["get-compras"]));
+  const [columns, setColumns] = useState([]);
 
   const selectedValue = useMemo(
     () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
@@ -109,111 +110,77 @@ export default function GeneradorReportes() {
     return query.toString();
   };
 
-  const {
-    data: comprasData,
-    error: comprasError,
-    isLoading: comprasLoading,
-    refetch: refetchCompras,
-  } = useGetComprasQuery(
-    selectedQueryType === "get-compras" ? buildQueryString() : "",
-    {
-      refetchOnMountOrArgChange: true,
-    }
-  );
+  function useQueryByType(selectedQueryType, buildQueryString) {
+    // Ejecutar solo la consulta seleccionada
+    const comprasQuery = useGetComprasQuery(
+      selectedQueryType === "get-compras" ? buildQueryString() : "",
+      {
+        skip: selectedQueryType !== "get-compras",
+        refetchOnMountOrArgChange: true,
+      }
+    );
 
-  const {
-    data: ventasData,
-    error: ventasError,
-    isLoading: ventasLoading,
-    refetch: refetchVentas,
-  } = useGetVentasQuery(
-    selectedQueryType === "get-ventas" ? buildQueryString() : "",
-    {
-      refetchOnMountOrArgChange: true,
-    }
-  );
+    const ventasQuery = useGetVentasQuery(
+      selectedQueryType === "get-ventas" ? buildQueryString() : "",
+      {
+        skip: selectedQueryType !== "get-ventas",
+        refetchOnMountOrArgChange: true,
+      }
+    );
 
-  const {
-    data: almacenData,
-    error: almacenError,
-    isLoading: almacenLoading,
-    refetch: refetchAlmacen,
-  } = useGetAlmacenQuery(
-    selectedQueryType === "get-almacen" ? buildQueryString() : "",
-    {
-      refetchOnMountOrArgChange: true,
-    }
-  );
+    const almacenQuery = useGetAlmacenQuery(
+      selectedQueryType === "get-almacen" ? buildQueryString() : "",
+      {
+        skip: selectedQueryType !== "get-almacen",
+        refetchOnMountOrArgChange: true,
+      }
+    );
 
-  const {
-    data: mermasData,
-    error: mermasError,
-    isLoading: mermasLoading,
-    refetch: refetchMermas,
-  } = useGetMermasQuery(
-    selectedQueryType === "get-mermas" ? buildQueryString() : "",
-    {
-      refetchOnMountOrArgChange: true,
-    }
-  );
+    const mermasQuery = useGetMermasQuery(
+      selectedQueryType === "get-mermas" ? buildQueryString() : "",
+      {
+        skip: selectedQueryType !== "get-mermas",
+        refetchOnMountOrArgChange: true,
+      }
+    );
 
-  const {
-    data: movimientosData,
-    error: movimientosError,
-    isLoading: movimientosLoading,
-    refetch: refetchMovimientos,
-  } = useGetMovimientosQuery(
-    selectedQueryType === "get-movimientos" ? buildQueryString() : "",
-    {
-      refetchOnMountOrArgChange: true,
-    }
-  );
+    const movimientosQuery = useGetMovimientosQuery(
+      selectedQueryType === "get-movimientos" ? buildQueryString() : "",
+      {
+        skip: selectedQueryType !== "get-movimientos",
+        refetchOnMountOrArgChange: true,
+      }
+    );
 
-  function getQueryFunction(actionType) {
-    switch (actionType) {
+    // Seleccionar la consulta adecuada según el tipo
+    switch (selectedQueryType) {
       case "get-compras":
-        return {
-          data: comprasData,
-          error: comprasError,
-          isLoading: comprasLoading,
-          refetch: refetchCompras,
-        };
+        return comprasQuery;
       case "get-ventas":
-        return {
-          data: ventasData,
-          error: ventasError,
-          isLoading: ventasLoading,
-          refetch: refetchVentas,
-        };
+        return ventasQuery;
       case "get-almacen":
-        return {
-          data: almacenData,
-          error: almacenError,
-          isLoading: almacenLoading,
-          refetch: refetchAlmacen,
-        };
+        return almacenQuery;
       case "get-mermas":
-        return {
-          data: mermasData,
-          error: mermasError,
-          isLoading: mermasLoading,
-          refetch: refetchMermas,
-        };
+        return mermasQuery;
       case "get-movimientos":
-        return {
-          data: movimientosData,
-          error: movimientosError,
-          isLoading: movimientosLoading,
-          refetch: refetchMovimientos,
-        };
+        return movimientosQuery;
       default:
         return { data: null, error: null, isLoading: false, refetch: () => {} };
     }
   }
 
-  // Aquí puedes manejar los datos, errores o el estado de carga en base a `data`, `error`, `isLoading`
-  const { data, error, isLoading, refetch } =
-    getQueryFunction(selectedQueryType);
+  // Uso del hook en el componente
+  const { data, error, isLoading, refetch } = useQueryByType(
+    selectedQueryType,
+    buildQueryString
+  );
+
+  // Refetch cuando cambia la selección
+  useEffect(() => {
+    if (refetch) {
+      refetch();
+    }
+  }, [selectedQueryType, refetch]);
 
   // Maneja los datos recibidos
   useEffect(() => {
@@ -223,15 +190,7 @@ export default function GeneradorReportes() {
     } else {
       setPreviewData([]);
     }
-  }, [data]);
-
-  // Volver a cargar los datos al cambiar la página o los filtros
-  useEffect(() => {
-    // Refrescar datos al cambiar de página, filtros o selección
-    if (selectedKeys.size) {
-      refetch();
-    }
-  }, [currentPage, filter, startDate, endDate, selectedKeys, refetch]);
+  }, [data, refetch]);
 
   const handleFilterTypeChange = (e) => {
     setCurrentPage(1);
@@ -270,25 +229,34 @@ export default function GeneradorReportes() {
       },
     ],
   };
-
+  useEffect(() => {
+    if (data?.data && Array.isArray(data.data)) {
+      const rows = data.data;
+      if (rows.length > 0) {
+        const columnsFromData = Object.keys(rows[0]).map((key) => ({
+          id: key,
+          label: key.charAt(0).toUpperCase() + key.slice(1), // Capitaliza el nombre de la columna
+          accessor: key,
+        }));
+        setColumns(columnsFromData);
+      }
+    }
+  }, [data]);
   // Función de manejo de finalización de arrastre
   const handleDragEnd = (event) => {
     const { active, over } = event;
-
-    /* if (!over) {
+    if (!over) {
       const dragged = columns.find((col) => col.id === active.id);
       if (dragged) {
         //setFilteredColumns((prev) => [...prev, dragged]);
         setColumns((prev) => prev.filter((col) => col.id !== active.id));
       }
     } else if (active.id !== over.id) {
-      setColumns((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
+      const oldIndex = columns.findIndex((col) => col.id === active.id);
+      const newIndex = columns.findIndex((col) => col.id === over.id);
+      setColumns((items) => arrayMove(items, oldIndex, newIndex));
     }
- */
+
     setDraggedColumn(null);
   };
 
@@ -360,6 +328,7 @@ export default function GeneradorReportes() {
             </section>
 
             <ReportTable
+              columns={columns}
               paginatedData={previewData}
               isDragging={!!draggedColumn}
               onSort={handleSort}

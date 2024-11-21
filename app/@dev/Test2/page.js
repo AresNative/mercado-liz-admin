@@ -1,108 +1,127 @@
 "use client";
-import { useState, useEffect } from "react";
+// components/SortableTable.js
 
-export default function ComprasComponent() {
-  const [data, setData] = useState([]);
-  const [totalRecords, setTotalRecords] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+import React, { useState } from "react";
+import {
+  DndContext,
+  closestCenter,
+  useSensor,
+  useSensors,
+  PointerSensor,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  horizontalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
-  const fetchCompras = async (codigo, estatus, articulo, proveedor) => {
-    setLoading(true);
+const SortableTable = ({ data, columns }) => {
+  // Estado para el orden de las columnas
+  const [columnOrder, setColumnOrder] = useState(columns);
 
-    try {
-      // Crear un objeto con los parámetros disponibles
-      const params = {};
-      if (codigo) params.codigo = codigo;
-      if (estatus) params.estatus = estatus;
-      if (articulo) params.articulo = articulo;
-      if (proveedor) params.proveedor = proveedor;
+  // Configurar los sensores para Dnd-Kit
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    })
+  );
 
-      // Agregar paginación
-      params.page = page.toString();
-      params.pageSize = pageSize.toString();
+  // Función para manejar el reordenamiento
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
 
-      // Construir la URL con los parámetros no vacíos
-      const queryParams = new URLSearchParams(params);
+    if (active.id !== over.id) {
+      const oldIndex = columnOrder.findIndex((col) => col.id === active.id);
+      const newIndex = columnOrder.findIndex((col) => col.id === over.id);
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}testQuery/compras?${queryParams}`
-      );
-
-      if (response.ok) {
-        const result = await response.json();
-
-        setData(Array.isArray(result.data) ? result.data : []);
-        setTotalRecords(result.totalRecords || 0);
-      } else {
-        console.error("Error al obtener los datos:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error en la solicitud:", error);
-    } finally {
-      setLoading(false);
+      setColumnOrder((items) => arrayMove(items, oldIndex, newIndex));
     }
   };
 
-  useEffect(() => {
-    fetchCompras(); // Llama la función para cargar datos al montar el componente
-  }, [page, pageSize]);
-
   return (
     <div>
-      <h1>Lista de Compras</h1>
-      {loading ? (
-        <p>Cargando...</p>
-      ) : (
-        <div>
-          <table>
-            <thead>
-              <tr>
-                <th>Código</th>
-                <th>Artículo</th>
-                <th>Nombre</th>
-                <th>Estatus</th>
-                <th>Cantidad</th>
-                <th>Costo</th>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <table>
+          <thead>
+            <tr>
+              <SortableContext
+                items={columnOrder}
+                strategy={horizontalListSortingStrategy}
+              >
+                {columnOrder.map((column) => (
+                  <SortableItem key={column.id} id={column.id}>
+                    {column.label}
+                  </SortableItem>
+                ))}
+              </SortableContext>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                {columnOrder.map((column) => (
+                  <td key={column.id}>{row[column.accessor]}</td>
+                ))}
               </tr>
-            </thead>
-            <tbody>
-              {data.length > 0 ? (
-                data.map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.Codigo}</td>
-                    <td>{item.Articulo}</td>
-                    <td>{item.Nombre}</td>
-                    <td>{item.Estatus}</td>
-                    <td>{item.Cantidad}</td>
-                    <td>{item.Costo}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6">No hay datos disponibles</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-          <div>
-            <p>Total de Registros: {totalRecords}</p>
-            <button
-              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-              disabled={page === 1}
-            >
-              Anterior
-            </button>
-            <button
-              onClick={() => setPage((prev) => prev + 1)}
-              disabled={data.length < pageSize}
-            >
-              Siguiente
-            </button>
-          </div>
-        </div>
-      )}
+            ))}
+          </tbody>
+        </table>
+      </DndContext>
+    </div>
+  );
+};
+
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+export const SortableItem = ({ id, children }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    cursor: "grab",
+    padding: "10px",
+    backgroundColor: "#f0f0f0",
+    border: "1px solid #ddd",
+  };
+
+  return (
+    <th ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {children}
+    </th>
+  );
+};
+
+// pages/index.js
+
+const data = [
+  { id: 1, name: "John Doe", age: 28, job: "Developer" },
+  { id: 2, name: "Jane Smith", age: 34, job: "Designer" },
+  { id: 3, name: "Mark Brown", age: 45, job: "Manager" },
+
+  { id: 4, name: "Mark Brown2", age: 45, job: "Manager" },
+
+  { id: 5, name: "Mark Brown3", age: 45, job: "Manager" },
+];
+
+const columns = [
+  { id: "name", label: "Name", accessor: "name" },
+  { id: "age", label: "Age", accessor: "age" },
+  { id: "job", label: "Job", accessor: "job" },
+];
+export default function Home() {
+  return (
+    <div style={{ padding: "20px" }}>
+      <h1>Sortable Table</h1>
+      <SortableTable data={data} columns={columns} />
     </div>
   );
 }
