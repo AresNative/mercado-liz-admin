@@ -60,7 +60,8 @@ function ReportTable({
               {columns.map((column, colIndex) => {
                 const key = column.id;
                 const value = row[key];
-                if (key === "Impuestos") {
+
+                if (key === "TypoImpuestos") {
                   return value.split(",").map((impuesto, idx) => (
                     <td
                       key={`${column.id}-${rowIndex}-${idx}`} // Combina el id con el índice de fila y el índice de impuesto
