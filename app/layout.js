@@ -1,9 +1,10 @@
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Providers } from "@/store/provider";
+import { UserRoleRenderer } from "@/func/render-rol";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "tailwindcss/tailwind.css";
 import NavBar from "@/components/ui/nav-barr";
-import { UserRoleRenderer } from "@/func/render-rol";
 import DynamicAlert from "@/components/func/dynamic-alert";
 
 export const metadata = {
@@ -28,6 +29,7 @@ export default function RootLayout({ user, admin, dev, children }) {
               dev={dev}
               fallback={children}
             />
+            <SpeedInsights />
             <DynamicAlert />
           </ThemeProvider>
         </Providers>
