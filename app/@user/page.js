@@ -1,6 +1,24 @@
 "use client";
 
+import React, { useState } from "react";
 import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  rectSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import {
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -13,7 +31,14 @@ import {
   Progress,
   Chip,
 } from "@nextui-org/react";
-import { ShoppingCart, Package, Users, TrendingUp } from "lucide-react";
+import {
+  ShoppingCart,
+  Package,
+  Users,
+  TrendingUp,
+  Edit,
+  Save,
+} from "lucide-react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -58,97 +83,127 @@ const chartData = {
 const chartOptions = {
   responsive: true,
   scales: {
-    x: {
-      type: "category",
-    },
-    y: {
-      type: "linear",
-      beginAtZero: true,
-    },
+    x: { type: "category" },
+    y: { type: "linear", beginAtZero: true },
   },
   plugins: {
-    legend: {
-      position: "top",
-    },
-    title: {
-      display: true,
-      text: "Resumen de Ventas Mensuales",
-    },
+    legend: { position: "top" },
+    title: { display: true, text: "Resumen de Ventas Mensuales" },
   },
 };
 
-export default function Dashboard() {
+function SortableCard({ children, id, isEditing, size }) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({
+      id,
+      disabled: !isEditing,
+    });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    cursor: isEditing ? "move" : "default",
+  };
+
+  // Clases dinámicas según el tamaño de la tarjeta
+  const sizeClass = {
+    small: "col-span-1 row-span-1",
+    medium: "col-span-2 row-span-1",
+    large: "col-span-2 row-span-2",
+    expand: "col-span-4 row-span-1",
+  };
+
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <Head>
-        <title>Dashboard - SuperMercado</title>
-        <meta
-          name="description"
-          content="Dashboard del supermercado con ventas, inventario y más."
-        />
-      </Head>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`bg-white rounded-lg shadow-md ${sizeClass[size]} overflow-hidden`}
+      {...attributes}
+      {...(isEditing ? listeners : {})}
+    >
+      {children}
+    </div>
+  );
+}
 
-      <main className="flex-1 p-8 overflow-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Dashboard</h1>
+export default function DashboardSupermercado() {
+  const [items, setItems] = useState([
+    { id: "ventas", content: "Ventas Totales", size: "small" },
+    { id: "clientes", content: "Nuevos Clientes", size: "small" },
+    { id: "productos", content: "Productos Vendidos", size: "small" },
+    { id: "conversion", content: "Tasa de Conversión", size: "small" },
+    { id: "inventario", content: "Estado del Inventario", size: "large" },
+    { id: "pedidos", content: "Pedidos Recientes", size: "large" },
+    { id: "grafica", content: "Gráfica de Ventas", size: "expand" },
+  ]);
+  const [isEditing, setIsEditing] = useState(false);
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-          <Card>
-            <CardBody>
-              <div className="flex justify-between items-center">
-                <p className="text-md">Ventas Totales</p>
-                <ShoppingCart className="h-4 w-4 text-gray-400" />
-              </div>
-              <p className="text-2xl font-bold">$45,231.89</p>
-              <p className="text-sm text-green-500">+20.1% del mes pasado</p>
-            </CardBody>
-          </Card>
-          <Card>
-            <CardBody>
-              <div className="flex justify-between items-center">
-                <p className="text-md">Nuevos Clientes</p>
-                <Users className="h-4 w-4 text-gray-400" />
-              </div>
-              <p className="text-2xl font-bold">+2350</p>
-              <p className="text-sm text-green-500">+180.1% del mes pasado</p>
-            </CardBody>
-          </Card>
-          <Card>
-            <CardBody>
-              <div className="flex justify-between items-center">
-                <p className="text-md">Productos Vendidos</p>
-                <Package className="h-4 w-4 text-gray-400" />
-              </div>
-              <p className="text-2xl font-bold">+12,234</p>
-              <p className="text-sm text-green-500">+19% del mes pasado</p>
-            </CardBody>
-          </Card>
-          <Card>
-            <CardBody>
-              <div className="flex justify-between items-center">
-                <p className="text-md">Tasa de Conversión</p>
-                <TrendingUp className="h-4 w-4 text-gray-400" />
-              </div>
-              <p className="text-2xl font-bold">+573</p>
-              <p className="text-sm text-green-500">
-                +201 desde la última hora
-              </p>
-            </CardBody>
-          </Card>
-        </div>
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
 
-        <Card className="mb-8">
-          <CardBody className=" h-80">
-            <Bar options={chartOptions} data={chartData} />
+  function handleDragEnd(event) {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      setItems((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  }
+
+  const renderCardContent = (id) => {
+    switch (id) {
+      case "ventas":
+        return (
+          <CardBody>
+            <div className="flex justify-between items-center">
+              <p className="text-md">Ventas Totales</p>
+              <ShoppingCart className="h-4 w-4 text-gray-400" />
+            </div>
+            <p className="text-2xl font-bold">$45,231.89</p>
+            <p className="text-sm text-green-500">+20.1% del mes pasado</p>
           </CardBody>
-        </Card>
-
-        <Card className="mb-8">
-          <CardHeader>
-            <h3 className="text-xl font-bold">Estado del Inventario</h3>
-            <p className="text-sm text-gray-500">
-              Productos con bajo stock que necesitan reabastecimiento
-            </p>
-          </CardHeader>
+        );
+      case "clientes":
+        return (
+          <CardBody>
+            <div className="flex justify-between items-center">
+              <p className="text-md">Nuevos Clientes</p>
+              <Users className="h-4 w-4 text-gray-400" />
+            </div>
+            <p className="text-2xl font-bold">+2350</p>
+            <p className="text-sm text-green-500">+180.1% del mes pasado</p>
+          </CardBody>
+        );
+      case "productos":
+        return (
+          <CardBody>
+            <div className="flex justify-between items-center">
+              <p className="text-md">Productos Vendidos</p>
+              <Package className="h-4 w-4 text-gray-400" />
+            </div>
+            <p className="text-2xl font-bold">+12,234</p>
+            <p className="text-sm text-green-500">+19% del mes pasado</p>
+          </CardBody>
+        );
+      case "conversion":
+        return (
+          <CardBody>
+            <div className="flex justify-between items-center">
+              <p className="text-md">Tasa de Conversión</p>
+              <TrendingUp className="h-4 w-4 text-gray-400" />
+            </div>
+            <p className="text-2xl font-bold">+573</p>
+            <p className="text-sm text-green-500">+201 desde la última hora</p>
+          </CardBody>
+        );
+      case "inventario":
+        return (
           <CardBody>
             <div className="space-y-4">
               <div>
@@ -174,17 +229,11 @@ export default function Dashboard() {
               </div>
             </div>
           </CardBody>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <h3 className="text-xl font-bold">Pedidos Recientes</h3>
-            <p className="text-sm text-gray-500">
-              Has recibido 32 pedidos este mes
-            </p>
-          </CardHeader>
+        );
+      case "pedidos":
+        return (
           <CardBody>
-            <Table>
+            <Table aria-label="Pedidos recientes">
               <TableHeader>
                 <TableColumn>PEDIDO</TableColumn>
                 <TableColumn>ESTADO</TableColumn>
@@ -210,22 +259,71 @@ export default function Dashboard() {
                     </Chip>
                   </TableCell>
                   <TableCell>Juan Pérez</TableCell>
-                  <TableCell>$87.65</TableCell>
-                </TableRow>
-                <TableRow key="3">
-                  <TableCell>#3208</TableCell>
-                  <TableCell>
-                    <Chip color="danger" variant="flat">
-                      Cancelado
-                    </Chip>
-                  </TableCell>
-                  <TableCell>Ana Martínez</TableCell>
-                  <TableCell>$54.32</TableCell>
+                  <TableCell>$98.00</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
           </CardBody>
-        </Card>
+        );
+      case "grafica":
+        return (
+          <CardBody className="max-h-80">
+            <Bar data={chartData} options={chartOptions} />
+          </CardBody>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      <Head>
+        <title>Dashboard - SuperMercado</title>
+        <meta
+          name="description"
+          content="Dashboard del supermercado con ventas, clientes y más."
+        />
+      </Head>
+
+      <main className="flex-1 p-8 overflow-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
+          <Button
+            auto
+            color={isEditing ? "success" : "primary"}
+            onClick={() => setIsEditing(!isEditing)}
+            startContent={isEditing ? <Save size={18} /> : <Edit size={18} />}
+          >
+            {isEditing ? "Guardar" : "Editar"}
+          </Button>
+        </div>
+
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={items} strategy={rectSortingStrategy}>
+            <div className="grid gap-6 grid-cols-4 auto-rows-auto">
+              {items.map((item) => (
+                <SortableCard
+                  key={item.id}
+                  id={item.id}
+                  size={item.size}
+                  isEditing={isEditing}
+                >
+                  <Card>
+                    <CardHeader>
+                      <h3 className="text-xl font-bold">{item.content}</h3>
+                    </CardHeader>
+                    {renderCardContent(item.id)}
+                  </Card>
+                </SortableCard>
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       </main>
     </div>
   );
