@@ -67,6 +67,12 @@ const data = [
   { name: "Abr", total: 4600 },
   { name: "May", total: 5100 },
   { name: "Jun", total: 4900 },
+  { name: "Jul", total: 4500 },
+  { name: "Ago", total: 4100 },
+  { name: "Sep", total: 4000 },
+  { name: "Oct", total: 900 },
+  { name: "Nov", total: 4900 },
+  { name: "Dic", total: 5600 },
 ];
 
 const chartData = {
@@ -107,17 +113,17 @@ function SortableCard({ children, id, isEditing, size }) {
 
   // Clases dinámicas según el tamaño de la tarjeta
   const sizeClass = {
-    small: "col-span-1 row-span-1",
-    medium: "col-span-2 row-span-1",
-    large: "col-span-2 row-span-2",
-    expand: "col-span-4 row-span-1",
+    small: "sm:col-span-1 sm:row-span-1",
+    medium: "sm:col-span-2 sm:row-span-1",
+    large: "sm:col-span-2 sm:row-span-2",
+    expand: "sm:col-span-4 sm:row-span-1",
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`bg-white rounded-lg shadow-md ${sizeClass[size]} overflow-hidden`}
+      className={`${sizeClass[size]} `}
       {...attributes}
       {...(isEditing ? listeners : {})}
     >
@@ -128,10 +134,10 @@ function SortableCard({ children, id, isEditing, size }) {
 
 export default function DashboardSupermercado() {
   const [items, setItems] = useState([
-    { id: "ventas", content: "Ventas Totales", size: "small" },
-    { id: "clientes", content: "Nuevos Clientes", size: "small" },
-    { id: "productos", content: "Productos Vendidos", size: "small" },
-    { id: "conversion", content: "Tasa de Conversión", size: "small" },
+    { id: "ventas", content: "", size: "small" },
+    { id: "clientes", content: "", size: "small" },
+    { id: "productos", content: "", size: "small" },
+    { id: "conversion", content: "", size: "small" },
     { id: "inventario", content: "Estado del Inventario", size: "large" },
     { id: "pedidos", content: "Pedidos Recientes", size: "large" },
     { id: "grafica", content: "Gráfica de Ventas", size: "expand" },
@@ -162,7 +168,7 @@ export default function DashboardSupermercado() {
         return (
           <CardBody>
             <div className="flex justify-between items-center">
-              <p className="text-md">Ventas Totales</p>
+              <h3 className="text-xl font-bold">Ventas Totales</h3>
               <ShoppingCart className="h-4 w-4 text-gray-400" />
             </div>
             <p className="text-2xl font-bold">$45,231.89</p>
@@ -173,7 +179,7 @@ export default function DashboardSupermercado() {
         return (
           <CardBody>
             <div className="flex justify-between items-center">
-              <p className="text-md">Nuevos Clientes</p>
+              <h3 className="text-xl font-bold">Nuevos Clientes</h3>
               <Users className="h-4 w-4 text-gray-400" />
             </div>
             <p className="text-2xl font-bold">+2350</p>
@@ -184,7 +190,7 @@ export default function DashboardSupermercado() {
         return (
           <CardBody>
             <div className="flex justify-between items-center">
-              <p className="text-md">Productos Vendidos</p>
+              <h3 className="text-xl font-bold">Productos Vendidos</h3>
               <Package className="h-4 w-4 text-gray-400" />
             </div>
             <p className="text-2xl font-bold">+12,234</p>
@@ -195,7 +201,7 @@ export default function DashboardSupermercado() {
         return (
           <CardBody>
             <div className="flex justify-between items-center">
-              <p className="text-md">Tasa de Conversión</p>
+              <h3 className="text-xl font-bold">Tasa de Conversión</h3>
               <TrendingUp className="h-4 w-4 text-gray-400" />
             </div>
             <p className="text-2xl font-bold">+573</p>
@@ -204,7 +210,7 @@ export default function DashboardSupermercado() {
         );
       case "inventario":
         return (
-          <CardBody>
+          <CardBody className="h-52">
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between mb-1">
@@ -227,12 +233,27 @@ export default function DashboardSupermercado() {
                 </div>
                 <Progress color="danger" value={15} className="h-2" />
               </div>
+
+              <div>
+                <div className="flex justify-between mb-1">
+                  <span>Tortillas</span>
+                  <span>10%</span>
+                </div>
+                <Progress color="danger" value={10} className="h-2" />
+              </div>
+              <div>
+                <div className="flex justify-between mb-1">
+                  <span>Tortillas</span>
+                  <span>10%</span>
+                </div>
+                <Progress color="danger" value={10} className="h-2" />
+              </div>
             </div>
           </CardBody>
         );
       case "pedidos":
         return (
-          <CardBody>
+          <CardBody className="h-52">
             <Table aria-label="Pedidos recientes">
               <TableHeader>
                 <TableColumn>PEDIDO</TableColumn>
@@ -261,14 +282,29 @@ export default function DashboardSupermercado() {
                   <TableCell>Juan Pérez</TableCell>
                   <TableCell>$98.00</TableCell>
                 </TableRow>
+
+                <TableRow key="3">
+                  <TableCell>#3209</TableCell>
+                  <TableCell>
+                    <Chip color="warning" variant="flat">
+                      Pendiente
+                    </Chip>
+                  </TableCell>
+                  <TableCell>Juan Pérez</TableCell>
+                  <TableCell>$98.00</TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </CardBody>
         );
       case "grafica":
         return (
-          <CardBody className="max-h-80">
-            <Bar data={chartData} options={chartOptions} />
+          <CardBody>
+            <Bar
+              className="max-w-full max-h-64"
+              data={chartData}
+              options={chartOptions}
+            />
           </CardBody>
         );
       default:
@@ -305,7 +341,7 @@ export default function DashboardSupermercado() {
           onDragEnd={handleDragEnd}
         >
           <SortableContext items={items} strategy={rectSortingStrategy}>
-            <div className="grid gap-6 grid-cols-4 auto-rows-auto">
+            <div className="grid gap-6 grid-cols-1 sm:grid-cols-4 auto-rows-auto">
               {items.map((item) => (
                 <SortableCard
                   key={item.id}
@@ -314,9 +350,11 @@ export default function DashboardSupermercado() {
                   isEditing={isEditing}
                 >
                   <Card>
-                    <CardHeader>
-                      <h3 className="text-xl font-bold">{item.content}</h3>
-                    </CardHeader>
+                    {item.content && (
+                      <CardHeader>
+                        <h3 className="text-xl font-bold">{item.content}</h3>
+                      </CardHeader>
+                    )}
                     {renderCardContent(item.id)}
                   </Card>
                 </SortableCard>
