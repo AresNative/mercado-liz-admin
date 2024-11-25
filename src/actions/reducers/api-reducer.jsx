@@ -29,9 +29,6 @@ export const api = createApi({
     getReport: builder.query({
       query: (params) => `reporteria/${params}`,
     }),
-    getTest: builder.query({
-      query: (params) => `testQuery/compras?${params}`,
-    }),
 
     getCompras: builder.query({
       query: (params) => `reporteria/compras?${params}`,
@@ -101,7 +98,6 @@ export const api = createApi({
 
 export const {
   useGetReportQuery,
-  useGetTestQuery,
 
   useGetComprasQuery,
   useGetVentasQuery,

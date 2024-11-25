@@ -6,3 +6,7 @@ export interface UserRoleRendererProps {
   loadingRole: boolean; // Indicador de si se está cargando el rol
   error: string | null; // Error al obtener el rol
 }
+export interface DashboardLayoutProps {
+  admin: React.ReactNode;
+  user: React.ReactNode;
+}

@@ -6,7 +6,7 @@ export const useDragAndDrop = (initialState: Data[]) => {
   const [listItems, setListItems] = useState<Data[]>(initialState);
 
   const handleUpdateList = (id: number, status: Status) => {
-    const card = listItems.find((item) => item.id === id); // Cambiar 'let' a 'const'
+    const card = listItems.find((item) => item.id === id);
 
     if (card && card.status !== status) {
       card.status = status;
