@@ -72,7 +72,7 @@ export default function SideBar() {
         className={`md:top-16 fixed top-0 left-0 z-40 w-64 transition-transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
         aria-label="Sidebar"
       >
-        <div className="h-[94vh] flex flex-col px-3 py-4 overflow-y-auto bg-slate-50 dark:bg-gray-800">
+        <div className="md:h-[94vh] h-screen flex flex-col px-3 py-4 overflow-y-auto bg-slate-50 dark:bg-gray-800">
           <ul className="space-y-2 font-medium">
             {menuItems.map((item, index) => (
               <Item
