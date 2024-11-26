@@ -8,6 +8,7 @@ export default {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/flowbite-react/**/*.js", // Asegúrate de agregar esta línea para incluir Flowbite
   ],
   theme: {
     extend: {

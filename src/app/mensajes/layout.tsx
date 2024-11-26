@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { DashboardLayoutProps } from '@/interfaces/render-page';
 import SideBar from '@/components/ui/side-bar';
 import Navbar from '@/components/ui/nav-bar';
+import { Providers } from '@/actions/providers';
 
 const DashboardLayout = async ({ admin, user }: DashboardLayoutProps) => {
     // Función para obtener el rol del usuario desde las cookies en el lado del servidor
@@ -29,7 +30,9 @@ const DashboardLayout = async ({ admin, user }: DashboardLayoutProps) => {
                 <Navbar />
                 {/* Muestra el contenido según el rol o un mensaje por defecto */}
                 <section className='p-2 pt-20 md:ml-64'>
-                    {userRole && roleContent[userRole] ? roleContent[userRole] : <>Acceso no autorizado</>}
+                    <Providers>
+                        {userRole && roleContent[userRole] ? roleContent[userRole] : <>Acceso no autorizado</>}
+                    </Providers>
                 </section>
             </main>
         </div>
