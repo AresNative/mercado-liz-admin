@@ -9,6 +9,7 @@ import {
   LogOut,
   ScanBarcode,
   ScanText,
+  ScrollText,
   Settings,
   Store,
   Truck,
@@ -25,6 +26,7 @@ const handleLogout = () => {
 // Lista de ítems principales
 export const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
+  { icon: ScrollText, label: "Facturacion", href: "/facturacion" },
   {
     icon: ChartCandlestick,
     label: "Tablas",
