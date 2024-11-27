@@ -3,12 +3,7 @@ import { getLocalStorageItem } from "@/actions/localStorage";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const getUserData = () => getLocalStorageItem("user_data");
-/* 
-?Example use |getUserData| ↡
- getAllListings: builder.query({
-      query: () => `Listing/GetAllListing/${getUserData().id}`,
-    }),
-*/
+
 export const api = createApi({
   reducerPath: "api", // ?Nombre del reducer
   refetchOnFocus: true,

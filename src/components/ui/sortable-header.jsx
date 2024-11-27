@@ -20,10 +20,18 @@ function SortableHeader({ column, isDragging, onSort, sortConfig }) {
       ref={setNodeRef}
       style={style}
       {...attributes} // Atributos necesarios para drag-and-drop
-          onClick={handleSortClick} // Ordenar al hacer clic en el encabezado
-      className={`px-1 py-3 text-left text-xs font-medium uppercase whitespace-nowrap cursor-pointer border border-gray-300 ${
-        sortConfig.key === column.id ? "bg-gray-300" : ""
-      }`}
+      onClick={handleSortClick} // Ordenar al hacer clic en el encabezado
+      className={`px-1 
+                  py-3 
+                  text-left 
+                  text-xs 
+                  font-medium 
+                  uppercase 
+                  whitespace-nowrap 
+                  cursor-pointer
+                ${
+                    sortConfig.key === column.id ? "border-gray-300 dark:border-gray-950 " : ""
+                }`}
     >
       <span className="flex">
         <GripVertical

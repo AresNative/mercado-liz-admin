@@ -198,7 +198,15 @@ const UserPage = () => {
                 onDragStart={(event: any) => setDraggedColumn(event.active.id)}
             >
                 <section className="flex flex-col lg:flex-row gap-4 mt-3">
-                    <Card className="flex-1 p-4 shadow-none border-2 border-gray-200 rounded-lg dark:border-gray-800">
+                    <Card className="flex-1 
+                                    p-4 
+                                    shadow-none
+                                    border-2
+                                    rounded-lg
+                                    bg-gray-50
+                                    dark:bg-gray-800
+                                    border-gray-200
+                                    dark:border-gray-800">
 
                         <ReportTable
                             isLoaded={isLoading}
