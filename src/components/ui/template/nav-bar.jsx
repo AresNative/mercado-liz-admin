@@ -1,5 +1,5 @@
 import { navItems } from "@/constants/aside";
-import { Item } from "./item";
+import { Item } from "../item";
 
 export default function Navbar() {
   return (

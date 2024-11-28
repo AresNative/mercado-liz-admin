@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
 import { cookies } from 'next/headers';
 import { DashboardLayoutProps } from '@/interfaces/render-page';
-import SideBar from '@/components/ui/side-bar';
-import Navbar from '@/components/ui/nav-bar';
+import SideBar from '@/components/ui/template/side-bar';
+import Navbar from '@/components/ui/template/nav-bar';
 
 const DashboardLayout = async ({ admin, user }: DashboardLayoutProps) => {
     // Función para obtener el rol del usuario desde las cookies en el lado del servidor

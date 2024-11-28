@@ -22,6 +22,7 @@ export function MultipleParagraphInput({
     const updatedParagraphs = paragraphs.map((paragraph, i) =>
       i === index ? { ...paragraph, valueDefined: value } : paragraph
     );
+    setError(cuestion.name, {});
     setParagraphs(updatedParagraphs);
     setValue(paragraphs[index].name, value); // Actualiza el valor en react-hook-form
   };

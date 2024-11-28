@@ -9,8 +9,8 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import { Dropdown } from "./drop-down";
-import { Item } from "./item";
+import { Dropdown } from "../emerging/drop-down";
+import { Item } from "../item";
 export default function SideBar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [theme, setTheme] = useState('light');

@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
 import { cookies } from 'next/headers';
 import { DashboardLayoutProps } from '@/interfaces/render-page';
-import SideBar from '@/components/ui/side-bar';
-import Navbar from '@/components/ui/nav-bar';
+import SideBar from '@/components/ui/template/side-bar';
+import Navbar from '@/components/ui/template/nav-bar';
 import { Providers } from '@/actions/providers';
 
 const DashboardLayout = async ({ admin, user }: DashboardLayoutProps) => {

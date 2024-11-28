@@ -1,5 +1,5 @@
-import SideBar from '@/components/ui/side-bar';
-import Navbar from '@/components/ui/nav-bar';
+import SideBar from '@/components/ui/template/side-bar';
+import Navbar from '@/components/ui/template/nav-bar';
 
 const DashboardLayout = async ({
     children,

@@ -16,14 +16,11 @@ import { SearchableSelect } from "./components/select";
 import { OptionMultiple } from "./components/optionmultiple";
 import { Button } from "@nextui-org/react";
 import { MultipleParagraphInput } from "./components/dinamic-inputs";
-import {
-  usePostProjectsMutation,
-  usePostSprintsMutation,
-  usePostTasksMutation,
-} from "@/store/server/reducers/api-reducer";
-import { useAppDispatch } from "@/store/hooks/hooks";
-import { openAlertReducer } from "@/store/reducers/alert-reducer";
-import { closeModalReducer } from "@/store/reducers/modal-reducer";
+
+import { usePostProjectsMutation, usePostSprintsMutation, usePostTasksMutation } from "@/actions/reducers/api-reducer";
+import { useAppDispatch } from "@/actions/selector";
+import { openAlertReducer } from "@/actions/reducers/alert-reducer";
+import { closeModalReducer } from "@/actions/reducers/modal-reducer";
 
 export const MainForm = ({ message_button, dataForm, actionType }) => {
   const dispatch = useAppDispatch();
