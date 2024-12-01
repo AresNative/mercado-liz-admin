@@ -51,6 +51,7 @@ export default function SideBar() {
     setTheme(newTheme);
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
     localStorage.setItem('theme', newTheme); // Guarda el tema seleccionado en almacenamiento local
+    document.body.setAttribute("data-theme", newTheme);
   };
 
   return (

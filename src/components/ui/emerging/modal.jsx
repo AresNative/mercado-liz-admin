@@ -1,23 +1,25 @@
 "use client";
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
-import FormJson from "@/constants/new-project-scrum.json";
 import { useAppDispatch, useAppSelector } from "@/actions/selector";
-import { closeModalReducer } from "@/actions/reducers/modal-reducer";
+import { closeModal } from "@/actions/reducers/modal-reducer";
 import { MainForm } from "@/components/utils/main-form";
+
+import FormJson from "@/constants/new-project-scrum.json";
+
 function ModalComponent({
   title,
   message_button,
-  modalName,
   functionString,
 }) {
   const dispatch = useAppDispatch();
-  const isOpen = useAppSelector((state) => state.modal.modals[modalName]);
+  const isOpen = useAppSelector((state) => state.modal.modals[functionString]);
 
   const onClose = () => {
-    dispatch(closeModalReducer({ modalName }));
+    dispatch(closeModal({ modalName: functionString }));
   };
+  
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} className="z-20 dark:bg-gray-800">
       <ModalContent>
         {() => (
           <>

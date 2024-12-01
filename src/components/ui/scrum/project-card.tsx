@@ -9,7 +9,7 @@ const ProjectCard = ({ project, onClick }: { project: any; onClick: () => void }
         <div>
             <span>{project.nombre}</span>
         </div>
-        <div className="w-full">
+        <div className="w-full dark:bg-gray-700">
             <AvatarGroup className="w-fit ml-auto" isBordered max={3} total={10}>
                 {Array(3).fill("").map((_, i) => (
                     <Avatar

@@ -5,17 +5,17 @@ const initialState = {
   cuestionActivate: null,
 };
 
-export const modal = createSlice({
+export const modalReducer = createSlice({
   name: "modal",
   initialState,
   reducers: {
-    openModalReducer: (state, action) => {
+    openModal: (state, action) => {
       const { modalName, isOpen } = action.payload;
-      state.modals[modalName] = isOpen;
+        state.modals[modalName] = isOpen;
     },
-    closeModalReducer: (state, action) => {
+    closeModal: (state, action) => {
       const { modalName } = action.payload;
-      state.modals[modalName] = false;
+        state.modals[modalName] = false;
     },
     setCuestionActivate: (state, action) => {
       state.cuestionActivate = action.payload;
@@ -23,7 +23,6 @@ export const modal = createSlice({
   },
 });
 
-export const { openModalReducer, closeModalReducer, setCuestionActivate } =
-  modal.actions;
+export const { openModal, closeModal, setCuestionActivate } = modalReducer.actions;
 
-export default modal.reducer;
+export default modalReducer.reducer;

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
+import { Providers } from "@/actions/providers";
+import DynamicAlert from "@/components/ui/dynamic-alert";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,6 +19,9 @@ export default function RootLayout({
       <body>
         {children}
         <SpeedInsights />
+        <Providers>
+          <DynamicAlert />
+        </Providers>
       </body>
     </html>
   );

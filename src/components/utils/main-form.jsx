@@ -20,7 +20,7 @@ import { MultipleParagraphInput } from "./components/dinamic-inputs";
 import { usePostProjectsMutation, usePostSprintsMutation, usePostTasksMutation } from "@/actions/reducers/api-reducer";
 import { useAppDispatch } from "@/actions/selector";
 import { openAlertReducer } from "@/actions/reducers/alert-reducer";
-import { closeModalReducer } from "@/actions/reducers/modal-reducer";
+import { closeModal } from "@/actions/reducers/modal-reducer";
 
 export const MainForm = ({ message_button, dataForm, actionType }) => {
   const dispatch = useAppDispatch();
@@ -65,7 +65,7 @@ export const MainForm = ({ message_button, dataForm, actionType }) => {
         })
       );
 
-      dispatch(closeModalReducer({ actionType }));
+      dispatch(closeModal({ modalName: actionType }));
     } catch (error) {
       console.error("Error en el envío del formulario:", error);
       dispatch(

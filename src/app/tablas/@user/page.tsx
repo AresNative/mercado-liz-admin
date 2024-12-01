@@ -1,7 +1,11 @@
 "use client";
 
-import ReportTable from "@/components/ui/report-table";
+import ReportInputs from "@/components/func/report-inputs";
+import PaginationTable from "@/components/ui/table/pagination";
+import ReportTable from "@/components/ui/table/report-table";
+import Box from "@/components/ui/template/box";
 import { useQueryByType } from "@/hooks/load-data";
+import { Filter } from "@/interfaces/tables";
 import {
     DndContext,
     closestCenter,
@@ -11,33 +15,38 @@ import {
     useSensors,
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import { Button, Card } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-
 const UserPage = () => {
-    interface Filter {
-        codigo: string;
-        articulo: string;
-        proveedor: string;
-        descripcion: string;
-    }
-
     const [selectedKeys] = useState("get-compras");
     const [previewData, setPreviewData] = useState<any[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalRecords, setTotalRecords] = useState(0);
-    const itemsPerPage = 8;
-
-    const [filter] = useState<Filter>({
+    const itemsPerPage = 13;
+    ////////
+    // ? filtros y funcionalidad
+    const [filter, setFilter] = useState<Filter>({
         codigo: "",
         articulo: "",
         proveedor: "",
         descripcion: "",
     });
+    const [filterType, setFilterType] = useState<keyof Filter>("codigo");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
 
-    const [filterType] = useState<keyof Filter>("codigo");
-    const [startDate] = useState("");
-    const [endDate] = useState("");
+    const handleFilterTypeChange = (e: any) => {
+        console.log(e);
+
+        setCurrentPage(1);
+        setFilterType(e.anchorKey);
+    };
+    const handleFilterChange = (e: any) => {
+        const value = e.target.value;
+        setFilter((prev) => ({
+            ...prev,
+            [filterType]: value,
+        }));
+    };
 
     const buildQueryString = (): string => {
         const query = new URLSearchParams({
@@ -49,8 +58,9 @@ const UserPage = () => {
         });
         return query.toString();
     };
-
-    const { data, isLoading } = useQueryByType(
+    ////////
+    // ? consulta de datos
+    const { data, isLoading, error } = useQueryByType(
         selectedKeys,
         buildQueryString
     );
@@ -63,14 +73,9 @@ const UserPage = () => {
             setPreviewData([]);
         }
     }, [data]);
-
+    ////////
+    // ? construccion de la tabla
     const [columns, setColumns] = useState<any[]>([]);
-    const [draggedColumn, setDraggedColumn] = useState<string | null>(null);
-    const [sortConfig, setSortConfig] = useState({
-        key: "",
-        direction: "asc",
-    });
-
     useEffect(() => {
         if (data?.data?.length) {
             const columnsFromData = Object.keys(data.data[0]).map((key) => ({
@@ -81,18 +86,18 @@ const UserPage = () => {
             setColumns(columnsFromData);
         }
     }, [data]);
-
     const handlePageChange = (newPage: number) => {
         if (newPage >= 1 && newPage <= Math.ceil(totalRecords / itemsPerPage)) {
             setCurrentPage(newPage);
         }
     };
-
+    ////////
+    // ? configuracion de drag and drop
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
     );
-
+    const [draggedColumn, setDraggedColumn] = useState<string | null>(null);
     const handleDragEnd = ({ active, over }: any) => {
         if (over && active.id !== over.id) {
             setColumns((items) =>
@@ -105,7 +110,12 @@ const UserPage = () => {
         }
         setDraggedColumn(null);
     };
-
+    ////////
+    // ? configuracion de sorteable (orden alfabetico y numerico)
+    const [sortConfig, setSortConfig] = useState({
+        key: "",
+        direction: "asc",
+    });
     const handleSort = (columnId: string) => {
         const newDirection =
             sortConfig.key === columnId && sortConfig.direction === "asc"
@@ -126,8 +136,24 @@ const UserPage = () => {
         );
     };
 
+
+    // ? estados de consultas
+    if (isLoading) return <p>Cargando...</p>;
+    if (error) return <p>Error al cargar los datos</p>;
     return (
-        <section>
+        <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
+            <div className="grid grid-cols-2 gap-4 mb-4">
+                <Box height="6rem">
+                    <ReportInputs
+                        filterType={filterType}
+                        setStartDate={setStartDate}
+                        setEndDate={setEndDate}
+                        handleFilterTypeChange={handleFilterTypeChange}
+                        handleFilterChange={handleFilterChange}
+                    />
+                </ Box>
+                <Box height="6rem" />
+            </div>
             <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
@@ -135,7 +161,7 @@ const UserPage = () => {
                 onDragStart={({ active }: any) => setDraggedColumn(active.id)}
             >
                 <section className="flex flex-col lg:flex-row gap-4 mt-3">
-                    <Card className="flex-1 p-4 shadow-none border-2 rounded-lg bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-800">
+                    <Box>
                         <ReportTable
                             isLoaded={isLoading}
                             columns={columns}
@@ -144,34 +170,16 @@ const UserPage = () => {
                             onSort={handleSort}
                             sortConfig={sortConfig}
                         />
-                        <div className="flex justify-between items-center mt-4">
-                            <span>
-                                Mostrando {(currentPage - 1) * itemsPerPage + 1} -{" "}
-                                {Math.min(currentPage * itemsPerPage, totalRecords)} de{" "}
-                                {totalRecords}
-                            </span>
-                            <div className="flex gap-2">
-                                <Button
-                                    onClick={() => handlePageChange(currentPage - 1)}
-                                    disabled={currentPage === 1}
-                                >
-                                    Anterior
-                                </Button>
-                                <Button
-                                    onClick={() => handlePageChange(currentPage + 1)}
-                                    disabled={
-                                        currentPage === Math.ceil(totalRecords / itemsPerPage)
-                                    }
-                                >
-                                    Siguiente
-                                </Button>
-                            </div>
-                        </div>
-                    </Card>
+                        <PaginationTable
+                            currentPage={currentPage}
+                            itemsPerPage={itemsPerPage}
+                            totalRecords={totalRecords}
+                            handlePageChange={handlePageChange}
+                        />
+                    </Box>
                 </section>
             </DndContext>
-        </section>
+        </div>
     );
 };
-
 export default UserPage;

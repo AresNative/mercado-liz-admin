@@ -2,6 +2,76 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --background: #fff;
+  --foreground: #6e6e6e;
+}
+.dark, [data-theme='dark'] {
+  --background: #333333;
+  --foreground: #f3f3f3;
+
+
+  color-scheme: dark;
+  --nextui-background: 0 0% 13%;
+    /* Gray-800 base para fondos oscuros */
+    --nextui-foreground-50: 0 0% 20%;
+    --nextui-foreground-100: 0 0% 25%;
+    --nextui-foreground-200: 0 0% 30%;
+    --nextui-foreground-300: 0 0% 35%;
+    --nextui-foreground-400: 0 0% 40%;
+    --nextui-foreground-500: 0 0% 50%;
+    --nextui-foreground-600: 0 0% 60%;
+    --nextui-foreground-700: 0 0% 70%;
+    --nextui-foreground-800: 0 0% 80%;
+    --nextui-foreground-900: 0 0% 90%;
+    --nextui-foreground: 0 0% 87%;
+    /* Para tonos de texto más brillantes */
+    --nextui-focus: 212 100% 40%;
+    /* Mantén algo de color para el foco */
+    --nextui-overlay: 0 0% 10%;
+    /* Más oscuro para superposiciones */
+    --nextui-divider: 0 0% 80%;
+    /* Línea divisoria más visible */
+    --nextui-divider-opacity: 0.15;
+    --nextui-content1: 0 0% 20%;
+    --nextui-content1-foreground: 0 0% 90%;
+    --nextui-content2: 0 0% 25%;
+    --nextui-content2-foreground: 0 0% 85%;
+    --nextui-content3: 0 0% 30%;
+    --nextui-content3-foreground: 0 0% 80%;
+    --nextui-content4: 0 0% 35%;
+    --nextui-content4-foreground: 0 0% 75%;
+    --nextui-default-50: 0 0% 20%;
+    --nextui-default-100: 0 0% 25%;
+    --nextui-default-200: 0 0% 30%;
+    --nextui-default-300: 0 0% 35%;
+    --nextui-default-400: 0 0% 40%;
+    --nextui-default-500: 0 0% 50%;
+    --nextui-default-600: 0 0% 60%;
+    --nextui-default-700: 0 0% 70%;
+    --nextui-default-800: 0 0% 80%;
+    --nextui-default-900: 0 0% 90%;
+    --nextui-default-foreground: 0 0% 95%;
+    --nextui-default: 0 0% 30%;
+    /* General oscuro neutro */
+    --nextui-primary-50: 212 10% 15%;
+    --nextui-primary-100: 212 10% 25%;
+    --nextui-primary-200: 212 10% 35%;
+    --nextui-primary-300: 212 10% 45%;
+    --nextui-primary-400: 212 10% 55%;
+    --nextui-primary-500: 212 10% 65%;
+    --nextui-primary-600: 212 10% 75%;
+    --nextui-primary-700: 212 10% 85%;
+    --nextui-primary-800: 212 10% 90%;
+    --nextui-primary-900: 212 10% 95%;
+    --nextui-primary-foreground: 0 0% 95%;
+    --nextui-primary: 212 10% 45%;
+    /* Ajuste base de azul oscuro neutro */
+    --nextui-secondary-50: 270 6% 20%;
+}
 body {
   font-family: Arial, Helvetica, sans-serif;
+}
+*::-webkit-scrollbar {
+  width: 0px;
 }

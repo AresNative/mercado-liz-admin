@@ -20,7 +20,7 @@ export function CheckBox(props) {
       {cuestion.options.length > 1 && <label>{cuestion.placeholder}</label>}
       {cuestion.options.map((option, index) => (
         <Checkbox
-          className="w-full"
+          className="w-full dark:bg-gray-700"
           key={index}
           isSelected={isAtLeastOneChecked}
           onChange={handleCheckboxChange}

@@ -1,4 +1,6 @@
+import { generateData } from "@/components/hooks/data";
 import DynamicChart from "@/components/ui/grafic";
+import { HeatmapMultiColor, HeatmapSingleColor } from "@/components/ui/heat-map";
 import TreemapChart from "@/components/ui/Treemap";
 
 const ChartPage = () => {
@@ -37,6 +39,9 @@ const ChartPage = () => {
       ],
     },
   ];
+  const heatmapData = generateData(5, 7)
+  const heatmapDataSingle = generateData(10, 10);
+
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-8">Dynamic Chart Examples</h1>
@@ -68,6 +73,11 @@ const ChartPage = () => {
       <div className="mb-8">
         <h2 className="text-2xl font-semibold mb-4">Treemap Chart</h2>
         <TreemapChart data={treemapData} />
+      </div>
+      <div>
+        <h2>Heatmap</h2>
+        <HeatmapMultiColor data={heatmapData} />
+        <HeatmapSingleColor data={heatmapDataSingle} />
       </div>
     </div>
   );
