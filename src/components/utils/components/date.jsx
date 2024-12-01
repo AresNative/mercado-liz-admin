@@ -7,18 +7,18 @@ export function DateInput(props) {
   const toDay = new Date().toISOString().slice(0, 16);
 
   const handleDateChange = (date) => {
-    if (date) {
-      const selectedDateTime = new Date(date);
-
-      if (selectedDateTime <= new Date(toDay)) {
-        props.setError(cuestion.name, {
-          message: `Value must be ${toDay} or later`,
-        });
-      } else {
-        props.setValue(cuestion.name, selectedDateTime.toISOString());
-        props.setError(cuestion.name, {});
-      }
+    if (!date) {
+      props.setValue(cuestion.name, selectedDateTime.toISOString());
+      props.setError(cuestion.name, {});
+      return
     }
+    const selectedDateTime = new Date(date);
+
+    if (selectedDateTime <= new Date(toDay)) {
+      props.setError(cuestion.name, {
+        message: `Value must be ${toDay} or later`,
+      });
+    } 
   };
 
   return (
