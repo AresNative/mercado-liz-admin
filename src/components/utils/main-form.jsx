@@ -32,6 +32,7 @@ export const MainForm = ({ message_button, dataForm, actionType }) => {
     setError,
     watch,
     setValue,
+    control,
     formState: { errors },
   } = useForm();
 
@@ -53,6 +54,8 @@ export const MainForm = ({ message_button, dataForm, actionType }) => {
   }
 
   async function onSubmit(submitData) {
+    console.log(submitData);
+    
     setLoading(true);
     const mutationFunction = getMutationFunction(actionType);
     try {
@@ -85,6 +88,7 @@ export const MainForm = ({ message_button, dataForm, actionType }) => {
         <SwitchTypeInputRender
           key={key}
           cuestion={field}
+          control={control}
           register={register}
           watch={watch}
           clearErrors={clearErrors}
