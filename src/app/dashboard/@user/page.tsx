@@ -10,7 +10,6 @@ import {
     DragOverlay,
 } from "@dnd-kit/core";
 import {
-    arrayMove,
     SortableContext,
     useSortable,
     rectSortingStrategy,
@@ -35,6 +34,7 @@ function SortableBox({ id, height }: any) {
             {...attributes}
             {...listeners}
         >
+            {id}
             <Box height={height} />
         </div>
     );
@@ -65,7 +65,7 @@ const UserPage = () => {
         { id: "box-13", height: "8rem" },
     ]);
 
-    const [activeId, setActiveId] = useState(null);
+    const [activeId, setActiveId] = useState<string | null>(null);
 
     const sensors = useSensors(useSensor(PointerSensor));
 
@@ -76,12 +76,15 @@ const UserPage = () => {
     const handleDragEnd = (event: any) => {
         const { active, over } = event;
 
-        if (active.id !== over.id) {
+        if (active.id !== over?.id) {
             setItems((prevItems) => {
-                const oldIndex = prevItems.findIndex((item) => item.id === active.id);
-                const newIndex = prevItems.findIndex((item) => item.id === over.id);
+                const activeIndex = prevItems.findIndex((item) => item.id === active.id);
+                const overIndex = prevItems.findIndex((item) => item.id === over.id);
 
-                return arrayMove(prevItems, oldIndex, newIndex);
+                const newItems = [...prevItems];
+                [newItems[activeIndex], newItems[overIndex]] = [newItems[overIndex], newItems[activeIndex]];
+
+                return newItems;
             });
         }
 
