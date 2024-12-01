@@ -135,8 +135,6 @@ const UserPage = () => {
             )
         );
     };
-
-
     // ? estados de consultas
     if (isLoading) return <p>Cargando...</p>;
     if (error) return <p>Error al cargar los datos</p>;
