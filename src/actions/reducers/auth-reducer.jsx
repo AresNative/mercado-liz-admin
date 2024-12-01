@@ -8,7 +8,7 @@ export const authApi = createApi({
   reducerPath: "authApi",
   refetchOnFocus: true,
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.apiUrl,
+    baseUrl: process.env.NEXT_PUBLIC_API_URL,
     prepareHeaders: (headers, { getState }) => {
       headers.set("Content-Type", "application/json");
       const state = getState();
