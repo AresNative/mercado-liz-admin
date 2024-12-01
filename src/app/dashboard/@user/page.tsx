@@ -15,7 +15,6 @@ import {
     useSortable,
     rectSortingStrategy,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import Box from "@/components/ui/template/box";
 
 function SortableBox({ id, height }: any) {
