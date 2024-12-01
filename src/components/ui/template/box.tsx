@@ -29,7 +29,7 @@ const Box: React.FC<BoxProps> = ({ height = "auto", colSpan = 1, children = null
 
     return (
         <div
-            className={`flex items-center justify-center rounded bg-gray-50 dark:bg-gray-800 ${isColSpanTwo ? "col-span-2" : ""
+            className={`flex  w-full items-center justify-center rounded bg-gray-50 dark:bg-gray-800 ${isColSpanTwo ? "col-span-2" : ""
                 }`}
             style={{ minHeight: height, maxHeight: "auto" }}
         >

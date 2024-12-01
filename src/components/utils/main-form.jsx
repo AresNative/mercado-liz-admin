@@ -21,6 +21,7 @@ import { usePostProjectsMutation, usePostSprintsMutation, usePostTasksMutation }
 import { useAppDispatch } from "@/actions/selector";
 import { openAlertReducer } from "@/actions/reducers/alert-reducer";
 import { closeModal } from "@/actions/reducers/modal-reducer";
+import { DateRangeInput } from "./components/date-range";
 
 export const MainForm = ({ message_button, dataForm, actionType }) => {
   const dispatch = useAppDispatch();
@@ -119,6 +120,8 @@ export function SwitchTypeInputRender(props) {
       return <InputMedia {...props} />;
     case "DATE":
       return <DateInput {...props} />;
+    case "DATERANGE":
+      return <DateRangeInput {...props} />;
     case "MONTH":
       return <MonthInput {...props} />;
     case "EMAIL":

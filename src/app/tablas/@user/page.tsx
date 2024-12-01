@@ -1,6 +1,7 @@
 "use client";
 
 import ReportInputs from "@/components/func/report-inputs";
+import { FileList } from "@/components/ui/filelist";
 import PaginationTable from "@/components/ui/table/pagination";
 import ReportTable from "@/components/ui/table/report-table";
 import Box from "@/components/ui/template/box";
@@ -138,6 +139,18 @@ const UserPage = () => {
     // ? estados de consultas
     if (isLoading) return <p>Cargando...</p>;
     if (error) return <p>Error al cargar los datos</p>;
+
+    // * data example
+    const files = [
+        { name: "config.json", extension: "json", size: "2.3 KB" },
+        { name: "app.tsx", extension: "tsx", size: "4.1 KB" },
+        { name: "styles.css", extension: "css", size: "1.8 KB" },
+        { name: "utils.ts", extension: "ts", size: "892 B" },
+        { name: "README.md", extension: "md", size: "4.2 KB" },
+        { name: "logo.svg", extension: "svg", size: "3.1 KB" },
+        { name: "index.js", extension: "js", size: "1.5 KB" },
+        { name: "types.d.ts", extension: "ts", size: "567 B" },
+    ];
     return (
         <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -150,7 +163,9 @@ const UserPage = () => {
                         handleFilterChange={handleFilterChange}
                     />
                 </ Box>
-                <Box height="6rem" />
+                <Box height="6rem" >
+                    <FileList files={files} />
+                </Box>
             </div>
             <DndContext
                 sensors={sensors}
