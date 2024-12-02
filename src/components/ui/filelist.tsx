@@ -21,9 +21,9 @@ export default function FileList({ files }: FileListProps) {
         {files.map((file, index) => (
           <div
             key={index}
-            className={` bg-white dark:bg-black min-w-28 ${cn(
-              "group relative p-2 rounded-lg border border-border/50",
-              "hover:border-secondary/50 hover:shadow-lg transition-all duration-200",
+            className={` bg-gray-100 cursor-pointer dark:bg-gray-800 min-w-28 ${cn(
+              "group relative p-2 rounded-lg border dark:border-gray-900 border-border/50",
+              "hover:border-secondary/50 dark:hover:border-secondary/50  hover:shadow-lg transition-all duration-200",
               "bg-card/50 backdrop-blur-sm"
             )}`}
           >

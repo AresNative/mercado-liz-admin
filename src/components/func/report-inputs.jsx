@@ -1,4 +1,4 @@
-import { Input, Select, SelectItem } from "@nextui-org/react";
+import { DatePicker, Input, Select, SelectItem } from "@nextui-org/react";
 function ReportInputs({
   filterType,
   setStartDate,
@@ -7,7 +7,7 @@ function ReportInputs({
   handleFilterChange,
 }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
       <div className="flex col-span-2 gap-2">
         <Select
           placeholder="Selecciona un tipo de filtro"
@@ -23,32 +23,22 @@ function ReportInputs({
           {(item) => <SelectItem key={item.value}>{item.label}</SelectItem>}
         </Select>
         <Input
-          placeholder={`Buscar por ${
-            filterType.charAt(0).toUpperCase() + filterType.slice(1)
-          }`}
+          placeholder={`Buscar por ${filterType.charAt(0).toUpperCase() + filterType.slice(1)}`}
           onChange={handleFilterChange}
           className="w-full"
           aria-label={filterType}
         />
       </div>
 
-      <Input
-        type="date"
+      <DatePicker
         placeholder="Fecha de inicio"
-        onChange={(e) => {
-          const date = new Date(e.target.value);
-          setStartDate(date.toISOString().split("Z")[0]);
-        }}
+        onChange={setStartDate}
         className="w-full"
       />
 
-      <Input
-        type="date"
+      <DatePicker
         placeholder="Fecha de fin"
-        onChange={(e) => {
-          const date = new Date(e.target.value);
-          setEndDate(date.toISOString().split("Z")[0]);
-        }}
+        onChange={setEndDate}
         className="w-full"
       />
     </div>

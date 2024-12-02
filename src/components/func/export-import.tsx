@@ -47,3 +47,22 @@ export const exportToPDF = (columns: string[], data: any[]) => {
   // Guardar el archivo PDF
   doc.save('tabla_dinamica.pdf');
 };
+
+export const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const file = event.target.files?.[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = e.target?.result;
+      if (typeof data === 'string') {
+        const workbook = XLSX.read(data, { type: 'binary' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const json = XLSX.utils.sheet_to_json(worksheet);
+        console.log(json);
+      }
+    };
+    reader.readAsBinaryString(file);
+
+  }
+};

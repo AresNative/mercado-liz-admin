@@ -1,6 +1,6 @@
 "use client";
 
-import { exportToExcel, exportToPDF } from "@/components/func/export";
+import { exportToExcel, exportToPDF, handleFileUpload } from "@/components/func/export-import";
 import ReportInputs from "@/components/func/report-inputs";
 import FileList from "@/components/ui/filelist";
 import PaginationTable from "@/components/ui/table/pagination";
@@ -17,9 +17,9 @@ import {
     useSensors,
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import { Button, Select, SelectItem } from "@nextui-org/react";
+import { Button, ButtonGroup, Select, SelectItem } from "@nextui-org/react";
 import { ChartBar, ChartCandlestick, ChartLine, ChartPie, CloudUpload, Eye, FileChartColumn, FileText } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 const UserPage = () => {
     const [Keys, selectedKeys] = useState<string>("get-ventas")
     const [previewData, setPreviewData] = useState<any[]>([]);
@@ -65,6 +65,8 @@ const UserPage = () => {
         });
         return query.toString();
     };
+    console.log(startDate, endDate);
+
     ////////
     // ? consulta de datos
     const { data, isLoading, error } = useQueryByType(
@@ -155,9 +157,13 @@ const UserPage = () => {
         { name: "index.js", extension: "js", size: "1.5 KB" },
         { name: "types.d.ts", extension: "ts", size: "567 B" },
     ];
-
-
     const headers = columns.map(column => column.label || column.Header);
+
+    const fileInputRef: any = useRef(null);
+
+    const handleButtonClick = () => {
+        if (fileInputRef) fileInputRef.current.click();
+    };
     return (
         <>{/* div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700" */}
             <div className="grid grid-cols-1 gap-4 mb-4 lg:grid-cols-2">
@@ -170,17 +176,35 @@ const UserPage = () => {
                             handleFilterTypeChange={handleFilterTypeChange}
                             handleFilterChange={handleFilterChange}
                         />
-                        <section className="flex gap-2 m-auto">
-                            <Button color="success" onClick={() => {
-                                exportToExcel(previewData)
-                            }}>Exel <FileChartColumn /></Button>
-                            <Button color="danger" onClick={() => {
-                                exportToPDF(headers, previewData)
-                            }}>PDF <FileText /></Button>
-                            <Button color="secondary">
-                                Subir <CloudUpload />
+                        <ButtonGroup className="flex m-2">
+                            <Button
+                                onClick={() => {
+                                    exportToExcel(previewData)
+                                }}>
+                                Exel <FileChartColumn
+                                    className="stroke-green-500" />
                             </Button>
-                        </section>
+                            {/* ///////////////// */}
+                            <Button
+                                onClick={() => {
+                                    exportToPDF(headers, previewData)
+                                }}>
+                                PDF <FileText
+                                    className="stroke-red-500" />
+                            </Button>
+                            {/* ///////////////// */}
+                            <Button onClick={handleButtonClick}>
+                                Subir archivo <CloudUpload
+                                    className="stroke-purple-500" />
+                            </Button>
+                        </ButtonGroup>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept=".xlsx, .xls"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                        />
                     </div>
                 </Box>
                 <Box height="6rem" >

@@ -34,7 +34,7 @@ const [selectedRows, setSelectedRows] = useState([]);
   return (
     <div className="overflow-x-auto h-full min-h-80">
       <Skeleton isLoaded={!isLoaded} className="rounded">
-        <table className="min-w-full dark:border-gray-700 bg-white dark:bg-gray-700 rounded-2xl">
+        <table className="min-w-full dark:border-gray-700 bg-gray-100 dark:bg-gray-800 rounded-2xl">
           <thead>
             <SortableContext items={dataKeys} strategy={verticalListSortingStrategy}>
               <tr className="divide-x divide-gray-200 dark:divide-gray-700">
