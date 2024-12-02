@@ -1,5 +1,6 @@
 "use client";
 
+import { exportToExcel, exportToPDF } from "@/components/func/export";
 import ReportInputs from "@/components/func/report-inputs";
 import FileList from "@/components/ui/filelist";
 import PaginationTable from "@/components/ui/table/pagination";
@@ -17,7 +18,7 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { Button, Select, SelectItem } from "@nextui-org/react";
-import { ChartBar, ChartCandlestick, ChartLine, ChartPie, CloudUpload, Eye } from "lucide-react";
+import { ChartBar, ChartCandlestick, ChartLine, ChartPie, CloudUpload, Eye, FileChartColumn, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
 const UserPage = () => {
     const [Keys, selectedKeys] = useState<string>("get-ventas")
@@ -154,18 +155,34 @@ const UserPage = () => {
         { name: "index.js", extension: "js", size: "1.5 KB" },
         { name: "types.d.ts", extension: "ts", size: "567 B" },
     ];
+
+
+    const headers = columns.map(column => column.label || column.Header);
     return (
         <>{/* div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700" */}
             <div className="grid grid-cols-1 gap-4 mb-4 lg:grid-cols-2">
                 <Box height="6rem">
-                    <ReportInputs
-                        filterType={filterType}
-                        setStartDate={setStartDate}
-                        setEndDate={setEndDate}
-                        handleFilterTypeChange={handleFilterTypeChange}
-                        handleFilterChange={handleFilterChange}
-                    />
-                </ Box>
+                    <div className="w-full">
+                        <ReportInputs
+                            filterType={filterType}
+                            setStartDate={setStartDate}
+                            setEndDate={setEndDate}
+                            handleFilterTypeChange={handleFilterTypeChange}
+                            handleFilterChange={handleFilterChange}
+                        />
+                        <section className="flex gap-2 m-auto">
+                            <Button color="success" onClick={() => {
+                                exportToExcel(previewData)
+                            }}>Exel <FileChartColumn /></Button>
+                            <Button color="danger" onClick={() => {
+                                exportToPDF(headers, previewData)
+                            }}>PDF <FileText /></Button>
+                            <Button color="secondary">
+                                Subir <CloudUpload />
+                            </Button>
+                        </section>
+                    </div>
+                </Box>
                 <Box height="6rem" >
                     <FileList files={files} />
                 </Box>
@@ -236,9 +253,6 @@ const UserPage = () => {
                                 </Select>
                                 <Button color="secondary" variant="solid">
                                     Ver <Eye />
-                                </Button>
-                                <Button color="secondary" variant="light">
-                                    Subir <CloudUpload />
                                 </Button>
                             </div>
                         </section>

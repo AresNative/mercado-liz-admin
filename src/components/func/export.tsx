@@ -1,8 +1,5 @@
 import * as XLSX from 'xlsx';
 
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-import autoTable from 'jspdf-autotable';
 export const exportToExcel = (data: any[], fileName: string = 'data.xlsx') => {
   // 1. Crear una hoja de trabajo a partir de los datos
   const worksheet = XLSX.utils.json_to_sheet(data);
@@ -15,17 +12,36 @@ export const exportToExcel = (data: any[], fileName: string = 'data.xlsx') => {
   XLSX.writeFile(workbook, fileName);
 };
 
-export const exportToPDF = (columns: string[], data: any[]) => {
-  const doc = new jsPDF();
+import 'jspdf-autotable';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
+export const exportToPDF = (columns: string[], data: any[]) => {
+  const doc = new jsPDF({
+    orientation: "landscape", // "portrait" o "landscape"
+    unit: "mm",               // Unidad de medida: "mm", "pt", "cm", etc.
+    format: "a4",             // Tamaño de página: "a4", "letter", "legal", etc.
+  });
+  console.log(columns, data);
+  // Mapea los datos con las cabeceras correctas
+  const tableData = data.map((row) =>
+    columns.map((header) => row[header] || "")
+  );
   // Título del PDF
-  doc.text('Reporte de Tabla Dinámica', 20, 20);
+  doc.text('Reporte de Tabla Dinámica', 10, 10);
 
   // Generar la tabla usando autoTable
   autoTable(doc, {
     head: [columns],
-    body: data,
-    startY: 30,
+    body: tableData,
+    startY: 20, // Define la posición vertical inicial
+    margin: { top: 20, left: 10, right: 10, bottom: 20 }, // Márgenes personalizados
+    theme: "grid", // Opciones: "striped", "grid", "plain"
+    styles: {
+      fontSize: 10,    // Tamaño de fuente
+      cellPadding: 2,  // Espaciado en celdas
+    },
+    pageBreak: "auto", // Define cómo manejar saltos de página
   });
 
   // Guardar el archivo PDF

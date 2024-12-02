@@ -1,5 +1,4 @@
-import { Button, Input, Select, SelectItem } from "@nextui-org/react";
-import { FileChartColumn, FileText } from "lucide-react";
+import { Input, Select, SelectItem } from "@nextui-org/react";
 function ReportInputs({
   filterType,
   setStartDate,
@@ -52,8 +51,6 @@ function ReportInputs({
         }}
         className="w-full"
       />
-        <Button color="success"><FileChartColumn /> Exel</Button>
-        <Button color="danger"><FileText /> PDF</Button>
     </div>
   );
 }
