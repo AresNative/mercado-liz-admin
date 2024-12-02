@@ -21,6 +21,7 @@ import { Button, ButtonGroup, Select, SelectItem } from "@nextui-org/react";
 import { ChartBar, ChartCandlestick, ChartLine, ChartPie, CloudUpload, Eye, FileChartColumn, FileText } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 const UserPage = () => {
+    const fileInputRef: any = useRef(null);
     const [Keys, selectedKeys] = useState<string>("get-ventas")
     const [previewData, setPreviewData] = useState<any[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -159,10 +160,8 @@ const UserPage = () => {
     ];
     const headers = columns.map(column => column.label || column.Header);
 
-    const fileInputRef: any = useRef(null);
-
     const handleButtonClick = () => {
-        if (fileInputRef) fileInputRef.current.click();
+        fileInputRef.current.click();
     };
     return (
         <>{/* div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700" */}
