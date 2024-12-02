@@ -25,7 +25,6 @@ const UserPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalRecords, setTotalRecords] = useState(0);
     const itemsPerPage = 13;
-
     const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         console.log(e.target.value);
         setCurrentPage(() => { return 1 });
