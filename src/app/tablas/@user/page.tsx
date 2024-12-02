@@ -1,7 +1,7 @@
 "use client";
 
 import ReportInputs from "@/components/func/report-inputs";
-import { FileList } from "@/components/ui/filelist";
+import FileList from "@/components/ui/filelist";
 import PaginationTable from "@/components/ui/table/pagination";
 import ReportTable from "@/components/ui/table/report-table";
 import Box from "@/components/ui/template/box";
@@ -16,13 +16,21 @@ import {
     useSensors,
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import { Button, Select, SelectItem } from "@nextui-org/react";
+import { ChartBar, ChartCandlestick, ChartLine, ChartPie, Eye, HeartIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 const UserPage = () => {
-    const [selectedKeys] = useState("get-compras");
+    const [Keys, selectedKeys] = useState<string>("get-ventas")
     const [previewData, setPreviewData] = useState<any[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalRecords, setTotalRecords] = useState(0);
     const itemsPerPage = 13;
+
+    const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        console.log(e.target.value);
+        setCurrentPage(() => { return 1 });
+        selectedKeys(e.target.value);
+    };
     ////////
     // ? filtros y funcionalidad
     const [filter, setFilter] = useState<Filter>({
@@ -36,9 +44,7 @@ const UserPage = () => {
     const [endDate, setEndDate] = useState("");
 
     const handleFilterTypeChange = (e: any) => {
-        console.log(e);
-
-        setCurrentPage(1);
+        setCurrentPage(() => { return 1 });
         setFilterType(e.anchorKey);
     };
     const handleFilterChange = (e: any) => {
@@ -62,7 +68,7 @@ const UserPage = () => {
     ////////
     // ? consulta de datos
     const { data, isLoading, error } = useQueryByType(
-        selectedKeys,
+        Keys,
         buildQueryString
     );
 
@@ -137,9 +143,7 @@ const UserPage = () => {
         );
     };
     // ? estados de consultas
-    if (isLoading) return <p>Cargando...</p>;
     if (error) return <p>Error al cargar los datos</p>;
-
     // * data example
     const files = [
         { name: "config.json", extension: "json", size: "2.3 KB" },
@@ -152,8 +156,8 @@ const UserPage = () => {
         { name: "types.d.ts", extension: "ts", size: "567 B" },
     ];
     return (
-        <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
-            <div className="grid grid-cols-2 gap-4 mb-4">
+        <>{/* div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700" */}
+            <div className="grid grid-cols-1 gap-4 mb-4 lg:grid-cols-2">
                 <Box height="6rem">
                     <ReportInputs
                         filterType={filterType}
@@ -175,6 +179,68 @@ const UserPage = () => {
             >
                 <section className="flex flex-col lg:flex-row gap-4 mt-3">
                     <Box>
+                        <section className="flex justify-between items-center p-2">
+                            <span>
+                                <Select
+                                    placeholder="Selecciona consulta"
+                                    selectionMode="single"
+                                    onChange={handleSelectionChange}
+                                    selectedKeys={[Keys]}
+                                    className="w-40"
+                                    items={[
+                                        { value: "get-compras", label: "Compras" },
+                                        { value: "get-ventas", label: "Ventas" },
+                                        { value: "get-mermas", label: "Mermas" },
+                                        { value: "get-movimientos", label: "Movimientos" },
+                                    ]}
+                                >
+                                    {(item) => <SelectItem key={item.value}>{item.label}</SelectItem>}
+                                </Select>
+                            </span>
+
+                            <div className="flex gap-2">
+                                <Select
+                                    placeholder="Selecciona tipo de grafica"
+                                    selectionMode="single"
+                                    onChange={handleSelectionChange}
+                                    selectedKeys={[Keys]}
+                                    className="w-40"
+                                    startContent={<ChartCandlestick />}
+                                    items={[
+                                        {
+                                            value: "get-compras",
+                                            label: "Area",
+                                            icon: <ChartCandlestick className="w-6 h-6" />,
+                                        },
+                                        {
+                                            value: "get-ventas",
+                                            label: "Barras",
+                                            icon: <ChartBar className="w-6 h-6" />,
+                                        },
+                                        {
+                                            value: "get-mermas",
+                                            label: "Pastel",
+                                            icon: <ChartPie className="w-6 h-6" />,
+                                        },
+                                        {
+                                            value: "get-movimientos",
+                                            label: "Lineas",
+                                            icon: <ChartLine className="w-6 h-6" />,
+                                        },
+                                    ]}
+                                >
+                                    {(item) => (
+                                        <SelectItem key={item.value} startContent={item.icon}>
+                                            {item.label}
+                                        </SelectItem>
+                                    )}
+                                </Select>
+                                <Button color="secondary" variant="shadow">
+                                    Ver <Eye />
+                                </Button>
+                            </div>
+                        </section>
+
                         <ReportTable
                             isLoaded={isLoading}
                             columns={columns}
@@ -192,7 +258,7 @@ const UserPage = () => {
                     </Box>
                 </section>
             </DndContext>
-        </div>
+        </>
     );
 };
 export default UserPage;

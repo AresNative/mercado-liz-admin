@@ -1,7 +1,7 @@
 import { Button } from "@nextui-org/react";
 
 const PaginationTable = ({currentPage, itemsPerPage, totalRecords, handlePageChange}) => {    
-    return (<div className="flex justify-between items-center mt-4">
+    return (<div className="flex justify-between items-center mt-2">
                 <span>
                     Mostrando {(currentPage - 1) * itemsPerPage + 1} -{" "}
                     {Math.min(currentPage * itemsPerPage, totalRecords)} de{" "}

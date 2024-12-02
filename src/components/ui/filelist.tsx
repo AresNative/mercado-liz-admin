@@ -8,12 +8,13 @@ interface File {
   extension: string;
   size?: string;
   modified?: string;
+  url?: string;
 }
 interface FileListProps {
   files: File[];
 }
 
-export function FileList({ files }: FileListProps) {
+export default function FileList({ files }: FileListProps) {
   return (
     <div className="w-full">
       <div className="flex gap-3 overflow-x-scroll">
@@ -21,7 +22,7 @@ export function FileList({ files }: FileListProps) {
           <div
             key={index}
             className={` bg-white dark:bg-black min-w-28 ${cn(
-              "group relative p-4 rounded-lg border border-border/50",
+              "group relative p-2 rounded-lg border border-border/50",
               "hover:border-primary/50 hover:shadow-lg transition-all duration-200",
               "bg-card/50 backdrop-blur-sm"
             )}`}

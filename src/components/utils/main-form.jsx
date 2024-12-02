@@ -100,7 +100,7 @@ export const MainForm = ({ message_button, dataForm, actionType }) => {
       ))}
       <Button
         type="submit"
-        disabled={loading}
+        isLoading={loading}
         aria-label="boton formulario dinamico"
       >
         {loading ? "Loading..." : message_button}
