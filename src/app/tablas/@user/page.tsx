@@ -17,7 +17,7 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { Button, Select, SelectItem } from "@nextui-org/react";
-import { ChartBar, ChartCandlestick, ChartLine, ChartPie, Eye, HeartIcon } from "lucide-react";
+import { ChartBar, ChartCandlestick, ChartLine, ChartPie, Eye } from "lucide-react";
 import { useEffect, useState } from "react";
 const UserPage = () => {
     const [Keys, selectedKeys] = useState<string>("get-ventas")
