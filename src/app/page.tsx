@@ -5,7 +5,7 @@ import { Button, Input, Tabs, Tab } from '@nextui-org/react';
 import { Eye, EyeOff, LogIn, UserRoundPlus } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
+  const [activeTab, setActiveTab] = useState<any>();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -59,7 +59,8 @@ const LoginPage: React.FC = () => {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-md bg-gray-200 p-6 rounded-lg shadow-md flex flex-col gap-4">
-        <Tabs selectedKey={activeTab} onSelectionChange={setActiveTab} variant="solid">
+        <Tabs
+          aria-label="Options" key="login" onSelectionChange={setActiveTab} variant="solid">
           <Tab key="login" title={
             <div className="flex items-center space-x-2">
               <LogIn />
