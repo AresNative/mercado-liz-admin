@@ -3,9 +3,12 @@ function ReportInputs({
   filterType,
   setStartDate,
   setEndDate,
+  keys,
   handleFilterTypeChange,
   handleFilterChange,
 }) {
+  console.log(keys);
+  
   return (
    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
       <div className="flex col-span-2 gap-2">
@@ -30,17 +33,21 @@ function ReportInputs({
         />
       </div>
 
-      <DatePicker
-        placeholder="Fecha de inicio"
-        onChange={setStartDate}
-        className="w-full"
-      />
+      {["get-compras", "get-ventas"].includes(keys) && (
+        <>
+          <DatePicker
+            placeholder="Fecha de inicio"
+            onChange={setStartDate}
+            className="w-full"
+          />
+          <DatePicker
+            placeholder="Fecha de fin"
+            onChange={setEndDate}
+            className="w-full"
+          />
+        </>
+      )}
 
-      <DatePicker
-        placeholder="Fecha de fin"
-        onChange={setEndDate}
-        className="w-full"
-      />
     </div>
   );
 }

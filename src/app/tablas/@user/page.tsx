@@ -172,6 +172,7 @@ const UserPage = () => {
                             filterType={filterType}
                             setStartDate={setStartDate}
                             setEndDate={setEndDate}
+                            keys={Keys}
                             handleFilterTypeChange={handleFilterTypeChange}
                             handleFilterChange={handleFilterChange}
                         />
