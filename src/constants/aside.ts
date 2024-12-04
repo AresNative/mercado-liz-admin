@@ -56,7 +56,7 @@ export const navItems = [
 
 export const storeItems = [
   { icon: Store, label: "Mapa de tienda", href: "#" },
-  { icon: FolderArchive, label: "Archivo muerto", href: "#" },
+  { icon: FolderArchive, label: "Archivo muerto", href: "archivo-muerto" },
   { icon: Truck, label: "Envios", href: "#" },
   { icon: ScanBarcode, label: "Productos", href: "#" },
   { icon: ScanText, label: "Listas", href: "#" },

@@ -12,18 +12,24 @@ interface File {
 }
 interface FileListProps {
   files: File[];
+  isGrid?: boolean; // Nueva propiedad para definir el tipo de disposición
 }
 
-export default function FileList({ files }: FileListProps) {
+export default function FileList({ files, isGrid = false }: FileListProps) {
   return (
     <div className="w-full">
-      <div className="flex gap-3 overflow-x-scroll">
+      <div
+        className={cn(
+          "gap-3",
+          isGrid ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5" : "flex overflow-x-scroll"
+        )}
+      >
         {files.map((file, index) => (
           <div
             key={index}
-            className={` bg-gray-100 cursor-pointer dark:bg-gray-800 min-w-28 ${cn(
+            className={`bg-gray-100 cursor-pointer dark:bg-gray-800 min-w-28 ${cn(
               "group relative p-2 rounded-lg border dark:border-gray-900 border-border/50",
-              "hover:border-secondary/50 dark:hover:border-secondary/50  hover:shadow-lg transition-all duration-200",
+              "hover:border-secondary/50 dark:hover:border-secondary/50 hover:shadow-lg transition-all duration-200",
               "bg-card/50 backdrop-blur-sm"
             )}`}
           >

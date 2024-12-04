@@ -13,7 +13,7 @@ const DashboardLayout = async ({
             <main className='w-full'>
                 <Navbar />
                 {/* Muestra el contenido según el rol o un mensaje por defecto */}
-                <section className='p-2 pt-20 md:ml-64'>
+                <section className='p-2 pt-20 md:ml-24'>
                     {children}
                 </section>
             </main>
