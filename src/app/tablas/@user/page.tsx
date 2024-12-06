@@ -18,7 +18,7 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { Button, ButtonGroup, Select, SelectItem } from "@nextui-org/react";
-import { ChartBar, ChartCandlestick, ChartLine, ChartPie, CloudUpload, Eye, FileChartColumn, FileText } from "lucide-react";
+import { ChartBar, ChartCandlestick, ChartLine, ChartPie, CloudUpload, Eye, FileChartColumn, FileText, RotateCw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 const UserPage = () => {
     const fileInputRef: any = useRef(null);
@@ -176,28 +176,34 @@ const UserPage = () => {
                             handleFilterTypeChange={handleFilterTypeChange}
                             handleFilterChange={handleFilterChange}
                         />
-                        <ButtonGroup className="flex m-2">
-                            <Button
-                                onClick={() => {
-                                    exportToExcel(previewData)
-                                }}>
-                                Exel <FileChartColumn
-                                    className="stroke-green-500" />
+                        <section className="flex m-2 gap-2">
+                            <ButtonGroup>
+                                <Button
+                                    onClick={() => {
+                                        exportToExcel(previewData)
+                                    }}>
+                                    Exel <FileChartColumn
+                                        className="stroke-green-500" />
+                                </Button>
+                                {/* ///////////////// */}
+                                <Button
+                                    onClick={() => {
+                                        exportToPDF(headers, previewData)
+                                    }}>
+                                    PDF <FileText
+                                        className="stroke-red-500" />
+                                </Button>
+                                {/* ///////////////// */}
+                                <Button onClick={handleButtonClick}>
+                                    Subir archivo <CloudUpload
+                                        className="stroke-purple-500" />
+                                </Button>
+                            </ButtonGroup>
+
+                            <Button isIconOnly color="secondary" variant="faded" aria-label="Take a photo">
+                                <RotateCw />
                             </Button>
-                            {/* ///////////////// */}
-                            <Button
-                                onClick={() => {
-                                    exportToPDF(headers, previewData)
-                                }}>
-                                PDF <FileText
-                                    className="stroke-red-500" />
-                            </Button>
-                            {/* ///////////////// */}
-                            <Button onClick={handleButtonClick}>
-                                Subir archivo <CloudUpload
-                                    className="stroke-purple-500" />
-                            </Button>
-                        </ButtonGroup>
+                        </section>
                         <input
                             ref={fileInputRef}
                             type="file"

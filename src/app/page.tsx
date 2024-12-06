@@ -21,7 +21,6 @@ const LoginPage: React.FC = () => {
 
   const handleAuth = async () => {
     const expires = `expires=${getCookieExpiration()}`;
-
     // Simulación de autenticación
     if (email === 'admin@example.com' && password === 'admin123') {
       // Set cookies para autenticación con expiración
