@@ -6,7 +6,7 @@ import FileList from "@/components/ui/filelist";
 import PaginationTable from "@/components/ui/table/pagination";
 import ReportTable from "@/components/ui/table/report-table";
 import Box from "@/components/ui/template/box";
-import { useQueryByType } from "@/hooks/load-data";
+import { useQueryByType, useAutocompleteByType, useGlosarioByType } from "@/hooks/load-data";
 import { Filter } from "@/interfaces/tables";
 import {
     DndContext,
@@ -28,7 +28,6 @@ const UserPage = () => {
     const [totalRecords, setTotalRecords] = useState(0);
     const itemsPerPage = 13;
     const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        console.log(e.target.value);
         setCurrentPage(() => { return 1 });
         selectedKeys(e.target.value);
     };
@@ -69,10 +68,19 @@ const UserPage = () => {
     console.log(startDate, endDate);
 
     ////////
-    // ? consulta de datos
-    const { data, isLoading, error } = useQueryByType(
+    // ? consultas de datos
+    const { data, isLoading, error, refetch } = useQueryByType(
         Keys,
         buildQueryString
+    );
+
+    const { dataAutocoplete, isLoadingAutocoplete, errorAutocoplete } = useAutocompleteByType(
+        Keys,
+        buildQueryString
+    );
+
+    const { dataGlosario, isLoadingGlosario, errorGlosario } = useGlosarioByType(
+        Keys
     );
 
     useEffect(() => {
@@ -175,6 +183,7 @@ const UserPage = () => {
                             keys={Keys}
                             handleFilterTypeChange={handleFilterTypeChange}
                             handleFilterChange={handleFilterChange}
+                            Options={dataAutocoplete}
                         />
                         <section className="flex m-2 gap-2">
                             <ButtonGroup>
@@ -200,7 +209,7 @@ const UserPage = () => {
                                 </Button>
                             </ButtonGroup>
 
-                            <Button isIconOnly color="secondary" variant="faded" aria-label="Take a photo">
+                            <Button isIconOnly color="secondary" onClick={refetch} variant="faded" aria-label="Take a photo">
                                 <RotateCw />
                             </Button>
                         </section>

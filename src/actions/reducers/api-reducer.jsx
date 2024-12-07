@@ -76,6 +76,19 @@ export const api = createApi({
       }),
     }),
 
+    getAutocompletarCompras: builder.query({
+      query: (params) => `filtros/autocompletar-compras?${params}`,
+    }),
+    getAutocompletarVentas: builder.query({
+      query: (params) => `filtros/autocompletar-ventas?${params}`,
+    }),
+
+    getGlosarioCompras: builder.query({
+      query: (params) => `filtros/glosario-compras?${params}`,
+    }),
+    getGlosarioVentas: builder.query({
+      query: (params) => `filtros/glosario-ventas?${params}`,
+    }),
     /* 
     ? Formato de update ↡
     putEditUser: builder.mutation({
@@ -108,4 +121,10 @@ export const {
   usePostProjectsMutation,
   usePostSprintsMutation,
   usePostTasksMutation,
+
+  useGetAutocompletarComprasQuery,
+  useGetAutocompletarVentasQuery,
+
+  useGetGlosarioComprasQuery,
+  useGetGlosarioVentasQuery,
 } = api;
