@@ -3,8 +3,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Input, Tabs, Tab } from '@nextui-org/react';
 import { Eye, EyeOff, LogIn, UserRoundPlus } from 'lucide-react';
+import { useAppDispatch } from '@/store/selector';
+import { openAlertReducer } from '@/reducers/alert-reducer';
+import Providers from '@/hooks/providers';
 
-const LoginPage: React.FC = () => {
+const LoginPage = () => {
   const [activeTab, setActiveTab] = useState<any>();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -20,6 +23,7 @@ const LoginPage: React.FC = () => {
   };
 
   const handleAuth = async () => {
+    const dispatch = useAppDispatch();
     const expires = `expires=${getCookieExpiration()}`;
     // Simulación de autenticación
     if (email === 'admin@example.com' && password === 'admin123') {
@@ -32,7 +36,12 @@ const LoginPage: React.FC = () => {
       document.cookie = `user-role=user; ${expires}; path=/; SameSite=Lax`;
       router.push('/dashboard');
     } else {
-      alert('Credenciales inválidas');
+      dispatch(
+        openAlertReducer({
+          message: "Credenciales incorrectas",
+          type: "info", //? "info" |  "success" | "warning" | "error"
+        })
+      );
     }
   };
 
@@ -57,67 +66,70 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-md bg-gray-200 p-6 rounded-lg shadow-md flex flex-col gap-4">
-        <Tabs
-          aria-label="Options" key="login" onSelectionChange={setActiveTab} variant="solid">
-          <Tab key="login" title={
-            <div className="flex items-center space-x-2">
-              <LogIn />
-              <span>Iniciar sesion</span>
-            </div>
-          } />
-          <Tab key="register" title={
-            <div className="flex items-center space-x-2">
-              <UserRoundPlus />
-              <span>Registrar</span>
-            </div>
-          } />
-        </Tabs>
-        <Input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <Input
-          type={isVisible ? 'text' : 'password'}
-          placeholder="Password"
-          value={password}
-          onChange={(e) => handlePasswordChange(e.target.value)}
-          endContent={
-            <button
-              className="focus:outline-none"
-              type="button"
-              onClick={toggleVisibility}
-              aria-label="toggle password visibility"
-            >
-              {isVisible ? (
-                <EyeOff className="text-2xl text-default-400 pointer-events-none" />
-              ) : (
-                <Eye className="text-2xl text-default-400 pointer-events-none" />
-              )}
-            </button>
-          }
-        />
-        {activeTab === 'register' && passwordErrors.length > 0 && (
-          <ul className="text-sm text-red-500 list-disc ml-5">
-            {passwordErrors.map((error, index) => (
-              <li key={index}>{error}</li>
-            ))}
-          </ul>
-        )}
-        {activeTab === 'register' && (
+
+      <Providers>
+        <div className="w-full max-w-md bg-gray-200 p-6 rounded-lg shadow-md flex flex-col gap-4">
+          <Tabs
+            aria-label="Options" key="login" onSelectionChange={setActiveTab} variant="solid">
+            <Tab key="login" title={
+              <div className="flex items-center space-x-2">
+                <LogIn />
+                <span>Iniciar sesion</span>
+              </div>
+            } />
+            <Tab key="register" title={
+              <div className="flex items-center space-x-2">
+                <UserRoundPlus />
+                <span>Registrar</span>
+              </div>
+            } />
+          </Tabs>
           <Input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
-        )}
-        <Button onClick={handleAuth} color="secondary">
-          {activeTab === 'login' ? 'Login' : 'Register'}
-        </Button>
-      </div>
+          <Input
+            type={isVisible ? 'text' : 'password'}
+            placeholder="Password"
+            value={password}
+            onChange={(e) => handlePasswordChange(e.target.value)}
+            endContent={
+              <button
+                className="focus:outline-none"
+                type="button"
+                onClick={toggleVisibility}
+                aria-label="toggle password visibility"
+              >
+                {isVisible ? (
+                  <EyeOff className="text-2xl text-default-400 pointer-events-none" />
+                ) : (
+                  <Eye className="text-2xl text-default-400 pointer-events-none" />
+                )}
+              </button>
+            }
+          />
+          {activeTab === 'register' && passwordErrors.length > 0 && (
+            <ul className="text-sm text-red-500 list-disc ml-5">
+              {passwordErrors.map((error, index) => (
+                <li key={index}>{error}</li>
+              ))}
+            </ul>
+          )}
+          {activeTab === 'register' && (
+            <Input
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          )}
+          <Button onClick={handleAuth} color="secondary">
+            {activeTab === 'login' ? 'Login' : 'Register'}
+          </Button>
+        </div>
+      </Providers>
     </div>
   );
 };

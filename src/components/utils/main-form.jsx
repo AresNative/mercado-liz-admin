@@ -17,10 +17,10 @@ import { OptionMultiple } from "./components/optionmultiple";
 import { Button } from "@nextui-org/react";
 import { MultipleParagraphInput } from "./components/dinamic-inputs";
 
-import { usePostProjectsMutation, usePostSprintsMutation, usePostTasksMutation } from "@/actions/reducers/api-reducer";
-import { useAppDispatch } from "@/actions/selector";
-import { openAlertReducer } from "@/actions/reducers/alert-reducer";
-import { closeModal } from "@/actions/reducers/modal-reducer";
+import { usePostProjectsMutation, usePostSprintsMutation, usePostTasksMutation } from "@/reducers/api-reducer";
+import { useAppDispatch } from "@/store/selector";
+import { openAlertReducer } from "@/reducers/alert-reducer";
+import { closeModal } from "@/reducers/modal-reducer";
 import { DateRangeInput } from "./components/date-range";
 
 export const MainForm = ({ message_button, dataForm, actionType }) => {
