@@ -1,0 +1,35 @@
+[
+  {
+    "id": 0,
+    "type": "INPUT",
+    "name": "email",
+    "placeholder": "Email",
+    "require": true
+  },
+  {
+    "id": 1,
+    "type": "PASSWORD",
+    "name": "password",
+    "placeholder": "Password",
+    "require": true
+  },
+  {
+    "id": 2,
+    "type": "CHECKBOX",
+    "options": ["Recordar usuario"],
+    "name": "terms",
+    "placeholder": "Términos",
+    "require": true
+  },
+  {
+    "id": 3,
+    "type":"DIVIDER"
+  },
+  {
+    "id": 4,
+    "type": "LINK",
+    "placeholder": "Recuperar contraseña",
+    "href": "#",
+    "isExternal":false
+  }
+]

@@ -1,0 +1,24 @@
+[
+    {
+    "id": 4,
+    "type": "SELECT",
+    "options": [
+      {
+        "value": "admin",
+        "label": "Admin"
+      },
+      {
+        "value": "contable",
+        "label": "Contable"
+      },
+      {
+        "value": "user",
+        "label": "User"
+      }
+    ],
+    "name": "role",
+    "placeholder": "Rol de usuario",
+    "require": true,
+    "multi": false
+  }
+]

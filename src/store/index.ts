@@ -3,6 +3,7 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 
 import { api } from "@/reducers/api-reducer";
 import { authApi } from "@/reducers/auth-reducer";
+import { EnvConfig } from "@/constants/env.config";
 
 import modalReducer from "@/reducers/modal-reducer";
 import confirmReducer from "@/reducers/confirm-data";
@@ -12,8 +13,7 @@ import searchReducer from "@/reducers/search-reducer";
 import cuestionReducer from "@/reducers/cuestion-reducer";
 import alertReducer from "@/reducers/alert-reducer";
 
-const model = process.env.NODE_ENV;
-
+const config = EnvConfig();
 export const store = configureStore({
   reducer: {
     modal: modalReducer,
@@ -26,7 +26,7 @@ export const store = configureStore({
     [api.reducerPath]: api.reducer,
     [authApi.reducerPath]: authApi.reducer,
   },
-  devTools: model !== "production",
+  devTools: config.mode !== "production",
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({}).concat([api.middleware, authApi.middleware]),
 });

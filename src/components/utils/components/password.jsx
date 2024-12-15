@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Input } from "@nextui-org/react";
+import { Input, Tooltip } from "@nextui-org/react";
+import { Eye, EyeOff } from "lucide-react";
 
 export function Password(props) {
   const { cuestion } = props;
@@ -26,15 +27,25 @@ export function Password(props) {
         {...props.register(cuestion.name, {
           required: cuestion.require && "The field is required.",
         })}
+        endContent={
+          <Tooltip className="capitalize" color="secondary" content={`${showPassword ? 'ocultar' : 'ver'} ${cuestion.placeholder}`}>
+            
+            <button
+              className="focus:outline-none"
+              type="button"
+              onClick={togglePasswordVisibility}
+              aria-label="toggle password visibility"
+            >
+              {showPassword ? (
+                <EyeOff className="text-2xl text-default-400 pointer-events-none" />
+              ) : (
+                <Eye className="text-2xl text-default-400 pointer-events-none" />
+              )}
+            </button>
+            </Tooltip>
+          }
         clearable
       />
-      <button
-        type="button"
-        onClick={togglePasswordVisibility}
-        className="text-sm text-blue-500"
-      >
-        {showPassword ? "Hide" : "Show"}
-      </button>
     </div>
   );
 }

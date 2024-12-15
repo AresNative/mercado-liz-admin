@@ -1,22 +1,24 @@
 "use client";
+import { EnvConfig } from "@/constants/env.config";
 import { getLocalStorageItem } from "@/hooks/localStorage";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+const config = EnvConfig();
 export const getUserData = () => getLocalStorageItem("user_data");
 
 export const api = createApi({
   reducerPath: "api", // ?Nombre del reducer
   refetchOnFocus: true,
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL,
-    prepareHeaders: (headers, { /* getState */ }) => {
+    baseUrl: config.api,
+    prepareHeaders: (headers, { getState }) => {
       // *Preparacion de headers
       headers.set("Content-Type", "application/json");
-      //const state = getState();
-      //const token = state.authReducer.user || getLocalStorageItem("token");
-      /* if (token) {
+      const state = getState();
+      const token = state.authReducer.user || getLocalStorageItem("token");
+      if (token) {
         headers.set("Authorization", `Bearer ${token}`);
-      } */
+      }
       return headers;
     },
   }),

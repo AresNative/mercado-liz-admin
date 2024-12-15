@@ -1,0 +1,31 @@
+[
+  {
+    "id": 0,
+    "type": "INPUT",
+    "name": "email",
+    "placeholder": "Email",
+    "require": true
+  },
+  {
+    "id": 1,
+    "type": "PASSWORD",
+    "name": "password",
+    "placeholder": "Password",
+    "require": true
+  },
+  {
+    "id": 2,
+    "type": "PASSWORD",
+    "name": "confirmPassword",
+    "placeholder": "Confirm Password",
+    "require": true
+  },
+  {
+    "id": 3,
+    "type": "CHECKBOX",
+    "options": ["Acepto términos y condiciones"],
+    "name": "terms",
+    "placeholder": "Términos",
+    "require": true
+  }  
+]
