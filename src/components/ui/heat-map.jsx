@@ -30,7 +30,7 @@ export const HeatmapMultiColor  = ({ data }) => {
   return <Chart options={chartOptions} series={data} type="heatmap" height={350} />;
 };
 
-export const HeatmapSingleColor = ({ data, height }) => {
+export const HeatmapSingleColor = ({ data, height = null | Number }) => {
    const chartOptions = {
     chart: {
       height: 350,

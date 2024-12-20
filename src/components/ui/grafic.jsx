@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 // Carga dinámica de ApexCharts para evitar problemas en el servidor de Next.js
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const DynamicChart = ({ type, categories, data, height }) => {
+const DynamicChart = ({ type, categories, data, height = null | Number }) => {
   // Configuración común para los gráficos
   const chartOptions = type === "pie" ? {
   chart: { type: "pie" },

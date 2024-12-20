@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import DynamicChart from "@/components/ui/grafic";
 import TreemapChart from "@/components/ui/Treemap";
-import { HeatmapMultiColor, HeatmapSingleColor } from "@/components/ui/heat-map";
+import { HeatmapSingleColor } from "@/components/ui/heat-map";
 import { Filter, RotateCw } from "lucide-react";
 import { Button, DateRangePicker, Select, SelectItem } from "@nextui-org/react";
 import { useGetHistorialComprasQuery } from "@/actions/reducers/api-reducer";
@@ -102,16 +102,15 @@ function RenderChart({ type, barData, heatmapData, treemapData }: RenderChartPro
 
     switch (type) {
         case "treemap":
-            return <TreemapChart data={treemapData} height={""} />;
+            return <TreemapChart data={treemapData} />;
         case "heatmap-single":
-            return <HeatmapSingleColor data={heatmapData} height={""} />;
+            return <HeatmapSingleColor data={heatmapData} />;
         default:
             return (
                 <DynamicChart
                     type="bar"
                     categories={[categories]}
                     data={barData}
-                    height={""}
                 />
             );
     }
