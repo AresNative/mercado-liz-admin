@@ -89,6 +89,10 @@ export const api = createApi({
     getGlosarioVentas: builder.query({
       query: (params) => `filtros/glosario-ventas?${params}`,
     }),
+
+    getHistorialCompras: builder.query({
+      query: () => `estatico/historial-compras`,
+    }),
     /* 
     ? Formato de update ↡
     putEditUser: builder.mutation({
@@ -127,4 +131,6 @@ export const {
 
   useGetGlosarioComprasQuery,
   useGetGlosarioVentasQuery,
+
+  useGetHistorialComprasQuery
 } = api;

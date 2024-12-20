@@ -32,17 +32,17 @@ const UserPage = () => {
         selectedKeys(e.target.value);
     };
     ////////
-    // ? filtros y funcionalidad
+    /// ? filtros y funcionalidad
     const [filter, setFilter] = useState<Filter>({
-        codigo: "",
-        articulo: "",
-        proveedor: "",
-        descripcion: "",
+        Codigo: "",
+        Articulo: "",
+        Proveedor: "",
+        Descripcion1: "",
     });
-    const [filterType, setFilterType] = useState<keyof Filter>("codigo");
+    const [filterType, setFilterType] = useState<keyof Filter>("Codigo");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
-
+    ///?
     const handleFilterTypeChange = (e: any) => {
         setCurrentPage(() => { return 1 });
         setFilterType(e.anchorKey);
@@ -65,23 +65,23 @@ const UserPage = () => {
         });
         return query.toString();
     };
-    console.log(startDate, endDate);
-
     ////////
-    // ? consultas de datos
+    /// ? consultas de datos
     const { data, isLoading, error, refetch } = useQueryByType(
         Keys,
         buildQueryString
     );
 
-    const { dataAutocoplete, isLoadingAutocoplete, errorAutocoplete } = useAutocompleteByType(
+    const { data: autocompleteData, } = useAutocompleteByType(
         Keys,
-        buildQueryString
+        filterType
     );
 
-    const { dataGlosario, isLoadingGlosario, errorGlosario } = useGlosarioByType(
+    const { data: glossaryData } = useGlosarioByType(
         Keys
     );
+
+    console.log(glossaryData);
 
     useEffect(() => {
         if (data?.data) {
@@ -92,7 +92,7 @@ const UserPage = () => {
         }
     }, [data]);
     ////////
-    // ? construccion de la tabla
+    /// ? construccion de la tabla
     const [columns, setColumns] = useState<any[]>([]);
     useEffect(() => {
         if (data?.data?.length) {
@@ -110,7 +110,7 @@ const UserPage = () => {
         }
     };
     ////////
-    // ? configuracion de drag and drop
+    /// ? configuracion de drag and drop
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -129,7 +129,7 @@ const UserPage = () => {
         setDraggedColumn(null);
     };
     ////////
-    // ? configuracion de sorteable (orden alfabetico y numerico)
+    /// ? configuracion de sorteable (orden alfabetico y numerico)
     const [sortConfig, setSortConfig] = useState({
         key: "",
         direction: "asc",
@@ -139,8 +139,8 @@ const UserPage = () => {
             sortConfig.key === columnId && sortConfig.direction === "asc"
                 ? "desc"
                 : "asc";
-        setSortConfig({ key: columnId, direction: newDirection });
 
+        setSortConfig({ key: columnId, direction: newDirection });
         setPreviewData((prevData) =>
             [...prevData].sort((a, b) =>
                 newDirection === "asc"
@@ -153,7 +153,7 @@ const UserPage = () => {
             )
         );
     };
-    // ? estados de consultas
+    /// ? estados de consultas
     if (error) return <p>Error al cargar los datos</p>;
     // * data example
     const files = [
@@ -183,7 +183,7 @@ const UserPage = () => {
                             keys={Keys}
                             handleFilterTypeChange={handleFilterTypeChange}
                             handleFilterChange={handleFilterChange}
-                            Options={dataAutocoplete}
+                            Options={autocompleteData}
                         />
                         <section className="flex m-2 gap-2">
                             <ButtonGroup>

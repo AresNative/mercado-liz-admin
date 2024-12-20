@@ -55,7 +55,6 @@ export const MainForm = ({ message_button, dataForm, actionType }) => {
   }
 
   async function onSubmit(submitData) {
-    console.log(submitData);
     
     setLoading(true);
     const mutationFunction = getMutationFunction(actionType);

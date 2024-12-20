@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 // Carga dinámica de ApexCharts para evitar problemas en el servidor de Next.js
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const TreemapChart = ({data}) => {
+const TreemapChart = ({data, height}) => {
   const chartOptions = {
     chart: {
       height: 350,
@@ -27,7 +27,7 @@ const TreemapChart = ({data}) => {
     },
   };
 
-    return <Chart options={chartOptions} series={data} type="treemap" height={350} />;
+    return <Chart options={chartOptions} series={data} type="treemap" height={height} />;
 };
 
 export default TreemapChart;

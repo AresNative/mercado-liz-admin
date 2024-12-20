@@ -22,7 +22,6 @@ export const exportToPDF = (columns: string[], data: any[]) => {
     unit: "mm",               // Unidad de medida: "mm", "pt", "cm", etc.
     format: "a4",             // Tamaño de página: "a4", "letter", "legal", etc.
   });
-  console.log(columns, data);
   // Mapea los datos con las cabeceras correctas
   const tableData = data.map((row) =>
     columns.map((header) => row[header] || "")
@@ -58,8 +57,7 @@ export const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => 
         const workbook = XLSX.read(data, { type: 'binary' });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        const json = XLSX.utils.sheet_to_json(worksheet);
-        console.log(json);
+        XLSX.utils.sheet_to_json(worksheet);
       }
     };
     reader.readAsBinaryString(file);

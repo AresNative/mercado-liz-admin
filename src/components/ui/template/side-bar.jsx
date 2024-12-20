@@ -52,7 +52,7 @@ export default function SideBar() {
           onClick={toggleSidebar}
           className="fixed top-5 -right-7 mt-4 mb-2 mx-auto p-2 bg-slate-300 rounded-full shadow-lg flex items-center justify-center text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
         >
-          {isSidebarCollapsed ? <ChevronRight /> : <ChevronLeft />}
+          {isSidebarOpen ? <ChevronRight /> : <ChevronLeft />}
         </button>
 
         <ul className="space-y-2 font-medium">

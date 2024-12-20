@@ -61,20 +61,17 @@ export function useQueryByType(
     }
   );
 }
-
 export function useAutocompleteByType(
   selectedQueryType: string,
-  buildQueryString: () => string
+  buildQueryString: string
 ) {
-  const queryString = buildQueryString();
-
   // Llama todos los hooks con skip: true excepto el seleccionado
-  const comprasQuery = useGetAutocompletarComprasQuery(queryString, {
+  const comprasQuery = useGetAutocompletarComprasQuery(buildQueryString, {
     skip: selectedQueryType !== "get-compras",
     refetchOnMountOrArgChange: true,
   });
 
-  const ventasQuery = useGetAutocompletarVentasQuery(queryString, {
+  const ventasQuery = useGetAutocompletarVentasQuery(buildQueryString, {
     skip: selectedQueryType !== "get-ventas",
     refetchOnMountOrArgChange: true,
   });

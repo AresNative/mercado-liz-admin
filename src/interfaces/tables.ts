@@ -1,6 +1,6 @@
 export interface Filter {
-  codigo: string;
-  articulo: string;
-  proveedor: string;
-  descripcion: string;
+  Codigo: string;
+  Articulo: string;
+  Proveedor: string;
+  Descripcion1: string;
 }

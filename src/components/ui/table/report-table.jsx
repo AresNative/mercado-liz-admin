@@ -43,8 +43,7 @@ const [selectedRows, setSelectedRows] = useState([]);
                     type="checkbox"
                     onChange={(e) => {
                       const checked = e.target.checked;
-                      setSelectedRows(checked ? paginatedData.map((_, i) => i) : []);
-                      handleRowSelection(checked ? paginatedData.map((_, i) => i) : []);
+                      setSelectedRows(checked ? paginatedData.map((_) => _.ID) : []);
                     }}
                     checked={selectedRows.length === paginatedData.length && paginatedData.length > 0}
                   />
@@ -72,14 +71,14 @@ const [selectedRows, setSelectedRows] = useState([]);
                   if (e.target.tagName === 'INPUT' && e.target.type === 'checkbox') {
                     return;
                   }
-                  handleRowSelection(row.CompraID);
+                  handleRowSelection(row.ID);
                 }}
               >
                 <td className="px-4 py-2">
                   <input
                     type="checkbox"
-                    checked={selectedRows.includes(row.CompraID)}
-                    onChange={() => handleRowSelection(row.CompraID)}
+                    checked={selectedRows.includes(row.ID)}
+                    onChange={() => handleRowSelection(row.ID)}
                   />
                 </td>
                 {columns.map((column, colIndex) =>
