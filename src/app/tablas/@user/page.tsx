@@ -6,7 +6,7 @@ import FileList from "@/components/ui/filelist";
 import PaginationTable from "@/components/ui/table/pagination";
 import ReportTable from "@/components/ui/table/report-table";
 import Box from "@/components/ui/template/box";
-import { useQueryByType, useAutocompleteByType, useGlosarioByType } from "@/hooks/load-data";
+import { useQueryByType, useAutocompleteByType/* , useGlosarioByType */ } from "@/hooks/load-data";
 import { Filter } from "@/interfaces/tables";
 import {
     DndContext,
@@ -23,6 +23,7 @@ import { useEffect, useRef, useState } from "react";
 const UserPage = () => {
     const fileInputRef: any = useRef(null);
     const [Keys, selectedKeys] = useState<string>("get-ventas")
+    const [filterKeys, selectedFilterKeys] = useState<string>("")
     const [previewData, setPreviewData] = useState<any[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalRecords, setTotalRecords] = useState(0);
@@ -39,7 +40,7 @@ const UserPage = () => {
         Proveedor: "",
         Descripcion1: "",
     });
-    const [filterType, setFilterType] = useState<keyof Filter>("Codigo");
+    const [filterType, setFilterType] = useState<keyof Filter>("Descripcion1");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     ///?
@@ -48,10 +49,10 @@ const UserPage = () => {
         setFilterType(e.anchorKey);
     };
     const handleFilterChange = (e: any) => {
-        const value = e.target.value;
+        selectedFilterKeys(() => e)
         setFilter((prev) => ({
             ...prev,
-            [filterType]: value,
+            [filterType]: e,
         }));
     };
 
@@ -74,14 +75,12 @@ const UserPage = () => {
 
     const { data: autocompleteData, } = useAutocompleteByType(
         Keys,
-        filterType
+        `searchField=A.${filterType}&searchTerm=${filterKeys}`
     );
 
-    const { data: glossaryData } = useGlosarioByType(
+    /* const { data: glossaryData } = useGlosarioByType(
         Keys
-    );
-
-    console.log(glossaryData);
+    ); */
 
     useEffect(() => {
         if (data?.data) {
@@ -172,7 +171,7 @@ const UserPage = () => {
         fileInputRef.current.click();
     };
     return (
-        <>{/* div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700" */}
+        <>
             <div className="grid grid-cols-1 gap-4 mb-4 lg:grid-cols-2">
                 <Box height="6rem">
                     <div className="w-full">

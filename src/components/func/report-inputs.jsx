@@ -8,9 +8,9 @@ function ReportInputs({
   handleFilterChange,
   Options
 }) {
-  console.log(Options);
-  
-   const animals = [];
+  const animals = Options ? Options.data.map((rows) => ({label: rows, key:rows, description:rows})) : []
+   console.log(Options);
+   
   return (
    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
       <div className="flex col-span-2 gap-2">
@@ -18,6 +18,7 @@ function ReportInputs({
           placeholder="Selecciona un tipo de filtro"
           selectionMode="single"
           onSelectionChange={handleFilterTypeChange}
+          defaultSelectedKeys={["Descripcion1"]}
           items={[
             { value: "Codigo", label: "Código" },
             { value: "Articulo", label: "Artículo" },
@@ -29,7 +30,7 @@ function ReportInputs({
         </Select>
         <Autocomplete
           placeholder={`Buscar por ${filterType.charAt(0).toUpperCase() + filterType.slice(1)}`}
-          onChange={handleFilterChange}
+          onInputChange={handleFilterChange}
           className="w-full"
           aria-label={filterType}
         >{animals.length && animals.map((animal) => <AutocompleteItem key={animal.key}>{animal.label}</AutocompleteItem>)}
