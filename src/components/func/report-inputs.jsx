@@ -30,7 +30,7 @@ function ReportInputs({
         </Select>
         <Autocomplete
           placeholder={`Buscar por ${filterType.charAt(0).toUpperCase() + filterType.slice(1)}`}
-          onInputChange={handleFilterChange}
+          onSelectionChange={handleFilterChange}
           className="w-full"
           aria-label={filterType}
         >{animals.length && animals.map((animal) => <AutocompleteItem key={animal.key}>{animal.label}</AutocompleteItem>)}

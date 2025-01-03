@@ -13,10 +13,10 @@ export const api = createApi({
       // *Preparacion de headers
       headers.set("Content-Type", "application/json");
       //const state = getState();
-      //const token = state.authReducer.user || getLocalStorageItem("token");
-      /* if (token) {
+      const token =  getLocalStorageItem("token");
+      if (token) {
         headers.set("Authorization", `Bearer ${token}`);
-      } */
+      }
       return headers;
     },
   }),
@@ -41,6 +41,7 @@ export const api = createApi({
       query: (params) => `reporteria/movimientos?${params}`,
     }),
 
+    /// * scrum
     getProjects: builder.query({
       query: () => `projects`,
     }),
@@ -65,7 +66,7 @@ export const api = createApi({
       query: (data) => ({
         url: `projects/${data.projectId}/sprints`,
         method: "POST",
-        body: data.form,
+        body: data,
       }),
     }),
     postTasks: builder.mutation({
@@ -75,6 +76,40 @@ export const api = createApi({
         body: data,
       }),
     }),
+    postComments: builder.mutation({
+      query: (data) => ({
+        url: `tasks/${data.taskId}/comments`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    putTask: builder.mutation({
+      query: ({ dataForm, idEdit }) => {
+        return {
+          url: `tasks/${idEdit}/assing-user`,
+          method: "PUT",
+          body: dataForm,
+        };
+      },
+    }), 
+    putTaskStatus: builder.mutation({
+      query: (data) => {        
+        return {
+          url: `tasks/${data.taskId}/update-status`,
+          method: "PUT",
+          body: data,
+        };
+      },
+    }), 
+    putTaskOrder: builder.mutation({
+      query: (data) => {
+        return {
+          url: `tasks/${data.taskId}/update-order?order=${data.order}`,
+          method: "PUT",
+        };
+      },
+    }), 
+    /// * scrum
 
     getAutocompletarCompras: builder.query({
       query: (params) => `filtros/autocompletar-compras?${params}`,
@@ -95,15 +130,7 @@ export const api = createApi({
     }),
     /* 
     ? Formato de update ↡
-    putEditUser: builder.mutation({
-      query: ({ dataForm, idEdit }) => {
-        return {
-          url: `Users/Edit/${id}`,
-          method: "PUT",
-          body: dataForm,
-        };
-      },
-    }), 
+    
     */
   }),
 });
@@ -121,10 +148,13 @@ export const {
   useGetSprintsQuery,
   useGetTasksQuery,
   useGetHsitoryTaskQuery,
-
   usePostProjectsMutation,
   usePostSprintsMutation,
   usePostTasksMutation,
+  usePostCommentsMutation,
+  usePutTaskMutation,
+  usePutTaskStatusMutation,
+  usePutTaskOrderMutation,
 
   useGetAutocompletarComprasQuery,
   useGetAutocompletarVentasQuery,
