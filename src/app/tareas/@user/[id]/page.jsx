@@ -229,10 +229,10 @@ const ScrumBoard = ({ params }) => {
               <span>{task.nombre}</span>
             </li>
             <li>
-              <Button color="secondary" size="sm" variant="ghost" radius="full">{task.prioridad}</Button>
+              <Button color="secondary" size="sm" variant="ghost" radius="full">ver</Button>
             </li>
             <li>
-              <Button color="danger" size="sm" variant="ghost" radius="full">{task.prioridad}</Button>
+              <Button color="danger" size="sm" radius="full">archivar</Button>
             </li>
         </ul>
         <div className="text-sm text-gray-600 truncate">{task.descripcion}</div>
