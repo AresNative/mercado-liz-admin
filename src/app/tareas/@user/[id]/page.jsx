@@ -40,7 +40,6 @@ const ScrumBoard = ({ params }) => {
   const [newTaskName, setNewTaskName] = useState("");
   const [newTaskDescription, setNewTaskDescription] = useState("");
   const [newTaskPriority, setNewTaskPriority] = useState("media");
-  const [activeId, setActiveId] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [overColumn, setOverColumn] = useState(null);
 
@@ -61,13 +60,12 @@ const ScrumBoard = ({ params }) => {
 
   useEffect(() => {
     if (!isEqual(tasksData, tasks)) {
-      setTasks(tasksData);
+      setTasks(tasksData.filter(t => t.estado !== 'eliminado'));      
     }
   }, [tasksData]);
 
   const handleDragStart = (event) => {
     const { active } = event;
-    setActiveId(active.id);
     setActiveTask(tasks.find(task => task.id === active.id));
   };
 
@@ -82,7 +80,6 @@ const ScrumBoard = ({ params }) => {
 
   const handleDragEnd = async (event) => {
     const { active, over } = event;
-    setActiveId(null);
     setActiveTask(null);
     setOverColumn(null);
 
@@ -149,8 +146,7 @@ const ScrumBoard = ({ params }) => {
         taskId: active.id,
         estado: newStatus
       }).unwrap();
-
-      const tasksInNewStatus = tasks.filter(t => t.estado === newStatus);
+       
       const newOrder = 1; // Set the new task to the beginning of the list
 
       await putTaskOrder({
@@ -228,7 +224,17 @@ const ScrumBoard = ({ params }) => {
         {...listeners}
         className="bg-white p-3 mb-2 rounded shadow cursor-move"
       >
-        <div className="font-medium">{task.nombre}</div>
+        <ul className="flex items-center space-x-2 font-medium">
+            <li>
+              <span>{task.nombre}</span>
+            </li>
+            <li>
+              <Button color="secondary" size="sm" variant="ghost" radius="full">{task.prioridad}</Button>
+            </li>
+            <li>
+              <Button color="danger" size="sm" variant="ghost" radius="full">{task.prioridad}</Button>
+            </li>
+        </ul>
         <div className="text-sm text-gray-600 truncate">{task.descripcion}</div>
         <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
           <span className={`px-2 py-1 rounded ${
@@ -283,6 +289,7 @@ const ScrumBoard = ({ params }) => {
             items={filteredTasks.map((t) => t.id)}
             strategy={verticalListSortingStrategy}
           >
+          
             {filteredTasks.map((task) => (
               <SortableTask key={task.id} task={task} />
             ))}
@@ -300,28 +307,27 @@ const ScrumBoard = ({ params }) => {
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Scrum Board</h1>
       
-      <div className="mb-4">
-        <h2 className="text-xl font-semibold mb-2">Sprints</h2>
-        <div className="flex items-center space-x-2 mb-2">
-          <Input
+        <ul className="flex flex-col gap-2 mb-2">
+        <li className="flex items-center space-x-2">
+        <Input
             value={newSprintName}
             onChange={(e) => setNewSprintName(e.target.value)}
             placeholder="Nombre del Sprint"
           />
           <Button onClick={handleAddSprint}>Agregar Sprint</Button>
-        </div>
-        <Select
-          placeholder="Seleccionar Sprint"
-          value={selectedSprint}
-          onChange={(e) => setSelectedSprint(e.target.value)}
-        >
-          {sprintsData.map((sprint) => (
-            <SelectItem key={sprint.id} value={sprint.id}>
-              {sprint.nombre}
-            </SelectItem>
-          ))}
-        </Select>
-      </div>
+        </li>
+          <Select
+            placeholder="Seleccionar Sprint"
+            value={selectedSprint}
+            onChange={(e) => setSelectedSprint(e.target.value)}
+          >
+            {sprintsData.map((sprint) => (
+              <SelectItem key={sprint.id} value={sprint.id}>
+                {sprint.nombre}
+              </SelectItem>
+            ))}
+          </Select>
+        </ul>
 
       {selectedSprint && (
         <Card className="mb-4">
