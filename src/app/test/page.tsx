@@ -4,8 +4,6 @@ import { useQueryByType, useAutocompleteByType } from "@/hooks/test";
 import { Autocomplete, AutocompleteItem, Pagination, Select, SelectItem } from "@nextui-org/react";
 import { ChartCandlestick } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
-
-// Hook de debounce
 function useDebounce<T>(value: T, delay: number): T {
     const [debouncedValue, setDebouncedValue] = useState(value);
 

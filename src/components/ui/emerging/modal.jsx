@@ -10,6 +10,7 @@ function ModalComponent({
   title,
   message_button,
   functionString,
+  content = null,
 }) {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state) => state.modal.modals[functionString]);
@@ -17,20 +18,26 @@ function ModalComponent({
   const onClose = () => {
     dispatch(closeModal({ modalName: functionString }));
   };
-  
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="z-20 dark:bg-gray-800">
       <ModalContent>
         {() => (
           <>
-            <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
-            <ModalBody>
-              <MainForm
-                message_button={message_button}
-                actionType={functionString}
-                dataForm={FormJson}
-              />
-            </ModalBody>
+            {content ? (
+              content // Si content existe, lo renderiza directamente
+            ) : (
+              <>
+                <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
+                <ModalBody>
+                  <MainForm
+                    message_button={message_button}
+                    actionType={functionString}
+                    dataForm={FormJson}
+                  />
+                </ModalBody>
+              </>
+            )}
           </>
         )}
       </ModalContent>
@@ -38,4 +45,4 @@ function ModalComponent({
   );
 }
 
-export default ModalComponent
+export default ModalComponent;

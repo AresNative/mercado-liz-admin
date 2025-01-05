@@ -64,7 +64,7 @@ export const api = createApi({
     }),
     postSprints: builder.mutation({
       query: (data) => ({
-        url: `projects/${data.projectId}/sprints`,
+        url: `projects/${data.project_id}/sprints`,
         method: "POST",
         body: data,
       }),

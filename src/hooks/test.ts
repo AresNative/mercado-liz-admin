@@ -89,12 +89,10 @@ export function useQueryByType(
   selectedQueryType: string,
   buildQueryString: () => string
 ) {
-  return (
-    useDynamicQuery(selectedQueryType, buildQueryString, "get-compras") ||
-    useDynamicQuery(selectedQueryType, buildQueryString, "get-ventas") ||
-    useDynamicQuery(selectedQueryType, buildQueryString, "get-almacen") ||
-    useDynamicQuery(selectedQueryType, buildQueryString, "get-mermas") ||
-    useDynamicQuery(selectedQueryType, buildQueryString, "get-movimientos")
+  return useDynamicQuery(
+    selectedQueryType,
+    buildQueryString,
+    selectedQueryType
   );
 }
 

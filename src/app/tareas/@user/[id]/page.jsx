@@ -9,28 +9,28 @@ import {
 } from "@dnd-kit/core";
 import {
   SortableContext,
-  useSortable,
   arrayMove,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import {
   useGetSprintsQuery,
   useGetTasksQuery,
+  usePostCommentsMutation,
   usePostSprintsMutation,
   usePostTasksMutation,
   usePutTaskOrderMutation,
   usePutTaskStatusMutation,
 } from "@/actions/reducers/api-reducer";
-import { Button, Card, CardHeader, Select, SelectItem, Input } from "@nextui-org/react";
+import { Button, Card, CardHeader, Select, SelectItem, Input, AvatarGroup, Avatar } from "@nextui-org/react";
 import { isEqual } from "lodash";
+import ModalComponent from "@/components/ui/emerging/modal";
+import SimplifiedDocEditor from "@/components/ux/doc";
+import { SortableTask } from "@/components/ux/scrum/sorteable-tasks";
+import { Column } from "@/components/ux/scrum/col";
 
-const statusColumns = ["pendiente", "proceso", "pruebas", "terminado"];
+export const statusColumns = ["pendiente", "proceso", "pruebas", "terminado"];
   
-const generateRandomColor = () => {
-  const hue = Math.floor(Math.random() * 360);
-  return `hsl(${hue}, 70%, 50%)`;
-};
+
 
 const ScrumBoard = ({ params }) => {
   const { id } = React.use(params);
@@ -43,24 +43,20 @@ const ScrumBoard = ({ params }) => {
   const [activeTask, setActiveTask] = useState(null);
   const [overColumn, setOverColumn] = useState(null);
 
-  const { data: sprintsData = [], isLoading: sprintsLoading } = useGetSprintsQuery(id);
+  const { data: sprintsData = [], isLoading: sprintsLoading, refetch: refetchSprints } = useGetSprintsQuery(id);
   const { data: tasksData = [], isLoading: tasksLoading, refetch: refetchTasks } = useGetTasksQuery(selectedSprint);
 
   const [postSprints] = usePostSprintsMutation();
   const [postTask] = usePostTasksMutation();
   const [putTaskStatus] = usePutTaskStatusMutation();
   const [putTaskOrder] = usePutTaskOrderMutation();
+  const [postComments] = usePostCommentsMutation();
 
-  const columnColors = useMemo(() => {
-    return statusColumns.reduce((acc, status) => {
-      acc[status] = generateRandomColor();
-      return acc;
-    }, {});
-  }, [statusColumns]);
+  
 
   useEffect(() => {
     if (!isEqual(tasksData, tasks)) {
-      setTasks(tasksData.filter(t => t.estado !== 'eliminado'));      
+      setTasks(tasksData.filter(t => t.estado !== 'archivado'));      
     }
   }, [tasksData]);
 
@@ -127,6 +123,9 @@ const ScrumBoard = ({ params }) => {
           } catch (error) {
             console.error('Error updating task order:', error);
           }
+          finally {
+            refetchTasks();
+          }
         }
       }
       return;
@@ -177,6 +176,7 @@ const ScrumBoard = ({ params }) => {
         estado: "nuevo",
         project_id: id
       });
+      refetchSprints();
       setNewSprintName("");
     }
   };
@@ -200,104 +200,8 @@ const ScrumBoard = ({ params }) => {
     }
   };
 
-  const SortableTask = ({ task }) => {
-    const {
-      attributes,
-      listeners,
-      setNodeRef,
-      transform,
-      transition,
-      isDragging,
-    } = useSortable({ id: task.id });
-
-    const style = {
-      transform: CSS.Transform.toString(transform),
-      transition,
-      opacity: isDragging ? 0.5 : 1,
-    };
-
-    return (
-      <div
-        ref={setNodeRef}
-        style={style}
-        {...attributes}
-        {...listeners}
-        className="bg-white p-3 mb-2 rounded shadow cursor-move"
-      >
-        <ul className="flex items-center space-x-2 font-medium">
-            <li>
-              <span>{task.nombre}</span>
-            </li>
-            <li>
-              <Button color="secondary" size="sm" variant="ghost" radius="full">ver</Button>
-            </li>
-            <li>
-              <Button color="danger" size="sm" radius="full">archivar</Button>
-            </li>
-        </ul>
-        <div className="text-sm text-gray-600 truncate">{task.descripcion}</div>
-        <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
-          <span className={`px-2 py-1 rounded ${
-            task.prioridad === 'alta' ? 'bg-red-100 text-red-800' :
-            task.prioridad === 'media' ? 'bg-yellow-100 text-yellow-800' :
-            'bg-green-100 text-green-800'
-          }`}>
-            {task.prioridad || 'N/A'}
-          </span>
-          <span>
-            {task.fecha_vencimiento ? new Date(task.fecha_vencimiento).toLocaleDateString() : 'Sin fecha'}
-          </span>
-        </div>
-      </div>
-    );
-  };
-
-  const Column = ({ status }) => {
-    const { setNodeRef } = useDroppable({
-      id: status,
-    });
-
-    const filteredTasks = tasks
-      .filter((task) => task.estado === status)
-      .sort((a, b) => (a.order || 0) - (b.order || 0));
-
-    const showDropArea = activeTask && activeTask.estado !== status && overColumn === status;
-
-    return (
-      <div 
-        ref={setNodeRef} 
-        className="bg-gray-100 p-4 rounded-lg w-full min-h-[400px]"
-        style={{ borderLeft: `4px solid ${columnColors[status]}` }}
-      >
-        <h3 className="font-bold mb-4 capitalize flex items-center">
-          <span 
-            className="w-3 h-3 rounded-full mr-2" 
-            style={{ backgroundColor: columnColors[status] }}
-          ></span>
-          {status}
-          <span className="ml-2 text-sm text-gray-500">
-            ({filteredTasks.length})
-          </span>
-        </h3>
-        <div className="relative">
-          {showDropArea && (
-            <div className="absolute top-0 left-0 right-0 border-2 border-dashed border-gray-400 rounded-lg p-4 mb-2 bg-gray-200 z-10">
-              <span className="text-gray-600 font-medium">Soltar aquí</span>
-            </div>
-          )}
-          <SortableContext
-            items={filteredTasks.map((t) => t.id)}
-            strategy={verticalListSortingStrategy}
-          >
-          
-            {filteredTasks.map((task) => (
-              <SortableTask key={task.id} task={task} />
-            ))}
-          </SortableContext>
-        </div>
-      </div>
-    );
-  };
+  
+  
 
   if (sprintsLoading || tasksLoading) {
     return <div>Loading...</div>;
@@ -305,7 +209,7 @@ const ScrumBoard = ({ params }) => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Scrum Board</h1>
+      <h1 className="text-2xl font-bold mb-4">Tablero de scrum</h1>
       
         <ul className="flex flex-col gap-2 mb-2">
         <li className="flex items-center space-x-2">
@@ -316,6 +220,7 @@ const ScrumBoard = ({ params }) => {
           />
           <Button onClick={handleAddSprint}>Agregar Sprint</Button>
         </li>
+        <li className="flex items-center space-x-2">
           <Select
             placeholder="Seleccionar Sprint"
             value={selectedSprint}
@@ -327,6 +232,16 @@ const ScrumBoard = ({ params }) => {
               </SelectItem>
             ))}
           </Select>
+          <AvatarGroup isBordered max={3}>
+            <Avatar src="https://i.pravatar.cc/150?u=a042581f4e29026024d" />
+            <Avatar src="https://i.pravatar.cc/150?u=a04258a2462d826712d" />
+            <Avatar src="https://i.pravatar.cc/150?u=a042581f4e29026704d" />
+            <Avatar src="https://i.pravatar.cc/150?u=a04258114e29026302d" />
+            <Avatar src="https://i.pravatar.cc/150?u=a04258114e29026702d" />
+            <Avatar src="https://i.pravatar.cc/150?u=a04258114e29026708c" />
+          </AvatarGroup>
+        </li>
+          
         </ul>
 
       {selectedSprint && (
@@ -366,9 +281,9 @@ const ScrumBoard = ({ params }) => {
               onDragOver={handleDragOver}
               onDragEnd={handleDragEnd}
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="w-full flex gap-4 overflow-auto">
                 {statusColumns.map((status) => (
-                  <Column key={status} status={status} />
+                  <Column key={status} status={status} rows={tasks} activeTask={activeTask} refetchTasks={refetchTasks} overColumn={overColumn} />
                 ))}
               </div>
               <DragOverlay>
@@ -383,6 +298,17 @@ const ScrumBoard = ({ params }) => {
           </section>
         </Card>
       )}
+      
+        <ModalComponent
+                title="Nuevo Proyecto"
+                message_button="Agregar"
+                functionString="add-project"
+        content={
+          <>
+            <SimplifiedDocEditor />
+          </>
+        }
+            />
     </div>
   );
 };
