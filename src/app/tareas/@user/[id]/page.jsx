@@ -1,16 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   DndContext,
   closestCenter,
   DragOverlay,
-  useDroppable,
 } from "@dnd-kit/core";
 import {
-  SortableContext,
   arrayMove,
-  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import {
   useGetSprintsQuery,
@@ -21,16 +18,13 @@ import {
   usePutTaskOrderMutation,
   usePutTaskStatusMutation,
 } from "@/actions/reducers/api-reducer";
-import { Button, Card, CardHeader, Select, SelectItem, Input, AvatarGroup, Avatar } from "@nextui-org/react";
+import { Button,Select, SelectItem, Input, AvatarGroup, Avatar } from "@nextui-org/react";
 import { isEqual } from "lodash";
 import ModalComponent from "@/components/ui/emerging/modal";
 import SimplifiedDocEditor from "@/components/ux/doc";
-import { SortableTask } from "@/components/ux/scrum/sorteable-tasks";
 import { Column } from "@/components/ux/scrum/col";
 
 export const statusColumns = ["pendiente", "proceso", "pruebas", "terminado"];
-  
-
 
 const ScrumBoard = ({ params }) => {
   const { id } = React.use(params);
@@ -51,8 +45,6 @@ const ScrumBoard = ({ params }) => {
   const [putTaskStatus] = usePutTaskStatusMutation();
   const [putTaskOrder] = usePutTaskOrderMutation();
   const [postComments] = usePostCommentsMutation();
-
-  
 
   useEffect(() => {
     if (!isEqual(tasksData, tasks)) {
@@ -200,17 +192,13 @@ const ScrumBoard = ({ params }) => {
     }
   };
 
-  
-  
-
   if (sprintsLoading || tasksLoading) {
     return <div>Loading...</div>;
   }
 
-  return (
+  return (<>
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Tablero de scrum</h1>
-      
         <ul className="flex flex-col gap-2 mb-2">
         <li className="flex items-center space-x-2">
         <Input
@@ -233,33 +221,22 @@ const ScrumBoard = ({ params }) => {
             ))}
           </Select>
           <AvatarGroup isBordered max={3}>
-            <Avatar src="https://i.pravatar.cc/150?u=a042581f4e29026024d" />
-            <Avatar src="https://i.pravatar.cc/150?u=a04258a2462d826712d" />
-            <Avatar src="https://i.pravatar.cc/150?u=a042581f4e29026704d" />
-            <Avatar src="https://i.pravatar.cc/150?u=a04258114e29026302d" />
-            <Avatar src="https://i.pravatar.cc/150?u=a04258114e29026702d" />
-            <Avatar src="https://i.pravatar.cc/150?u=a04258114e29026708c" />
+            {Array.from({ length: 6 }, (_, index) =>(<Avatar key={index} src="https://i.pravatar.cc/150?u=a042581f4e29026024d" />))}
           </AvatarGroup>
         </li>
-          
         </ul>
-
       {selectedSprint && (
-        <Card className="mb-4">
-          <CardHeader>
+        <div className="mb-4">
+          <header>
             <h2 className="text-xl font-semibold">Tareas</h2>
-          </CardHeader>
-          <section className="p-4">
-            <div className="space-y-4 mb-4">
+          </header>
+          <section>
+            <ul className="space-y-4 mb-4">
+              <li className="flex items-center space-x-2">
               <Input
                 value={newTaskName}
                 onChange={(e) => setNewTaskName(e.target.value)}
                 placeholder="Nombre de la tarea"
-              />
-              <Input
-                value={newTaskDescription}
-                onChange={(e) => setNewTaskDescription(e.target.value)}
-                placeholder="Descripción de la tarea"
               />
               <Select
                 placeholder="Prioridad"
@@ -272,9 +249,17 @@ const ScrumBoard = ({ params }) => {
                     ]}
                 >
                     {(item) => <SelectItem key={item.value}>{item.label}</SelectItem>}
-              </Select>
-              <Button onClick={handleAddTask}>Agregar Tarea</Button>
-            </div>
+                </Select>
+              </li>
+              <li className="flex items-center space-x-2">
+              <Input
+                value={newTaskDescription}
+                onChange={(e) => setNewTaskDescription(e.target.value)}
+                placeholder="Descripción de la tarea"
+              />
+                <Button onClick={handleAddTask}>Agregar Tarea</Button>
+              </li>
+            </ul>
             <DndContext
               collisionDetection={closestCenter}
               onDragStart={handleDragStart}
@@ -296,22 +281,18 @@ const ScrumBoard = ({ params }) => {
               </DragOverlay>
             </DndContext>
           </section>
-        </Card>
+        </div>
       )}
-      
-        <ModalComponent
+        
+    </div>
+  <ModalComponent
                 title="Nuevo Proyecto"
                 message_button="Agregar"
                 functionString="add-project"
-        content={
-          <>
-            <SimplifiedDocEditor />
-          </>
-        }
+                content={<SimplifiedDocEditor />}
             />
-    </div>
+  </>
   );
 };
 
 export default ScrumBoard;
-

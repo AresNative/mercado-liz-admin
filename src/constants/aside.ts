@@ -47,7 +47,12 @@ export const menuItems = [
   },
   { icon: UsersRound, label: "Usuarios", href: "/usuarios" },
 ];
-
+// Lista de ítems principales
+export const badgeItems = [
+  { text: "Sprint 3", color: "purple" },
+  { text: "Backend", color: "fuchsia" },
+  { text: "In Progress", color: "indigo" },
+];
 // Lista de ítems principales
 export const navItems = [
   { icon: Settings, label: "Ajustes", href: "#" },

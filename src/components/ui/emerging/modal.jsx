@@ -20,16 +20,27 @@ function ModalComponent({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="z-20 dark:bg-gray-800">
-      <ModalContent>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      aria-labelledby="modal-title"
+      size="lg"
+      backdrop="blur"
+      scrollBehavior="inside"
+    >
+      <ModalContent className="rounded-lg shadow-lg bg-white dark:bg-gray-800">
         {() => (
           <>
             {content ? (
-              content // Si content existe, lo renderiza directamente
+              <>
+                <ModalBody className="h-full text-gray-800 dark:text-white">{content}</ModalBody>
+              </>
             ) : (
               <>
-                <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
-                <ModalBody>
+                <ModalHeader className="flex flex-col gap-2 text-xl font-semibold text-gray-900 dark:text-white">
+                  {title}
+                </ModalHeader>
+                <ModalBody className="py-6">
                   <MainForm
                     message_button={message_button}
                     actionType={functionString}

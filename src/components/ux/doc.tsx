@@ -1,100 +1,121 @@
-"use client"
+import { badgeItems } from "@/constants/aside"
+import { Avatar } from "@nextui-org/react"
+import { Badge } from "@nextui-org/react"
+import { Button } from "@nextui-org/react"
+import { GitPullRequest, MessageSquare } from "lucide-react"
+import { BadgeText } from "../ui/item"
 
-import React, { useState } from 'react'
-import { Button, Textarea } from "@nextui-org/react"
-import { Bold, Italic, List, ListOrdered } from 'lucide-react'
-
-// Componente para las opciones de modificado de texto
-const TextOptions = ({ onFormat }: { onFormat: (format: string) => void }) => {
-    return (
-        <div className="flex items-center space-x-2 mb-4">
-            <Button
-                isIconOnly
-                variant="light"
-                onClick={() => onFormat('bold')}
-            >
-                <Bold className="h-4 w-4" />
-            </Button>
-            <Button
-                isIconOnly
-                variant="light"
-                onClick={() => onFormat('italic')}
-            >
-                <Italic className="h-4 w-4" />
-            </Button>
-            <Button
-                isIconOnly
-                variant="light"
-                onClick={() => onFormat('bulletList')}
-            >
-                <List className="h-4 w-4" />
-            </Button>
-            <Button
-                isIconOnly
-                variant="light"
-                onClick={() => onFormat('orderedList')}
-            >
-                <ListOrdered className="h-4 w-4" />
-            </Button>
-        </div>
-    )
-}
-
-// Función para aplicar formato al texto
-const applyFormat = (text: string, format: string): string => {
-    switch (format) {
-        case 'bold':
-            return `<strong>${text}</strong>`
-        case 'italic':
-            return `<em>${text}</em>`
-        case 'bulletList':
-            return `<ul><li>${text}</li></ul>`
-        case 'orderedList':
-            return `<ol><li>${text}</li></ol>`
-        default:
-            return text
-    }
-}
-
-// Componente principal que combina las opciones de texto, el área de texto y la vista previa
 export default function SimplifiedDocEditor() {
-    const [content, setContent] = useState('')
-
-    const handleFormat = (format: string) => {
-        const selection = window.getSelection()
-        if (selection && selection.rangeCount > 0) {
-            const range = selection.getRangeAt(0)
-            const selectedText = range.toString()
-            const formattedText = applyFormat(selectedText, format)
-            const newContent = content.substring(0, range.startOffset) + formattedText + content.substring(range.endOffset)
-            setContent(newContent)
-        }
-    }
 
     return (
-        <div className="w-full max-w-6xl mx-auto p-4">
-            <TextOptions onFormat={handleFormat} />
-            <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                    <h2 className="text-lg font-semibold mb-2">Editor</h2>
-                    <Textarea
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        placeholder="Start typing your document here..."
-                        minRows={15}
-                        maxRows={30}
-                        className="w-full font-mono text-sm"
-                    />
+        <div className="h-full flex flex-col gap-4">
+            <header className="flex flex-col gap-1">
+                <div className="flex items-start justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold mb-2 flex items-center">
+                            <GitPullRequest className="mr-2 h-6 w-6 text-green-500" />
+                            Implementar autenticación de usuarios
+                        </h1>
+                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                            <span>#42</span>
+                            <span>opened 3 days ago by</span>
+                            <Avatar className="h-5 w-5">
+                                <img src="/placeholder-user.jpg" alt="@username" />
+                                <span>UN</span>
+                            </Avatar>
+                            <span>username</span>
+                        </div>
+                    </div>
+                    <Button variant="faded">Edit</Button>
                 </div>
-                <div className="flex-1">
-                    <h2 className="text-lg font-semibold mb-2">Preview</h2>
-                    <div
-                        className="border rounded-lg p-4 min-h-[300px] prose prose-sm"
-                        dangerouslySetInnerHTML={{ __html: content }}
-                    />
+            </header>
+            <section>
+                <div className="flex list-none">
+                    {badgeItems.map((item, index) => (
+                        <BadgeText
+                            key={index}
+                            text={item.text}
+                            color={item.color}
+                        />
+                    ))}
                 </div>
-            </div>
+                <h2 className="text-lg font-semibold mb-2">Description</h2>
+                <p className="mb-4">
+                    Implement user authentication system using JWT tokens. This includes login, registration, and
+                    password reset functionalities.
+                </p>
+                <h2 className="text-lg font-semibold mb-2">Acceptance Criteria</h2>
+                <ul className="list-disc list-inside mb-4">
+                    <li>Users can register with email and password</li>
+                    <li>Users can log in with their credentials</li>
+                    <li>Users can reset their password via email</li>
+                    <li>JWT tokens are securely stored and transmitted</li>
+                </ul>
+                <div className="flex space-x-4 mb-4">
+                    <div>
+                        <h3 className="text-sm font-semibold mb-1">Assignees</h3>
+                        <div className="flex -space-x-2">
+                            <Avatar className="border-2 border-background">
+                                <img src="/placeholder-user.jpg" alt="@user1" />
+                                <span>U1</span>
+                            </Avatar>
+                            <Avatar className="border-2 border-background">
+                                <img src="/placeholder-user.jpg" alt="@user2" />
+                                <span>U2</span>
+                            </Avatar>
+                        </div>
+                    </div>
+                    <div className="flex-1 items-center gap-2">
+                        <h3 className="text-sm">Story Points</h3>
+                        <BadgeText
+                            text={'9'}
+                            color={'indigo'}
+                        />
+                    </div>
+                </div>
+            </section>
+            <footer className="flex flex-col items-start pt-6 border-t-1 border-t-slate-300">
+                <h2 className="text-lg font-semibold mb-4 flex items-center">
+                    <MessageSquare className="mr-2 h-5 w-5" />
+                    Comments
+                </h2>
+                <div className="w-full space-y-2">
+                    <div className="flex items-start space-x-2">
+                        <Avatar>
+                            <img src="/placeholder-user.jpg" alt="@user2" />
+                            <span>U2</span>
+                        </Avatar>
+                        <div className="flex-1 bg-gray-100 rounded-lg">
+                            <div className="p-2">
+                                <div className="font-semibold mb-1">user2</div>
+                                <p>Great progress! I've started working on the password reset feature.</p>
+                            </div>
+                            <div className="text-sm text-muted-foreground p-2">1 day ago</div>
+                        </div>
+                    </div>
+                    <div className="flex items-start space-x-2">
+                        <Avatar>
+                            <img src="/placeholder-user.jpg" alt="@user2" />
+                            <span>U2</span>
+                        </Avatar>
+                        <div className="flex-1 bg-gray-100 rounded-lg">
+                            <div className="p-2">
+                                <div className="font-semibold mb-1">user2</div>
+                                <p>Great progress! I've started working on the password reset feature.</p>
+                            </div>
+                            <div className="text-sm text-muted-foreground p-2">1 day ago</div>
+                        </div>
+                    </div>
+                </div>
+                <div className="w-full mt-4">
+                    <textarea
+                        className="w-full p-2 border rounded-md"
+                        placeholder="Leave a comment"
+                        rows={3}
+                    ></textarea>
+                    <Button className="mt-2">Comment</Button>
+                </div>
+            </footer>
         </div>
     )
 }
-
