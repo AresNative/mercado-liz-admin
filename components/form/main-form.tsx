@@ -1,21 +1,9 @@
 "use client";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Tel } from "./tel";
-import { InputComponent as Input } from "./input"; // Ajustado el nombre del import
-import { Email } from "./email";
-import { RadioComponent as Radio } from "./radio"; // Ajustado el nombre del import
-import { Number } from "./number";
-import { DateInput } from "./date";
-import { MonthInput } from "./month";
-import { InputMedia } from "./media";
-import { CheckBox } from "./checkbox";
-import { TextArea } from "./textarea";
-import { Password } from "./password";
-import { SearchableSelect } from "./select";
-import { OptionMultiple } from "./optionmultiple";
-import { MultipleParagraphInput } from "./dinamic-inputs";
-import { DateRangeInput } from "./date-range";
+
+import { InputComponent as Input } from "./input";
+
 import { usePostProjectsMutation, usePostSprintsMutation, usePostTasksMutation } from "@/hooks/reducers/api";
 import { useAppDispatch } from "@/hooks/selector";
 
@@ -31,7 +19,7 @@ interface Field {
 interface MainFormProps {
   message_button: string;
   dataForm: Field[];
-  actionType: "add-project" | "add-sprints" | "add-task"; // Aquí puedes definir más tipos de acción si es necesario
+  actionType: "add-project" | "add-sprints" | "add-task";
 }
 
 export const MainForm = ({ message_button, dataForm, actionType }: MainFormProps) => {
@@ -96,7 +84,7 @@ export const MainForm = ({ message_button, dataForm, actionType }: MainFormProps
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
+    <form onSubmit={handleSubmit(onSubmit)}>
       {dataForm.map((field, key) => (
         <SwitchTypeInputRender
           key={key}
@@ -124,36 +112,8 @@ export const MainForm = ({ message_button, dataForm, actionType }: MainFormProps
 export function SwitchTypeInputRender(props: any) {
   const { type } = props.cuestion;
   switch (type) {
-    /* case "TEL":
-      return <Tel {...props} />; */
     case "INPUT":
       return <Input {...props} />;
-    case "MEDIA":
-      return <InputMedia {...props} />;
-    case "DATE":
-      return <DateInput {...props} />;
-    case "DATERANGE":
-      return <DateRangeInput {...props} />;
-    /* case "MONTH":
-      return <MonthInput {...props} />; */
-    /* case "EMAIL":
-      return <Email {...props} />; */
-    /* case "NUMBER":
-      return <Number {...props} />; */
-    case "CHECKBOX":
-      return <CheckBox {...props} />;
-    case "RADIO":
-      return <Radio {...props} />;
-    /* case "OPTIONMULTIPLE":
-      return <OptionMultiple {...props} />; */
-    case "SELECT":
-      return <SearchableSelect {...props} />;
-    /* case "PASSWORD":
-      return <Password {...props} />; */
-    case "TEXTAREA":
-      return <TextArea {...props} />;
-    case "DINAMIC":
-      return <MultipleParagraphInput {...props} />;
     default:
       return <h1>{type}</h1>;
   }

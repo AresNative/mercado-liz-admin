@@ -31,7 +31,10 @@
       "id":4,
       "type":"CHECKBOX",
       "options":[
-         "Activo"
+         "Activo",
+         "Pendiente",
+         "Inactivo",
+         "Finalizado"
       ],
       "name":"activo",
       "placeholder":"Estado",
@@ -46,6 +49,7 @@
             "label":"Urgencia"
          }
       ],
+      "enableAutocomplete": "true",
       "name":"state",
       "placeholder":"Prioridad",
       "require":false,
