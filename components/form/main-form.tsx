@@ -2,25 +2,13 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { MainFormProps } from "@/utils/constants/interfaces";
+
 import { InputComponent as Input } from "./input";
+import { Button } from "../button";
 
 import { usePostProjectsMutation, usePostSprintsMutation, usePostTasksMutation } from "@/hooks/reducers/api";
 import { useAppDispatch } from "@/hooks/selector";
-
-interface Field {
-  type: string;
-  name: string;
-  label?: string;
-  placeholder?: string;
-  // Puedes agregar otros campos según tu necesidad
-}
-
-
-interface MainFormProps {
-  message_button: string;
-  dataForm: Field[];
-  actionType: "add-project" | "add-sprints" | "add-task";
-}
 
 export const MainForm = ({ message_button, dataForm, actionType }: MainFormProps) => {
 
@@ -84,7 +72,7 @@ export const MainForm = ({ message_button, dataForm, actionType }: MainFormProps
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
       {dataForm.map((field, key) => (
         <SwitchTypeInputRender
           key={key}
@@ -98,13 +86,10 @@ export const MainForm = ({ message_button, dataForm, actionType }: MainFormProps
           setValue={setValue}
         />
       ))}
-      <button
-        type="submit"
-        disabled={loading}
-        aria-label="boton formulario dinamico"
-      >
-        {loading ? "Loading..." : message_button}
-      </button>
+      <Button
+        color="indigo"
+        label={loading ? "Loading..." : message_button}
+      />
     </form>
   );
 };

@@ -3,14 +3,11 @@ import { MainForm } from "@/components/form/main-form";
 import Providers from "@/hooks/provider";
 import Badge from "@/components/badge";
 import Background from "@/templates/background";
-import Footer from "@/templates/footer";
-import Nav from "@/templates/nav";
 
 import FormJson from "@/utils/constants/new-project-scrum.json";
 export default function Home() {
   return (
     <Background>
-      <Nav />
       <Alert />
       <Providers>
         <MainForm
@@ -20,19 +17,23 @@ export default function Home() {
         />
       </Providers>
       <Badge color="purple" text="Example" />
-      <Footer />
     </Background>
   )
 }
 
 /* 
-
 'use client'
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { AtSign, Phone, User, GraduationCap, Briefcase, Star } from 'lucide-react';
-import { validateName, validatePhone, validateEmail, formatPhoneNumber } from '@/utils/functions/valid-inputs';
+import { AtSign, Phone, User, GraduationCap, Briefcase, Star, Calendar, CalendarRange, ChevronDown, X } from 'lucide-react';
+
+const skills = [
+  'JavaScript', 'React', 'Node.js', 'Python', 'Java', 'C++', 'Ruby', 'PHP',
+  'HTML', 'CSS', 'TypeScript', 'Angular', 'Vue.js', 'Django', 'Flask',
+  'Express.js', 'MongoDB', 'SQL', 'Git', 'Docker', 'AWS', 'Azure', 'GraphQL',
+  'REST API', 'Machine Learning', 'Data Analysis', 'Agile', 'Scrum'
+];
 
 const CVForm: React.FC = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -41,14 +42,50 @@ const CVForm: React.FC = () => {
     name: '',
     email: '',
     phone: '',
+    birthDate: '',
+    interviewDateStart: '',
+    interviewDateEnd: '',
     education: '',
     experience: '',
-    skills: ''
+    skills: [] as string[]
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+  const [showBirthDatePicker, setShowBirthDatePicker] = useState(false);
+  const [showInterviewDatePicker, setShowInterviewDatePicker] = useState(false);
+  const [showSkillsDropdown, setShowSkillsDropdown] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
+  const skillsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (skillsRef.current && !skillsRef.current.contains(event.target as Node)) {
+        setShowSkillsDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Validation functions
+  const validateName = (value: string) => {
+    return /^[A-Za-zÀ-ÿ\s]{0,50}$/.test(value);
+  };
+
+  const validatePhone = (value: string) => {
+    return /^[0-9+\s-]{0,15}$/.test(value);
+  };
+
+  const validateEmail = (value: string) => {
+    return /^[^\s@]*$/.test(value) || value === '';
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    
     // Validation checks
     if (name === 'name' && !validateName(value)) return;
     if (name === 'phone' && !validatePhone(value)) return;
@@ -57,6 +94,32 @@ const CVForm: React.FC = () => {
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const formatPhoneNumber = (value: string) => {
+    if (!value) return '';
+    const cleaned = value.replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{0,3})(\d{0,3})(\d{0,4})$/);
+    if (match) {
+      return match[1] + (match[1] && match[2] ? '-' : '') + match[2] + (match[2] && match[3] ? '-' : '') + match[3];
+    }
+    return value;
+  };
+
+  const handleSkillToggle = (skill: string) => {
+    setFormData(prev => ({
+      ...prev,
+      skills: prev.skills.includes(skill)
+        ? prev.skills.filter(s => s !== skill)
+        : [...prev.skills, skill]
+    }));
+  };
+
+  const handleRemoveSkill = (skill: string) => {
+    setFormData(prev => ({
+      ...prev,
+      skills: prev.skills.filter(s => s !== skill)
     }));
   };
 
@@ -97,6 +160,26 @@ const CVForm: React.FC = () => {
     event.stopPropagation();
   }, []);
 
+  const generateYearOptions = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = currentYear - 100; i <= currentYear; i++) {
+      years.push(i);
+    }
+    return years.reverse();
+  };
+
+  const months = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
+
+  const generateDayOptions = (year: number, month: number) => {
+    if (isNaN(year) || isNaN(month)) return Array.from({ length: 31 }, (_, i) => i + 1);
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    return Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
       <div className="relative py-3 sm:max-w-xl sm:mx-auto">
@@ -104,6 +187,64 @@ const CVForm: React.FC = () => {
           <div className="max-w-md mx-auto">
             <form className="divide-y divide-gray-200">
               <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+                <div className="flex flex-col" ref={skillsRef}>
+                  <label className="leading-loose flex items-center gap-2">
+                    <Star className="w-4 h-4" />
+                    Habilidades
+                  </label>
+                  <div className="relative">
+                    <div
+                      className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600 cursor-pointer flex items-center justify-between"
+                      onClick={() => setShowSkillsDropdown(!showSkillsDropdown)}
+                    >
+                      <span>{formData.skills.length ? `${formData.skills.length} seleccionadas` : 'Seleccionar habilidades'}</span>
+                      <ChevronDown className="w-4 h-4" />
+                    </div>
+                    {showSkillsDropdown && (
+                      <div className="absolute z-10 w-full bg-white border border-gray-300 mt-1 rounded-md shadow-lg">
+                        <div className="p-2">
+                          <input
+                            type="text"
+                            className="w-full px-3 py-2 border rounded-md"
+                            placeholder="Buscar habilidades..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                          />
+                        </div>
+                        <ul className="max-h-60 overflow-y-auto">
+                          {skills
+                            .filter(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()))
+                            .map(skill => (
+                              <li
+                                key={skill}
+                                className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
+                                  formData.skills.includes(skill) ? 'bg-blue-100' : ''
+                                }`}
+                                onClick={() => handleSkillToggle(skill)}
+                              >
+                                {skill}
+                              </li>
+                            ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {formData.skills.map(skill => (
+                      <span key={skill} className="bg-blue-100 text-blue-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded flex items-center">
+                        {skill}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSkill(skill)}
+                          className="ml-1 text-blue-600 hover:text-blue-800"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="flex flex-col">
                   <label className="leading-loose flex items-center gap-2">
                     <User className="w-4 h-4" />
@@ -176,8 +317,140 @@ const CVForm: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col">
+                  <label className="leading-loose flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    Fecha de nacimiento
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="birthDate"
+                      value={formData.birthDate}
+                      onClick={() => setShowBirthDatePicker(true)}
+                      readOnly
+                      className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600 cursor-pointer"
+                      placeholder="Seleccionar fecha"
+                    />
+                    {showBirthDatePicker && (
+                      <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
+                        <div className="p-2">
+                          <div className="grid grid-cols-3 gap-2">
+                            <select
+                              className="px-2 py-1 border rounded-md"
+                              onChange={(e) => {
+                                const year = parseInt(e.target.value);
+                                const currentDate = new Date(formData.birthDate || Date.now());
+                                const newDate = new Date(year, currentDate.getMonth(), currentDate.getDate());
+                                setFormData({...formData, birthDate: newDate.toISOString().split('T')[0]});
+                              }}
+                            >
+                              {generateYearOptions().map((year) => (
+                                <option key={year} value={year}>
+                                  {year}
+                                </option>
+                              ))}
+                            </select>
+                            <select
+                              className="px-2 py-1 border rounded-md"
+                              onChange={(e) => {
+                                const month = parseInt(e.target.value);
+                                const currentDate = new Date(formData.birthDate || Date.now());
+                                const newDate = new Date(currentDate.getFullYear(), month, currentDate.getDate());
+                                setFormData({...formData, birthDate: newDate.toISOString().split('T')[0]});
+                              }}
+                            >
+                              {months.map((month, index) => (
+                                <option key={month} value={index}>
+                                  {month}
+                                </option>
+                              ))}
+                            </select>
+                            <select
+                              className="px-2 py-1 border rounded-md"
+                              onChange={(e) => {
+                                const day = parseInt(e.target.value);
+                                const currentDate = new Date(formData.birthDate || Date.now());
+                                const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                                setFormData({...formData, birthDate: newDate.toISOString().split('T')[0]});
+                              }}
+                            >
+                              {generateDayOptions(
+                                new Date(formData.birthDate || Date.now()).getFullYear(),
+                                new Date(formData.birthDate || Date.now()).getMonth()
+                              ).map((day) => (
+                                <option key={day} value={day}>
+                                  {day}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <button
+                            type="button"
+                            className="mt-2 w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                            onClick={() => setShowBirthDatePicker(false)}
+                          >
+                            Aceptar
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="leading-loose flex items-center gap-2">
+                    <CalendarRange className="w-4 h-4" />
+                    Fechas de entrevista
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="interviewDates"
+                      value={formData.interviewDateStart && formData.interviewDateEnd ? `${formData.interviewDateStart} - ${formData.interviewDateEnd}` : ''}
+                      onClick={() => setShowInterviewDatePicker(true)}
+                      readOnly
+                      className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600 cursor-pointer"
+                      placeholder="Seleccionar fechas"
+                    />
+                    {showInterviewDatePicker && (
+                      <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
+                        <div className="p-2">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <p className="mb-1 font-semibold">Fecha inicial</p>
+                              <input
+                                type="date"
+                                value={formData.interviewDateStart}
+                                onChange={(e) => setFormData({...formData, interviewDateStart: e.target.value || ''})}
+                                className="w-full px-2 py-1 border rounded-md"
+                              />
+                            </div>
+                            <div>
+                              <p className="mb-1 font-semibold">Fecha final</p>
+                              <input
+                                type="date"
+                                value={formData.interviewDateEnd}
+                                onChange={(e) => setFormData({...formData, interviewDateEnd: e.target.value || ''})}
+                                className="w-full px-2 py-1 border rounded-md"
+                              />
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            className="mt-4 w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                            onClick={() => setShowInterviewDatePicker(false)}
+                          >
+                            Aceptar
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex flex-col">
                   <label className="leading-loose">Foto de perfil</label>
-                  <div
+                  <div 
                     className="mt-1 flex justify-center items-center"
                     onDragOver={preventDefault}
                     onDrop={(e) => handleFileDrop(e, 'profile')}
@@ -251,25 +524,8 @@ const CVForm: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="leading-loose flex items-center gap-2">
-                    <Star className="w-4 h-4" />
-                    Habilidades
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      name="skills"
-                      value={formData.skills}
-                      onChange={handleInputChange}
-                      className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
-                      placeholder="Habilidades (separadas por comas)"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex flex-col">
                   <label className="leading-loose">Documentos adicionales</label>
-                  <div
+                  <div 
                     className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md"
                     onDragOver={preventDefault}
                     onDrop={(e) => handleFileDrop(e, 'documents')}
