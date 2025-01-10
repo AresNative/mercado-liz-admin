@@ -5,9 +5,22 @@ import { useForm } from "react-hook-form";
 import { MainFormProps } from "@/utils/constants/interfaces";
 
 import { InputComponent as Input } from "./input";
+import { MailComponent as Mail } from "./mail";
+import { PhoneComponent as Phone } from "./phone";
+import { TextAreaComponent as TextArea } from "./text-area";
+
+import { SelectComponent as Select } from "./select";
+import { CheckboxComponent as Checkbox } from "./checkbox";
+import { CheckboxGroupComponent as CheckboxGroup } from "./checkbox-group";
+
+import { CalendarComponent as Calendar } from "./calendar";
+import { DateRangeComponent as DateRange } from "./date-range";
+
 import { Button } from "../button";
 
 import { usePostProjectsMutation, usePostSprintsMutation, usePostTasksMutation } from "@/hooks/reducers/api";
+
+
 //import { useAppDispatch } from "@/hooks/selector";
 
 export const MainForm = ({ message_button, dataForm, actionType }: MainFormProps) => {
@@ -99,7 +112,25 @@ export function SwitchTypeInputRender(props: any) {
   switch (type) {
     case "INPUT":
       return <Input {...props} />;
+    case "PHONE":
+      return <Phone {...props} />;
+    case "TEXT_AREA":
+      return <TextArea {...props} />;
+    case "MAIL":
+      return <Mail {...props} />;
+    case "SELECT":
+      return <Select {...props} />;
+    case "DATE":
+      return <Calendar {...props} />;
+    case "DATE_RANGE":
+      return <DateRange {...props} />;
+    case "CHECKBOX":
+      return <Checkbox {...props} />;
+    case "CHECKBOX_GROUP":
+      return <CheckboxGroup {...props} />;
     default:
       return <h1>{type}</h1>;
   }
 }
+
+export default MainForm;

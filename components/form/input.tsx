@@ -1,5 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { InputFormProps } from "@/utils/constants/interfaces";
+import { User } from "lucide-react";
 
 export function InputComponent(props: InputFormProps) {
   const { cuestion } = props;
@@ -14,36 +15,33 @@ export function InputComponent(props: InputFormProps) {
     const { value } = event.target;
     props.setError(cuestion.name, {});
     props.setValue(cuestion.name, value);
+    setFormData({ ...formData, [cuestion.name]: value });
   };
 
-  const Icon = cuestion.icon || null;
+  const [formData, setFormData] = useState({
+    name: '',
+  });
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center rounded-md bg-white px-3 py-1.5 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:outline-indigo-600">
-        {Icon && (
-          <div className="shrink-0 pr-2 text-gray-500">
-            <Icon className="h-5 w-5" aria-hidden="true" />
-          </div>
-        )}
+    <div className="flex flex-col">
+      <label className="leading-loose flex items-center gap-2">
+        <User className="w-4 h-4" />
+        Nombre completo
+      </label>
+      <div className="relative">
         <input
-          type={cuestion.type}
-          className="block w-full grow py-1.5 text-base text-gray-900 placeholder-gray-400 focus:outline-none sm:text-sm"
-          placeholder={cuestion.placeholder}
-          value={cuestion.valueDefined || ""}
+          type="text"
+          name="name"
+          value={formData.name}
           onChange={handleInputChange}
-          required={cuestion.require}
-          {...props.register(cuestion.name, {
-            required: cuestion.require ? "The field is required." : undefined,
-          })}
+          className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
+          placeholder="Juan Pérez"
+          maxLength={50}
         />
-      </div>
-
-      {props.errors[cuestion.name]?.message && (
-        <span className="text-red-400 p-1">
-          {props.errors[cuestion.name]!.message}
+        <span className="absolute right-2 top-2 text-xs text-gray-400">
+          {formData.name.length}/50
         </span>
-      )}
+      </div>
     </div>
   );
 }

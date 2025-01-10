@@ -8,7 +8,21 @@
    },
    {
       "id":1,
-      "type":"INPUT",
+      "type":"PHONE",
+      "name":"descripcion",
+      "placeholder":"Descripción",
+      "require":false
+   },
+   {
+      "id":1,
+      "type":"TEXT_AREA",
+      "name":"descripcion",
+      "placeholder":"Descripción",
+      "require":false
+   },
+   {
+      "id":1,
+      "type":"MAIL",
       "name":"descripcion",
       "placeholder":"Descripción",
       "require":false
@@ -22,7 +36,7 @@
    },
    {
       "id":3,
-      "type":"DATE",
+      "type":"DATE_RANGE",
       "name":"fechaFin",
       "placeholder":"Fecha Fin",
       "require":false
@@ -30,6 +44,19 @@
    {
       "id":4,
       "type":"CHECKBOX",
+      "options":[
+         "Activo",
+         "Pendiente",
+         "Inactivo",
+         "Finalizado"
+      ],
+      "name":"activo",
+      "placeholder":"Estado",
+      "require":false
+   },
+   {
+      "id":4,
+      "type":"CHECKBOX_GROUP",
       "options":[
          "Activo",
          "Pendiente",

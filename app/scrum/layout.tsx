@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { DashboardLayoutProps } from "@/utils/constants/interfaces";
 
 import Providers from "@/hooks/provider";
-import Background from "@/templates/background";
+import Layout from "@/templates/layout";
 
 const DashboardLayout = async ({ admin, user }: DashboardLayoutProps) => {
   // Función para obtener el rol del usuario desde las cookies en el lado del servidor
@@ -25,16 +25,17 @@ const DashboardLayout = async ({ admin, user }: DashboardLayoutProps) => {
 
   // Renderizado en el servidor
   return (
-    <Background>
+    <Layout>
       {/* Muestra el contenido según el rol o un mensaje por defecto */}
+      {userRole && roleContent[userRole] ? (
+        roleContent[userRole]
+      ) : (
+        <>Acceso no autorizado</>
+      )}
       <Providers>
-        {userRole && roleContent[userRole] ? (
-          roleContent[userRole]
-        ) : (
-          <>Acceso no autorizado</>
-        )}
+        <></>
       </Providers>
-    </Background>
+    </Layout>
   );
 };
 
