@@ -5,10 +5,20 @@ import Badge from "@/components/badge";
 import Background from "@/templates/background";
 
 import FormJson from "@/utils/constants/new-project-scrum.json";
+import { CircleAlert } from "lucide-react";
 export default function Home() {
+  const handleAlertAction = () => {
+    console.log("Alerta cerrada con acción específica");
+  };
+
   return (
     <Background>
-      <Alert />
+      <Alert
+        message="Este es un mensaje de alerta"
+        type="error"
+        icon={<CircleAlert className="w-6 h-6 text-red-600" />}
+      /* action={handleAlertAction} */
+      />
       <Providers>
         <MainForm
           message_button={'Enviar'}
