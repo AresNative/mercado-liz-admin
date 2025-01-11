@@ -37,7 +37,7 @@ export function PhoneComponent(props: InputFormProps) {
                 <select
                     name="countryCode"
                     className="px-2 py-2 border focus:ring-gray-500 focus:border-gray-900 sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
-                    defaultValue="+1"
+                    defaultValue="+52"
                 >
                     <option value="+1">+1</option>
                     <option value="+44">+44</option>
@@ -48,10 +48,18 @@ export function PhoneComponent(props: InputFormProps) {
                 <input
                     type="tel"
                     name="phone"
-                    value={formatPhoneNumber('')}
+                    value={formatPhoneNumber(props.getValues?.(cuestion.name))}
                     onChange={handleInputChange}
                     className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
                     placeholder="123-456-7890"
+                    maxLength={12}
+                    {
+                    ...props.register(cuestion.name,
+                        cuestion.require
+                            ? { required: "The field is required." }
+                            : {}
+                    )
+                    }
                 />
             </div>
         </div>

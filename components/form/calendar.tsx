@@ -1,21 +1,15 @@
+import { InputFormProps } from "@/utils/constants/interfaces";
 import { Calendar1 } from "lucide-react";
 import { useState } from "react";
 
-export function CalendarComponent() {
-
+export function CalendarComponent(props: InputFormProps) {
+    const { cuestion } = props;
     const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
         birthDate: '',
-        interviewDateStart: '',
-        interviewDateEnd: '',
-        education: '',
-        experience: '',
-        skills: [] as string[]
     });
 
     const [showBirthDatePicker, setShowBirthDatePicker] = useState(false);
+
     const generateYearOptions = () => {
         const currentYear = new Date().getFullYear();
         const years = [];
@@ -51,6 +45,13 @@ export function CalendarComponent() {
                     readOnly
                     className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600 cursor-pointer"
                     placeholder="Seleccionar fecha"
+                    {
+                    ...props.register(cuestion.name,
+                        cuestion.require
+                            ? { required: "The field is required." }
+                            : {}
+                    )
+                    }
                 />
                 {showBirthDatePicker && (
                     <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">

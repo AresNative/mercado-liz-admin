@@ -1,20 +1,13 @@
+import { InputFormProps } from "@/utils/constants/interfaces";
 import { CalendarRange } from "lucide-react";
 import { useState } from "react";
 
-export function DateRangeComponent() {
-
+export function DateRangeComponent(props: InputFormProps) {
+    const { cuestion } = props;
     const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        birthDate: '',
         interviewDateStart: '',
         interviewDateEnd: '',
-        education: '',
-        experience: '',
-        skills: [] as string[]
     });
-
 
     const [showInterviewDatePicker, setShowInterviewDatePicker] = useState(false);
 
@@ -33,6 +26,13 @@ export function DateRangeComponent() {
                     readOnly
                     className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600 cursor-pointer"
                     placeholder="Seleccionar fechas"
+                    {
+                    ...props.register(cuestion.name,
+                        cuestion.require
+                            ? { required: "The field is required." }
+                            : {}
+                    )
+                    }
                 />
                 {showInterviewDatePicker && (
                     <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">

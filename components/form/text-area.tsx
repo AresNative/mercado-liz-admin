@@ -1,9 +1,10 @@
+import { InputFormProps } from "@/utils/constants/interfaces";
 import { validateName, validatePhone, validateEmail } from "@/utils/functions/valid-inputs";
 import { Briefcase } from "lucide-react";
 import { useState } from "react";
 
-export function TextAreaComponent() {
-
+export function TextAreaComponent(props: InputFormProps) {
+    const { cuestion } = props;
     const [formData, setFormData] = useState({
         experience: '',
     });
@@ -19,6 +20,8 @@ export function TextAreaComponent() {
             ...prev,
             [name]: value
         }));
+
+        props.setValue(cuestion.name, formData.experience);
     };
     return (
         <div className="flex flex-col">

@@ -9,21 +9,21 @@
    {
       "id":1,
       "type":"PHONE",
-      "name":"descripcion",
+      "name":"t1",
       "placeholder":"Descripción",
       "require":false
    },
    {
       "id":1,
       "type":"TEXT_AREA",
-      "name":"descripcion",
+      "name":"t2",
       "placeholder":"Descripción",
       "require":false
    },
    {
       "id":1,
       "type":"MAIL",
-      "name":"descripcion",
+      "name":"t3",
       "placeholder":"Descripción",
       "require":false
    },
@@ -63,7 +63,7 @@
          "Inactivo",
          "Finalizado"
       ],
-      "name":"activo",
+      "name":"t4",
       "placeholder":"Estado",
       "require":false
    },
@@ -81,5 +81,19 @@
       "placeholder":"Prioridad",
       "require":false,
       "multi":false
+   },
+   {
+      "id":5,
+      "type": "FILE",
+      "name":"nombre",
+      "placeholder":"Nombre",
+      "require":false
+   },   
+   {
+      "id":5,
+      "type": "IMG",
+      "name":"t5",
+      "placeholder":"Nombre",
+      "require":false
    }
 ]

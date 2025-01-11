@@ -16,6 +16,9 @@ import { CheckboxGroupComponent as CheckboxGroup } from "./checkbox-group";
 import { CalendarComponent as Calendar } from "./calendar";
 import { DateRangeComponent as DateRange } from "./date-range";
 
+import { FileComponent as File } from "./file";
+import { ImgComponent as Image } from "./img";
+
 import { Button } from "../button";
 
 import { usePostProjectsMutation, usePostSprintsMutation, usePostTasksMutation } from "@/hooks/reducers/api";
@@ -36,6 +39,7 @@ export const MainForm = ({ message_button, dataForm, actionType }: MainFormProps
     watch,
     setValue,
     control,
+    getValues,
     formState: { errors },
   } = useForm();
 
@@ -52,16 +56,17 @@ export const MainForm = ({ message_button, dataForm, actionType }: MainFormProps
       case "add-task":
         return postTask;
       default:
-        return () => { }; // Retorna una función vacía para manejar el caso predeterminado
+        return () => { };
     }
   }
 
   async function onSubmit(submitData: any) {
+    console.log(submitData);
 
     setLoading(true);
-    const mutationFunction = getMutationFunction(actionType);
+    //const mutationFunction = getMutationFunction(actionType);
     try {
-      await mutationFunction(submitData);
+      //await mutationFunction(submitData);
 
       /* dispatch(
         openAlertReducer({
@@ -85,7 +90,7 @@ export const MainForm = ({ message_button, dataForm, actionType }: MainFormProps
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2 max-w-prose m-auto">
       {dataForm.map((field, key) => (
         <SwitchTypeInputRender
           key={key}
@@ -96,11 +101,13 @@ export const MainForm = ({ message_button, dataForm, actionType }: MainFormProps
           clearErrors={clearErrors}
           setError={setError}
           errors={errors}
+          getValues={getValues}
           setValue={setValue}
         />
       ))}
       <Button
-        color="indigo"
+        color="info"
+        type="submit"
         label={loading ? "Loading..." : message_button}
       />
     </form>
@@ -128,6 +135,10 @@ export function SwitchTypeInputRender(props: any) {
       return <Checkbox {...props} />;
     case "CHECKBOX_GROUP":
       return <CheckboxGroup {...props} />;
+    case "FILE":
+      return <File {...props} />;
+    case "IMG":
+      return <Image {...props} />;
     default:
       return <h1>{type}</h1>;
   }

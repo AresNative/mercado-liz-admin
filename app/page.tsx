@@ -9,12 +9,6 @@ export default function Home() {
 
   return (
     <Layout>
-      {/*<Alert
-        message="Este es un mensaje de alerta"
-        type="error"
-        icon={<CircleAlert className="w-6 h-6 text-red-600" />}
-        action={handleAlertAction}
-      />*/}
       <Providers>
         <MainForm
           message_button={'Enviar'}

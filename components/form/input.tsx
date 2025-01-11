@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { InputFormProps } from "@/utils/constants/interfaces";
 import { User } from "lucide-react";
 
@@ -15,12 +15,7 @@ export function InputComponent(props: InputFormProps) {
     const { value } = event.target;
     props.setError(cuestion.name, {});
     props.setValue(cuestion.name, value);
-    setFormData({ ...formData, [cuestion.name]: value });
   };
-
-  const [formData, setFormData] = useState({
-    name: '',
-  });
 
   return (
     <div className="flex flex-col">
@@ -32,14 +27,20 @@ export function InputComponent(props: InputFormProps) {
         <input
           type="text"
           name="name"
-          value={formData.name}
           onChange={handleInputChange}
           className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
           placeholder="Juan Pérez"
           maxLength={50}
+          {
+          ...props.register(cuestion.name,
+            cuestion.require
+              ? { required: "The field is required." }
+              : {}
+          )
+          }
         />
         <span className="absolute right-2 top-2 text-xs text-gray-400">
-          {formData.name.length}/50
+          {JSON.stringify(props.getValues?.(cuestion.name) || "").length - 2}/50
         </span>
       </div>
     </div>

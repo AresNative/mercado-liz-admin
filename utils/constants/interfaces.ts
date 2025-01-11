@@ -47,6 +47,7 @@ export interface InputFormProps {
     type: "password" | "number" | "email" | "phone" | "text";
     icon?: React.ElementType<any>;
   };
+  getValues: (name: string) => string;
   setValue: (name: string, value: string) => void;
   setError: (name: string, error: object) => void;
   register: (name: string, options: { required?: string }) => object;
@@ -97,7 +98,7 @@ export interface ButtonProps {
   type?: "button" | "submit" | "reset";
   label?: string;
   size?: string;
-  color?: string;
+  color?: "success" | "error" | "warning" | "completed" | "info";
 }
 
 export interface UserRoleRendererProps {

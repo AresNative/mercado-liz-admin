@@ -79,13 +79,13 @@ export const alertClasses = {
   },
   info: {
     bg: "bg-purple-50",
-    hover: "hover:bg-purple-500 hover:text-white",
+    hover: "hover:bg-purple-200 hover:text-white hover:ring-purple-800/10",
     text: "text-purple-600",
     ring: "ring-purple-500/10",
   },
   indigo: {
     bg: "bg-indigo-50",
-    hover: "hover:bg-indigo-500 hover:text-white",
+    hover: "hover:bg-indigo-500 hover:text-indigo-800",
     text: "text-indigo-600",
     ring: "ring-indigo-500/10",
   },

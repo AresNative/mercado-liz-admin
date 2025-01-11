@@ -1,6 +1,6 @@
 
 import Image from "next/image";
-import { User } from "lucide-react";
+import { Camera, User } from "lucide-react";
 import { useCallback, useState } from "react";
 
 export function ImgComponent() {
@@ -44,9 +44,12 @@ export function ImgComponent() {
     }, []);
     return (
         <div className="flex flex-col">
-            <label className="leading-loose">Foto de perfil</label>
+            <label className="leading-loose flex gap-2 items-center">
+                <Camera className="w-4 h-4" />
+                Foto de perfil
+            </label>
             <div
-                className="mt-1 flex justify-center items-center"
+                className="mt-1 flex flex-col gap-2 justify-center items-center"
                 onDragOver={preventDefault}
                 onDrop={(e) => handleFileDrop(e, 'profile')}
             >
@@ -69,7 +72,7 @@ export function ImgComponent() {
                 />
                 <label
                     htmlFor="file-upload-profile"
-                    className="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer"
+                    className=" bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer"
                 >
                     {profileImage ? 'Cambiar foto' : 'Subir foto'}
                 </label>
