@@ -22,6 +22,7 @@ import { ImgComponent as Image } from "./img";
 import { Button } from "../button";
 
 import { usePostProjectsMutation, usePostSprintsMutation, usePostTasksMutation } from "@/hooks/reducers/api";
+import { map } from "framer-motion/client";
 
 
 //import { useAppDispatch } from "@/hooks/selector";
@@ -106,7 +107,7 @@ export const MainForm = ({ message_button, dataForm, actionType }: MainFormProps
         />
       ))}
       <Button
-        color="info"
+        color="success"
         type="submit"
         label={loading ? "Loading..." : message_button}
       />
@@ -139,6 +140,15 @@ export function SwitchTypeInputRender(props: any) {
       return <File {...props} />;
     case "IMG":
       return <Image {...props} />;
+    /* case "Flex":
+      return <section className="flex flex-wrap gap-4 justify-start">
+        {props.elements?.map((child: any, key: any) => (
+          <SwitchTypeInputRender
+            key={key}
+            {...child}
+          />
+        ))}
+      </section> */
     default:
       return <h1>{type}</h1>;
   }

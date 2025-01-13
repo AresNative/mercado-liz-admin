@@ -38,7 +38,7 @@ export function SelectComponent(props: InputFormProps) {
         <div className="flex flex-col" ref={skillsRef}>
             <label className="leading-loose flex items-center gap-2">
                 <Star className="w-4 h-4" />
-                Habilidades
+                {cuestion.label}
             </label>
             <div className="relative">
                 <div

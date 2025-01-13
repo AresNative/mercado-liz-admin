@@ -24,7 +24,7 @@ export function CheckboxGroupComponent(props: ChecboxFormProps) {
 
     return (
         <div>
-            <p className="text-sm font-medium text-gray-700 mb-2">Requisitos de la vacante que cumples:</p>
+            <p className="text-sm font-medium text-gray-700 mb-2">{cuestion.label}:</p>
             <div className="space-y-2">
                 {Object.entries(jobRequirements).map(([key, value]) => (
                     <div key={key} className="flex items-center">

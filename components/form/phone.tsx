@@ -33,7 +33,7 @@ export function PhoneComponent(props: InputFormProps) {
         <div className="flex flex-col">
             <label className="leading-loose flex items-center gap-2">
                 <Phone className="w-4 h-4" />
-                Teléfono
+                {cuestion.label}
             </label>
             <div className="relative flex gap-2">
                 <select
@@ -57,7 +57,7 @@ export function PhoneComponent(props: InputFormProps) {
                     maxLength={12}
                     {...props.register(cuestion.name,
                         cuestion.require
-                            ? { required: "The field is required." }
+                            ? { required: "El campo es obligatorio." }
                             : {}
                     )}
                 />

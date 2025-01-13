@@ -23,7 +23,7 @@ export function MailComponent(props: InputFormProps) {
         <div className="flex flex-col">
             <label className="leading-loose flex items-center gap-2">
                 <AtSign className="w-4 h-4" />
-                Email
+                {cuestion.label}
             </label>
             <div className="relative">
                 <input
@@ -34,7 +34,7 @@ export function MailComponent(props: InputFormProps) {
                     placeholder="ejemplo@correo.com"
                     {...props.register(cuestion.name,
                         cuestion.require
-                            ? { required: "The field is required." }
+                            ? { required: "El campo es obligatorio." }
                             : {}
                     )}
                 />

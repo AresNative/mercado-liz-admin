@@ -19,7 +19,7 @@ export function DateRangeComponent(props: InputFormProps) {
         <div className="flex flex-col">
             <label className="leading-loose flex items-center gap-2">
                 <CalendarRange className="w-4 h-4" />
-                Fechas de entrevista
+                {cuestion.label}
             </label>
             <div className="relative">
                 <input

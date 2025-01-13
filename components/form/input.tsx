@@ -24,7 +24,7 @@ export function InputComponent(props: InputFormProps) {
     <div className="flex flex-col">
       <label className="leading-loose flex items-center gap-2">
         <User className="w-4 h-4" />
-        Nombre completo
+        {cuestion.label}
       </label>
       <div className="relative">
         <input
@@ -36,7 +36,7 @@ export function InputComponent(props: InputFormProps) {
           maxLength={cuestion.maxLength}
           {...props.register(cuestion.name,
             cuestion.require
-              ? { required: "The field is required." }
+              ? { required: "El campo es obligatorio." }
               : {}
           )}
         />
@@ -44,6 +44,11 @@ export function InputComponent(props: InputFormProps) {
           {currentValue.length}/{cuestion.maxLength}
         </span>)}
       </div>
+      {props.errors[cuestion.name] && props.errors[cuestion.name]?.message && (
+        <span className="text-red-400 p-1">
+          {props.errors[cuestion.name]?.message}
+        </span>
+      )}
     </div>
   );
 }

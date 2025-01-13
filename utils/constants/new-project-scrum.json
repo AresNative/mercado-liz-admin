@@ -1,15 +1,39 @@
 [
    {
+      "type":"Flex",
+      "elements":[
+         {
+            "id":0,
+            "type":"INPUT",
+            "name":"nombre",
+            "label":"",
+            "placeholder":"Nombre",
+            "require":false
+         },
+         {
+            "id":1,
+            "type":"PHONE",
+            "name":"telefono",
+            "label":"",
+            "placeholder":"Teléfono",
+            "require":true
+         }
+         
+      ]
+   },
+   {
       "id":0,
       "type":"INPUT",
-      "name":"nombre",
+      "name":"usuarios",
+      "label":"Nombre de usuario",
       "placeholder":"Nombre",
-      "require":false
+      "require":true
    },
    {
       "id":1,
       "type":"PHONE",
       "name":"t1",
+      "label":"Teléfono",
       "placeholder":"Descripción",
       "require":false
    },
@@ -17,6 +41,7 @@
       "id":1,
       "type":"TEXT_AREA",
       "name":"t2",
+      "label":"Experiencia",
       "placeholder":"Descripción",
       "require":false,
       "maxLength": 100
@@ -25,6 +50,7 @@
       "id":1,
       "type":"MAIL",
       "name":"t3",
+      "label":"Correo",
       "placeholder":"Descripción",
       "require":false
    },
@@ -32,6 +58,7 @@
       "id":2,
       "type":"DATE",
       "name":"fechaInicio",
+      "label":"Fecha de nacimiento",
       "placeholder":"Fecha Inicio",
       "require":false
    },
@@ -39,19 +66,15 @@
       "id":3,
       "type":"DATE_RANGE",
       "name":"fechaFin",
+      "label":"Fechas de entrevista",
       "placeholder":"Fecha Fin",
       "require":false
    },
    {
       "id":4,
       "type":"CHECKBOX",
-      "options":[
-         "Activo",
-         "Pendiente",
-         "Inactivo",
-         "Finalizado"
-      ],
       "name":"activo",
+      "label":"Acepto los términos y condiciones",
       "placeholder":"Estado",
       "require":false
    },
@@ -65,6 +88,7 @@
          "Finalizado"
       ],
       "name":"t4",
+      "label":"Fortalezas",
       "placeholder":"Estado",
       "require":false
    },
@@ -79,6 +103,7 @@
       ],
       "enableAutocomplete": "true",
       "name":"state",
+      "label":"Habilidades",
       "placeholder":"Prioridad",
       "require":false,
       "multi":false
@@ -87,6 +112,7 @@
       "id":5,
       "type": "FILE",
       "name":"nombre",
+      "label":"archivo",
       "placeholder":"Nombre",
       "require":false
    },   
@@ -94,6 +120,7 @@
       "id":5,
       "type": "IMG",
       "name":"t5",
+      "label":"Foto de perfil",
       "placeholder":"Nombre",
       "require":false
    }

@@ -1,8 +1,9 @@
 export interface Field {
   type: string;
   name: string;
-  label?: string;
+  labell?: string;
   placeholder?: string;
+  label?: string;
   // Puedes agregar otros campos según tu necesidad
 }
 
@@ -16,6 +17,7 @@ export interface ChecboxFormProps {
   cuestion: {
     name: string;
     placeholder?: string;
+    label?: string;
     require: boolean;
     options: string[];
   };
@@ -31,6 +33,7 @@ export interface DateRangeInputProps {
   cuestion: {
     name: string;
     placeholder?: string;
+    label?: string;
     require: boolean;
   };
   control: any; // Replace with the actual type from react-hook-form
@@ -43,6 +46,7 @@ export interface InputFormProps {
   cuestion: {
     name: string;
     placeholder?: string;
+    label?: string;
     valueDefined?: string | any;
     require: boolean;
     type: "password" | "number" | "email" | "phone" | "text";
@@ -61,6 +65,7 @@ export interface InputMediaProps {
   cuestion: {
     name: string;
     placeholder?: string;
+    label?: string;
     require?: boolean;
     accept?: string; // Allowed file types
     multiple?: boolean;
@@ -70,24 +75,13 @@ export interface InputMediaProps {
   errors: Record<string, { message?: string } | undefined>;
 }
 
-/* export interface RadioComponentProps {
-  cuestion: {
-    name: string;
-    placeholder: string;
-    options: string[];
-    require?: boolean;
-  };
-  setValue: (name: string, value: string) => void;
-  register: (name: string, options: { required?: string | boolean }) => object;
-  errors: Record<string, { message?: string } | undefined>;
-}
- */
 export interface SearchableSelectProps {
   cuestion: {
     name: string;
     placeholder?: string;
+    label?: string;
     require?: boolean;
-    options: { value: string; label: string }[];
+    options: { value: string; labell: string }[];
     valueDefined?: { name: string };
     enableAutocomplete?: boolean;
   };

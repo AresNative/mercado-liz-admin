@@ -38,7 +38,7 @@ export function CalendarComponent(props: InputFormProps) {
         <div className="flex flex-col">
             <label className="leading-loose flex items-center gap-2">
                 <Calendar1 className="w-4 h-4" />
-                Fecha de nacimiento
+                {cuestion.label}
             </label>
             <div className="relative">
                 <input
@@ -48,11 +48,11 @@ export function CalendarComponent(props: InputFormProps) {
                     onClick={() => setShowBirthDatePicker(true)}
                     readOnly
                     className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600 cursor-pointer"
-                    placeholder="Seleccionar fecha"
+                    placeholder={cuestion.placeholder}
                     {
                     ...props.register(cuestion.name,
                         cuestion.require
-                            ? { required: "The field is required." }
+                            ? { required: "El campo es obligatorio." }
                             : {}
                     )
                     }

@@ -14,19 +14,19 @@ export function TextAreaComponent(props: InputFormProps) {
         <div className="flex flex-col">
             <label className="leading-loose flex items-center gap-2">
                 <Briefcase className="w-4 h-4" />
-                Experiencia laboral
+                {cuestion.label}
             </label>
             <div className="relative">
                 <textarea
                     name="experience"
                     onChange={handleInputChange}
                     className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
-                    placeholder="Experiencia laboral"
+                    placeholder={cuestion.placeholder}
                     rows={3}
                     maxLength={cuestion.maxLength}
                     {...props.register(cuestion.name,
                         cuestion.require
-                            ? { required: "The field is required." }
+                            ? { required: "El campo es obligatorio." }
                             : {}
                     )}
                 />
