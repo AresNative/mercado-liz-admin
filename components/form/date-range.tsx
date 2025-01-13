@@ -1,9 +1,10 @@
 import { InputFormProps } from "@/utils/constants/interfaces";
 import { CalendarRange } from "lucide-react";
-import { use, useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 
 export function DateRangeComponent(props: InputFormProps) {
     const { cuestion } = props;
+    const dropdownRef = useRef<HTMLDivElement>(null);
     const [formData, setFormData] = useState({
         interviewDateStart: '',
         interviewDateEnd: '',
@@ -15,8 +16,21 @@ export function DateRangeComponent(props: InputFormProps) {
         props.setValue(cuestion.name, formData.interviewDateStart && formData.interviewDateEnd ? `${formData.interviewDateStart} - ${formData.interviewDateEnd}` : '');
     }, [formData])
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setShowInterviewDatePicker(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col" ref={dropdownRef}>
             <label className="leading-loose flex items-center gap-2">
                 <CalendarRange className="w-4 h-4" />
                 {cuestion.label}

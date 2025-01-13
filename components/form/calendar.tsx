@@ -1,9 +1,10 @@
 import { InputFormProps } from "@/utils/constants/interfaces";
 import { Calendar1 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function CalendarComponent(props: InputFormProps) {
     const { cuestion } = props;
+    const dropdownRef = useRef<HTMLDivElement>(null);
     const [formData, setFormData] = useState({
         birthDate: '',
     });
@@ -34,8 +35,20 @@ export function CalendarComponent(props: InputFormProps) {
         props.setValue(cuestion.name, formData.birthDate);
     }, [formData]);
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setShowBirthDatePicker(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col" ref={dropdownRef}>
             <label className="leading-loose flex items-center gap-2">
                 <Calendar1 className="w-4 h-4" />
                 {cuestion.label}
