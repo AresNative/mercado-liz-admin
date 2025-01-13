@@ -13,7 +13,7 @@ export function DateRangeComponent(props: InputFormProps) {
 
     useEffect(() => {
         props.setValue(cuestion.name, formData.interviewDateStart && formData.interviewDateEnd ? `${formData.interviewDateStart} - ${formData.interviewDateEnd}` : '');
-    }, [])
+    }, [formData])
 
     return (
         <div className="flex flex-col">

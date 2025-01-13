@@ -1,6 +1,6 @@
 import { InputFormProps } from "@/utils/constants/interfaces";
 import { Calendar1 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function CalendarComponent(props: InputFormProps) {
     const { cuestion } = props;
@@ -29,6 +29,10 @@ export function CalendarComponent(props: InputFormProps) {
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         return Array.from({ length: daysInMonth }, (_, i) => i + 1);
     };
+
+    useEffect(() => {
+        props.setValue(cuestion.name, formData.birthDate);
+    }, [formData]);
 
     return (
         <div className="flex flex-col">
