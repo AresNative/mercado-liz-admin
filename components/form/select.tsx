@@ -34,6 +34,20 @@ export function SelectComponent(props: InputFormProps) {
         }));
     };
 
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (skillsRef.current && !skillsRef.current.contains(e.target as Node)) {
+                setShowSkillsDropdown(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    useEffect(() => {
+        props.setValue(cuestion.name, formData.skills.join(', '));
+    }, [formData.skills]);
+
     return (
         <div className="flex flex-col" ref={skillsRef}>
             <label className="leading-loose flex items-center gap-2">
@@ -45,7 +59,7 @@ export function SelectComponent(props: InputFormProps) {
                     className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600 cursor-pointer flex items-center justify-between"
                     onClick={() => setShowSkillsDropdown(!showSkillsDropdown)}
                 >
-                    <span>{formData.skills.length ? `${formData.skills.length} seleccionadas` : 'Seleccionar habilidades'}</span>
+                    <span>{formData.skills.length ? `${formData.skills.length} seleccionadas` : `Seleccionar ${cuestion.name}`}</span>
                     <ChevronDown className="w-4 h-4" />
                 </div>
                 {showSkillsDropdown && (
@@ -54,7 +68,7 @@ export function SelectComponent(props: InputFormProps) {
                             <input
                                 type="text"
                                 className="w-full px-3 py-2 border rounded-md"
-                                placeholder="Buscar habilidades..."
+                                placeholder={`Buscar ${cuestion.name}...`}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
