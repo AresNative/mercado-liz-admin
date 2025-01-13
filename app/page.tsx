@@ -4,7 +4,7 @@ import Badge from "@/components/badge";
 import Providers from "@/hooks/provider";
 import Layout from "@/templates/layout";
 //
-import FormJson from "@/utils/constants/new-project-scrum.json";
+import { TestInputsField } from "@/utils/constants/forms/testInputs";
 export default function Home() {
 
   return (
@@ -13,7 +13,7 @@ export default function Home() {
         <MainForm
           message_button={'Enviar'}
           actionType={"add-project"}
-          dataForm={FormJson}
+          dataForm={TestInputsField()}
         />
       </Providers>
       <Badge color="purple" text="Example" />

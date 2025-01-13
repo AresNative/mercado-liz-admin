@@ -1,16 +1,40 @@
+export type FieldType =
+  | "Flex"
+  | "INPUT"
+  | "PHONE"
+  | "TEXT_AREA"
+  | "MAIL"
+  | "DATE"
+  | "DATE_RANGE"
+  | "CHECKBOX"
+  | "CHECKBOX_GROUP"
+  | "SELECT"
+  | "FILE"
+  | "IMG";
+
+export interface SelectOption {
+  value: string;
+  label: string;
+}
+
 export interface Field {
-  type: string;
+  id?: number;
+  type: FieldType;
   name: string;
-  labell?: string;
-  placeholder?: string;
   label?: string;
-  // Puedes agregar otros campos según tu necesidad
+  placeholder?: string;
+  require: boolean;
+  elements?: Field[]; // For Flex type
+  options?: string[] | SelectOption[]; // For CHECKBOX_GROUP and SELECT
+  enableAutocomplete?: string; // Changed to string to match "true"
+  multi?: boolean; // For SELECT
+  maxLength?: number; // For TEXT_AREA and INPUT
 }
 
 export interface MainFormProps {
   message_button: string;
+  actionType: string;
   dataForm: Field[];
-  actionType: "add-project" | "add-sprints" | "add-task";
 }
 
 export interface ChecboxFormProps {
@@ -81,7 +105,7 @@ export interface SearchableSelectProps {
     placeholder?: string;
     label?: string;
     require?: boolean;
-    options: { value: string; labell: string }[];
+    options: { value: string; label: string }[];
     valueDefined?: { name: string };
     enableAutocomplete?: boolean;
   };

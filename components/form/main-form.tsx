@@ -22,8 +22,6 @@ import { ImgComponent as Image } from "./img";
 import { Button } from "../button";
 
 import { usePostProjectsMutation, usePostSprintsMutation, usePostTasksMutation } from "@/hooks/reducers/api";
-import { map } from "framer-motion/client";
-
 
 //import { useAppDispatch } from "@/hooks/selector";
 
@@ -140,18 +138,53 @@ export function SwitchTypeInputRender(props: any) {
       return <File {...props} />;
     case "IMG":
       return <Image {...props} />;
-    /* case "Flex":
-      return <section className="flex flex-wrap gap-4 justify-start">
-        {props.elements?.map((child: any, key: any) => (
-          <SwitchTypeInputRender
-            key={key}
-            {...child}
-          />
-        ))}
-      </section> */
+    case "Flex":
+      return <FlexComponent {...props} elements={props.cuestion.elements} />;
     default:
       return <h1>{type}</h1>;
   }
 }
+interface FlexProps {
+  elements: any[];
+  control: any;
+  register: any;
+  watch: any;
+  clearErrors: any;
+  setError: any;
+  errors: any;
+  getValues: any;
+  setValue: any;
+}
 
+export const FlexComponent: React.FC<FlexProps> = ({
+  elements,
+  control,
+  register,
+  watch,
+  clearErrors,
+  setError,
+  errors,
+  getValues,
+  setValue,
+}) => {
+  return (
+    <div className="flex flex-wrap gap-4 justify-start">
+      {elements.map((element, index) => (
+        <div key={index} className="flex-grow">
+          <SwitchTypeInputRender
+            cuestion={element}
+            control={control}
+            register={register}
+            watch={watch}
+            clearErrors={clearErrors}
+            setError={setError}
+            errors={errors}
+            getValues={getValues}
+            setValue={setValue}
+          />
+        </div>
+      ))}
+    </div>
+  );
+};
 export default MainForm;
