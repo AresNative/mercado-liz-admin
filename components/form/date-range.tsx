@@ -66,6 +66,11 @@ export function DateRangeComponent(props: InputFormProps) {
                     </div>
                 )}
             </div>
+            {props.errors[cuestion.name] && props.errors[cuestion.name]?.message && (
+                <span className="text-red-400 p-1">
+                    {props.errors[cuestion.name]?.message}
+                </span>
+            )}
         </div>
     )
 }
