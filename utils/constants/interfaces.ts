@@ -20,7 +20,7 @@ export interface SelectOption {
 export interface Field {
   id?: number;
   type: FieldType;
-  name: string;
+  name?: string;
   label?: string;
   placeholder?: string;
   require: boolean;
@@ -105,7 +105,7 @@ export interface SearchableSelectProps {
     placeholder?: string;
     label?: string;
     require?: boolean;
-    options: { value: string; label: string }[];
+    options: string[];
     valueDefined?: { name: string };
     enableAutocomplete?: boolean;
   };

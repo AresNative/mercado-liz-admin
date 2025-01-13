@@ -1,15 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { InputFormProps } from "@/utils/constants/interfaces";
+import { SearchableSelectProps } from "@/utils/constants/interfaces";
 import { ChevronDown, Star, X } from "lucide-react";
 import Badge from "../badge";
-const skills = [
-    'JavaScript', 'React', 'Node.js', 'Python', 'Java', 'C++', 'Ruby', 'PHP',
-    'HTML', 'CSS', 'TypeScript', 'Angular', 'Vue.js', 'Django', 'Flask',
-    'Express.js', 'MongoDB', 'SQL', 'Git', 'Docker', 'AWS', 'Azure', 'GraphQL',
-    'REST API', 'Machine Learning', 'Data Analysis', 'Agile', 'Scrum'
-];
 
-export function SelectComponent(props: InputFormProps) {
+
+export function SelectComponent(props: SearchableSelectProps) {
     const { cuestion } = props;
     const skillsRef = useRef<HTMLDivElement>(null);
 
@@ -74,7 +69,7 @@ export function SelectComponent(props: InputFormProps) {
                             />
                         </div>
                         <ul className="max-h-60 overflow-y-auto">
-                            {skills
+                            {cuestion.options && cuestion.options
                                 .filter(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()))
                                 .map(skill => (
                                     <li
