@@ -26,6 +26,7 @@ export function ScrumField(): Field[] {
       name: "usuarios",
       label: "Usuarios Relacionados",
       require: true,
+      multi: true,
       options: [
         "JavaScript",
         "React",

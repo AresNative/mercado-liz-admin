@@ -106,6 +106,7 @@ export interface SearchableSelectProps {
     label?: string;
     require?: boolean;
     options: string[];
+    multi?: boolean;
     valueDefined?: { name: string };
     enableAutocomplete?: boolean;
   };

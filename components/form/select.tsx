@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { SearchableSelectProps } from "@/utils/constants/interfaces";
-import { ChevronDown, Star, X } from "lucide-react";
+import { ChevronDown, Star, X } from 'lucide-react';
 import Badge from "../badge";
-
 
 export function SelectComponent(props: SearchableSelectProps) {
     const { cuestion } = props;
@@ -10,18 +9,26 @@ export function SelectComponent(props: SearchableSelectProps) {
 
     const [showSkillsDropdown, setShowSkillsDropdown] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [formData, setFormData] = useState({
-        skills: [] as string[]
+    const [formData, setFormData] = useState<{
+        skills: string[]
+    }>({
+        skills: []
     });
 
     const handleSkillToggle = (skill: string) => {
-        setFormData(prev => ({
-            ...prev,
-            skills: prev.skills.includes(skill)
-                ? prev.skills.filter(s => s !== skill)
-                : [...prev.skills, skill]
-        }));
+        if (cuestion.multi === false) {
+            setFormData({ skills: [skill] });
+            setShowSkillsDropdown(false);
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                skills: prev.skills.includes(skill)
+                    ? prev.skills.filter(s => s !== skill)
+                    : [...prev.skills, skill]
+            }));
+        }
     };
+
     const handleRemoveSkill = (skill: string) => {
         setFormData(prev => ({
             ...prev,
@@ -40,8 +47,8 @@ export function SelectComponent(props: SearchableSelectProps) {
     }, []);
 
     useEffect(() => {
-        props.setValue(cuestion.name, formData.skills.join(', '));
-    }, [formData.skills]);
+        props.setValue(cuestion.name, cuestion.multi ? formData.skills.join(', ') : formData.skills[0] || '');
+    }, [formData.skills, cuestion.multi, cuestion.name, props]);
 
     return (
         <div className="flex flex-col" ref={skillsRef}>
@@ -54,7 +61,13 @@ export function SelectComponent(props: SearchableSelectProps) {
                     className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600 cursor-pointer flex items-center justify-between"
                     onClick={() => setShowSkillsDropdown(!showSkillsDropdown)}
                 >
-                    <span>{formData.skills.length ? `${formData.skills.length} seleccionadas` : `Seleccionar ${cuestion.name}`}</span>
+                    <span>
+                        {formData.skills.length
+                            ? (cuestion.multi
+                                ? `${formData.skills.length} seleccionadas`
+                                : formData.skills[0])
+                            : `Seleccionar ${cuestion.name}`}
+                    </span>
                     <ChevronDown className="w-4 h-4" />
                 </div>
                 {showSkillsDropdown && (
@@ -85,20 +98,22 @@ export function SelectComponent(props: SearchableSelectProps) {
                     </div>
                 )}
             </div>
-            <div className="flex flex-wrap gap-2 mt-2">
-                {formData.skills.map(skill => (
-                    <div key={skill}>
-                        <Badge text={skill} color="purple" />
-                        <button
-                            type="button"
-                            onClick={() => handleRemoveSkill(skill)}
-                            className="ml-1 text-blue-600 hover:text-blue-800"
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
-                    </div>
-                ))}
-            </div>
+            {cuestion.multi && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                    {formData.skills.map(skill => (
+                        <div key={skill}>
+                            <Badge text={skill} color="purple" />
+                            <button
+                                type="button"
+                                onClick={() => handleRemoveSkill(skill)}
+                                className="ml-1 text-blue-600 hover:text-blue-800"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            )}
             {props.errors[cuestion.name] && props.errors[cuestion.name]?.message && (
                 <span className="text-red-400 p-1">
                     {props.errors[cuestion.name]?.message}
@@ -107,3 +122,4 @@ export function SelectComponent(props: SearchableSelectProps) {
         </div>
     );
 }
+
