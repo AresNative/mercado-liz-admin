@@ -18,7 +18,8 @@
       "type":"TEXT_AREA",
       "name":"t2",
       "placeholder":"Descripción",
-      "require":false
+      "require":false,
+      "maxLength": 100
    },
    {
       "id":1,

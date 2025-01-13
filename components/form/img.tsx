@@ -2,26 +2,26 @@
 import Image from "next/image";
 import { Camera, User } from "lucide-react";
 import { useCallback, useState } from "react";
+import { InputMediaProps } from "@/utils/constants/interfaces";
 
-export function ImgComponent() {
+export function ImgComponent(props: InputMediaProps) {
+
+    const { cuestion } = props;
+
     const [profileImage, setProfileImage] = useState<string | null>(null);
-    const [documents, setDocuments] = useState<File[]>([]);
 
-    const handleFileDrop = useCallback((event: React.DragEvent<HTMLDivElement>, type: 'profile' | 'documents') => {
+    const handleFileDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
         event.stopPropagation();
 
         const files = Array.from(event.dataTransfer.files);
 
-        if (type === 'profile' && files[0] && files[0].type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setProfileImage(reader.result as string);
-            };
-            reader.readAsDataURL(files[0]);
-        } else if (type === 'documents') {
-            setDocuments(prev => [...prev, ...files]);
-        }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setProfileImage(reader.result as string);
+        };
+        reader.readAsDataURL(files[0]);
+
     }, []);
 
     const preventDefault = useCallback((event: React.DragEvent<HTMLDivElement>) => {
@@ -29,18 +29,15 @@ export function ImgComponent() {
         event.stopPropagation();
     }, []);
 
-    const handleFileInput = useCallback((event: React.ChangeEvent<HTMLInputElement>, type: 'profile' | 'documents') => {
+    const handleFileInput = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(event.target.files || []);
 
-        if (type === 'profile' && files[0]) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setProfileImage(reader.result as string);
-            };
-            reader.readAsDataURL(files[0]);
-        } else if (type === 'documents') {
-            setDocuments(prev => [...prev, ...files]);
-        }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setProfileImage(reader.result as string);
+        };
+        reader.readAsDataURL(files[0]);
+        props.setValue(cuestion.name, files);
     }, []);
     return (
         <div className="flex flex-col">
@@ -51,7 +48,7 @@ export function ImgComponent() {
             <div
                 className="mt-1 flex flex-col gap-2 justify-center items-center"
                 onDragOver={preventDefault}
-                onDrop={(e) => handleFileDrop(e, 'profile')}
+                onDrop={(e) => handleFileDrop(e)}
             >
                 <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-gray-300 border-dashed">
                     {profileImage ? (
@@ -67,7 +64,7 @@ export function ImgComponent() {
                     name="file-upload-profile"
                     type="file"
                     className="sr-only"
-                    onChange={(e) => handleFileInput(e, 'profile')}
+                    onChange={(e) => handleFileInput(e)}
                     accept="image/*"
                 />
                 <label

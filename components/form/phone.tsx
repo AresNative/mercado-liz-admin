@@ -5,6 +5,8 @@ import { Phone } from "lucide-react";
 export function PhoneComponent(props: InputFormProps) {
     const { cuestion } = props;
 
+    const currentValue = props.watch(cuestion.name) || "";
+
     useEffect(() => {
         if (cuestion.valueDefined) {
             props.setValue(cuestion.name, cuestion.valueDefined);
@@ -48,18 +50,16 @@ export function PhoneComponent(props: InputFormProps) {
                 <input
                     type="tel"
                     name="phone"
-                    value={formatPhoneNumber(props.getValues?.(cuestion.name))}
+                    value={formatPhoneNumber(currentValue)}
                     onChange={handleInputChange}
                     className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
                     placeholder="123-456-7890"
                     maxLength={12}
-                    {
-                    ...props.register(cuestion.name,
+                    {...props.register(cuestion.name,
                         cuestion.require
                             ? { required: "The field is required." }
                             : {}
-                    )
-                    }
+                    )}
                 />
             </div>
         </div>

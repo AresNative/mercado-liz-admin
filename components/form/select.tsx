@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { InputFormProps } from "@/utils/constants/interfaces";
 import { ChevronDown, Star, X } from "lucide-react";
+import Badge from "../badge";
 const skills = [
     'JavaScript', 'React', 'Node.js', 'Python', 'Java', 'C++', 'Ruby', 'PHP',
     'HTML', 'CSS', 'TypeScript', 'Angular', 'Vue.js', 'Django', 'Flask',
@@ -15,14 +16,6 @@ export function SelectComponent(props: InputFormProps) {
     const [showSkillsDropdown, setShowSkillsDropdown] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        birthDate: '',
-        interviewDateStart: '',
-        interviewDateEnd: '',
-        education: '',
-        experience: '',
         skills: [] as string[]
     });
 
@@ -40,6 +33,7 @@ export function SelectComponent(props: InputFormProps) {
             skills: prev.skills.filter(s => s !== skill)
         }));
     };
+
     return (
         <div className="flex flex-col" ref={skillsRef}>
             <label className="leading-loose flex items-center gap-2">
@@ -84,8 +78,8 @@ export function SelectComponent(props: InputFormProps) {
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
                 {formData.skills.map(skill => (
-                    <span key={skill} className="bg-blue-100 text-blue-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded flex items-center">
-                        {skill}
+                    <div key={skill}>
+                        <Badge text={skill} color="purple" />
                         <button
                             type="button"
                             onClick={() => handleRemoveSkill(skill)}
@@ -93,7 +87,7 @@ export function SelectComponent(props: InputFormProps) {
                         >
                             <X className="w-4 h-4" />
                         </button>
-                    </span>
+                    </div>
                 ))}
             </div>
         </div>

@@ -7,8 +7,6 @@ export function CheckboxComponent(props: InputFormProps) {
             <input
                 type="checkbox"
                 id="terms"
-                /* checked={acceptedTerms}
-                onChange={() => setAcceptedTerms(!acceptedTerms)} */
                 {
                 ...props.register(cuestion.name,
                     cuestion.require

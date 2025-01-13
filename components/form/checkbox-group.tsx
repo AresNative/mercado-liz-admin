@@ -1,19 +1,27 @@
+import { ChecboxFormProps } from "@/utils/constants/interfaces";
 import { Check } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export function CheckboxGroupComponent() {
-    const [jobRequirements, setJobRequirements] = useState({
-        education: false,
-        experience: false,
-        skills: false,
-        availability: false,
-    });
+export function CheckboxGroupComponent(props: ChecboxFormProps) {
+
+    const { cuestion } = props;
+
+    const [jobRequirements, setJobRequirements] = useState(cuestion.options.reduce((acc, option) => {
+        acc[option] = false;
+        return acc;
+    }, {} as Record<string, boolean>));
+
     const handleJobRequirementChange = (requirement: keyof typeof jobRequirements) => {
         setJobRequirements(prev => ({
             ...prev,
             [requirement]: !prev[requirement]
         }));
     };
+
+    useEffect(() => {
+        props.setValue(cuestion.name, Object.keys(jobRequirements).filter(key => jobRequirements[key]) as unknown as boolean);
+    }, [jobRequirements])
+
     return (
         <div>
             <p className="text-sm font-medium text-gray-700 mb-2">Requisitos de la vacante que cumples:</p>

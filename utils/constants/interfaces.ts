@@ -23,6 +23,7 @@ export interface ChecboxFormProps {
   setValue: (name: string, value: boolean) => Promise<void>;
   register: (name: string, options: { required?: string }) => void;
   setError: (name: string, error: object) => void;
+  watch: (name: string) => string;
   errors: Record<string, { message?: string } | undefined>;
 }
 
@@ -46,7 +47,9 @@ export interface InputFormProps {
     require: boolean;
     type: "password" | "number" | "email" | "phone" | "text";
     icon?: React.ElementType<any>;
+    maxLength?: number;
   };
+  watch: (name: string) => string;
   getValues: (name: string) => string;
   setValue: (name: string, value: string) => void;
   setError: (name: string, error: object) => void;
@@ -60,12 +63,14 @@ export interface InputMediaProps {
     placeholder?: string;
     require?: boolean;
     accept?: string; // Allowed file types
+    multiple?: boolean;
   };
-  setValue: (name: string, value: File | null) => void;
+  setValue: (name: string, value: File | File[] | null) => void;
+  register: (name: string, options: { required?: string }) => object;
   errors: Record<string, { message?: string } | undefined>;
 }
 
-export interface RadioComponentProps {
+/* export interface RadioComponentProps {
   cuestion: {
     name: string;
     placeholder: string;
@@ -76,7 +81,7 @@ export interface RadioComponentProps {
   register: (name: string, options: { required?: string | boolean }) => object;
   errors: Record<string, { message?: string } | undefined>;
 }
-
+ */
 export interface SearchableSelectProps {
   cuestion: {
     name: string;
