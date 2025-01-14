@@ -123,6 +123,7 @@ export interface ButtonProps {
   label?: string;
   size?: string;
   color?: "success" | "error" | "warning" | "completed" | "info";
+  onClick?: () => void;
 }
 
 export interface UserRoleRendererProps {
