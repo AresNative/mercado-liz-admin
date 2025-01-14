@@ -4,13 +4,13 @@ import { getLocalStorageItem } from "@/utils/functions/local-storage";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const getUserData = () => getLocalStorageItem("user_data");
-const config = EnvConfig();
+const { api: apiUrl } = EnvConfig();
 
 export const api = createApi({
     reducerPath: "api", // ?Nombre del reducer
     refetchOnFocus: true,
     baseQuery: fetchBaseQuery({
-        baseUrl: config.api,
+        baseUrl: apiUrl,
         prepareHeaders: (headers, { }) => {
             headers.set("Content-Type", "application/json");
             const token = getLocalStorageItem("token");

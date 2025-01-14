@@ -1,11 +1,6 @@
-const {
-  NEXT_PUBLIC_API_URL: api,
-  NEXT_PUBLIC_MODE: mode,
-  itemsPerPage: items_per_page,
-} = process.env;
-
+// config.ts
 export const EnvConfig = () => ({
-  api,
-  mode,
-  items_per_page,
+  api: process.env.NEXT_PUBLIC_API_URL,
+  mode: process.env.NEXT_PUBLIC_MODE,
+  itemsPerPage: process.env.ITEMS_PER_PAGE, // Note: This will only be available server-side
 });
