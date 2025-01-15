@@ -1,60 +1,64 @@
 "use client";
-import { usePutTaskStatusMutation, usePutTaskOrderMutation, useGetSprintsQuery } from "@/hooks/reducers/api";
-import { DndContext, DragOverlay, closestCenter } from "@dnd-kit/core";
+import React, { useEffect, useState, useCallback } from "react";
+import { DndContext, DragOverlay, closestCenter, DragStartEvent, DragOverEvent, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import React, { useState } from "react";
+import { usePutTaskStatusMutation, usePutTaskOrderMutation, useGetSprintsQuery, useGetTasksQuery } from "@/hooks/reducers/api";
 import MainForm from "@/components/form/main-form";
-import { Column } from "./column";
 import { SprintField } from "../constants/sprints";
+import { Task } from "../constants/types";
+import { Column } from "./column";
+import Details from "@/components/details";
+import { TasksField } from "../constants/tasks";
 
-interface Context {
-    pryectId: string;
+interface DNDContextProps {
+    projectId: string;
     statusColumns: string[];
 }
-export default function DNDContext({ pryectId, statusColumns }: Context) {
-    const [activeTask, setActiveTask] = useState<any>(null);
-    const [overColumn, setOverColumn] = useState<any>(null);
-    const [tasks, setTasks] = useState<any[]>([]);
+
+export default function DNDContext({ projectId, statusColumns }: DNDContextProps) {
+    const [activeTask, setActiveTask] = useState<Task | null>(null);
+    const [overColumn, setOverColumn] = useState<string | null>(null);
+    const [tasks, setTasks] = useState<Task[]>([]);
 
     const [putTaskStatus] = usePutTaskStatusMutation();
     const [putTaskOrder] = usePutTaskOrderMutation();
 
-    const { data: sprintsData = [], isLoading: sprintsLoading, refetch: refetchSprints } = useGetSprintsQuery(pryectId);
+    const { data: sprintsData = [], isLoading: sprintsLoading } = useGetSprintsQuery(projectId);
+    const { data: tasksData = [], isLoading: tasksLoading } = useGetTasksQuery('11');
 
-    const handleDragStart = (event: any) => {
-        const { active } = event;
-        setActiveTask(tasks.find(task => task.id === active.id));
-    };
-
-    const handleDragOver = (event: any) => {
-        const { over } = event;
-        if (activeTask) {
-            const updatedTasks = tasks.map(task => {
-                if (task.id === activeTask.id) {
-                    return { ...task, column: over.id };
-                }
-                return task;
-            });
-            setTasks(updatedTasks);
+    useEffect(() => {
+        if (tasksData.length > 0) {
+            const filteredTasks = tasksData.filter((t: Task) => t.estado !== 'archivado');
+            setTasks(filteredTasks);
         }
-    };
+    }, [tasksData]);
 
-    const handleDragEnd = async (event: any) => {
+    const handleDragStart = useCallback((event: DragStartEvent) => {
+        const { active } = event;
+        const task = tasks.find(t => t.id === active.id) || null;
+        setActiveTask(task);
+    }, [tasks]);
+
+    const handleDragOver = useCallback((event: DragOverEvent) => {
+        const { over } = event;
+        if (over) setOverColumn(over.id as string);
+    }, []);
+
+    const handleDragEnd = useCallback(async (event: DragEndEvent) => {
         const { active, over } = event;
         setActiveTask(null);
         setOverColumn(null);
 
         if (!over) return;
 
-        const activeTask = tasks.find(task => task.id === active.id);
+        const activeTask = tasks.find(t => t.id === active.id);
         if (!activeTask) return;
 
-        const newStatus = over.id;
-
+        const newStatus = over.id as string;
         if (!statusColumns.includes(newStatus)) {
-            // Handle reordering within the same column
+            // Reordenar dentro de la misma columna
             if (over.data.current?.sortable) {
-                const overTask = tasks.find(task => task.id === over.id);
+                const overTask = tasks.find(t => t.id === over.id);
                 if (overTask && active.id !== over.id) {
                     const activeIndex = tasks.findIndex(t => t.id === active.id);
                     const overIndex = tasks.findIndex(t => t.id === over.id);
@@ -63,20 +67,12 @@ export default function DNDContext({ pryectId, statusColumns }: Context) {
                         .filter(t => t.estado === activeTask.estado)
                         .sort((a, b) => (a.order || 0) - (b.order || 0));
 
-                    let newOrder;
-                    if (overIndex === tasksInSameStatus.length - 1) {
-                        newOrder = (overTask.order || 0) + 1;
-                    } else {
-                        const nextTask = tasksInSameStatus[overIndex + 1];
-                        newOrder = Math.floor(((overTask.order || 0) + (nextTask?.order || 0)) / 2);
-                    }
+                    const newOrder = overIndex === tasksInSameStatus.length - 1
+                        ? (overTask.order || 0) + 1
+                        : Math.floor(((overTask.order || 0) + (tasksInSameStatus[overIndex + 1]?.order || 0)) / 2);
 
                     try {
-                        await putTaskOrder({
-                            taskId: active.id,
-                            order: newOrder
-                        }).unwrap();
-
+                        await putTaskOrder({ taskId: active.id, order: newOrder }).unwrap();
                         setTasks(prevTasks => {
                             const newTasks = arrayMove(prevTasks, activeIndex, overIndex);
                             return newTasks.map(task =>
@@ -88,35 +84,22 @@ export default function DNDContext({ pryectId, statusColumns }: Context) {
                     } catch (error) {
                         console.error('Error updating task order:', error);
                     }
-                    finally {
-                        /* refetchTasks(); */
-                    }
                 }
             }
             return;
         }
 
-        // Validate column movement
-        const isValidMove = activeTask.estado !== newStatus;
-
-        if (!isValidMove) {
+        // Validar movimiento entre columnas
+        if (activeTask.estado === newStatus) {
             console.warn('Movimiento no permitido entre columnas');
             return;
         }
 
-        // Update task status and order
         try {
-            await putTaskStatus({
-                taskId: active.id,
-                estado: newStatus
-            }).unwrap();
+            await putTaskStatus({ taskId: active.id, estado: newStatus }).unwrap();
+            const newOrder = 1;
 
-            const newOrder = 1; // Set the new task to the beginning of the list
-
-            await putTaskOrder({
-                taskId: active.id,
-                order: newOrder
-            }).unwrap();
+            await putTaskOrder({ taskId: active.id, order: newOrder }).unwrap();
 
             setTasks(prevTasks =>
                 prevTasks.map(task =>
@@ -130,37 +113,61 @@ export default function DNDContext({ pryectId, statusColumns }: Context) {
         } catch (error) {
             console.error('Error updating task status or order:', error);
         }
-    };
+    }, [tasks, statusColumns, putTaskOrder, putTaskStatus]);
+
+    if (tasksLoading || sprintsLoading) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <>
-            <MainForm
-                message_button={'Buscar'}
-                actionType={"add-sprint"}
-                dataForm={SprintField()}
-            />
+            <ul className="flex flex-wrap gap-4 justify-start">
+                <li className="flex-grow">
+                    <Details
+                        title="Agregar Sprint"
+                        type="form"
+                        children={
+                            <MainForm
+                                message_button={'Enviar'}
+                                actionType={"add-sprint"}
+                                dataForm={TasksField()}
+                            />
+                        }
+                    />
+                </li>
+
+                <li className="flex-grow">
+                    <MainForm
+                        message_button={'Buscar'}
+                        actionType={"add-sprint"}
+                        dataForm={SprintField()}
+                    />
+                </li>
+            </ul>
+
             <DndContext
                 collisionDetection={closestCenter}
                 onDragStart={handleDragStart}
                 onDragOver={handleDragOver}
                 onDragEnd={handleDragEnd}
             >
-                <div className="w-full flex gap-4 overflow-auto">
-                    {statusColumns.map((status) =>
+                <div className="w-full flex gap-4 overflow-auto p-4">
+                    {statusColumns.map((status) => (
                         <Column
                             key={status}
                             status={status}
                             statusColumns={statusColumns}
-                            rows={tasks}
+                            tasks={tasks}
                             activeTask={activeTask}
                             overColumn={overColumn}
                         />
-                    )}
+                    ))}
                 </div>
                 <DragOverlay>
                     {activeTask && (
                         <div className="bg-white p-3 rounded shadow opacity-80">
                             <div className="font-medium">{activeTask.nombre}</div>
-                            <div className="text-sm text-gray-600 truncate">{activeTask.descripcion}</div>
+                            <div className="text-sm text-gray-600 truncate">{activeTask.descripcion || 'Sin descripcion'}</div>
                         </div>
                     )}
                 </DragOverlay>

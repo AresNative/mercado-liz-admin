@@ -79,7 +79,7 @@ export const alertClasses = {
   },
   info: {
     bg: "bg-purple-50",
-    hover: "hover:bg-purple-200 hover:text-white hover:ring-purple-800/10",
+    hover: "hover:bg-purple-500 hover:text-white ",
     text: "text-purple-600",
     ring: "ring-purple-500/10",
   },
@@ -90,3 +90,16 @@ export const alertClasses = {
     ring: "ring-indigo-500/10",
   },
 }; // Añadido para evitar modificaciones si usas TypeScript
+
+export const colorBorderClasses = {
+  red: "border-red-500 bg-red-100",
+  blue: "border-blue-500 bg-blue-100",
+  green: "border-green-500 bg-green-100",
+  yellow: "border-yellow-500 bg-yellow-100",
+  purple: "border-purple-500 bg-purple-100",
+  pink: "border-pink-500 bg-pink-100",
+  indigo: "border-indigo-500 bg-indigo-100",
+  teal: "border-teal-500 bg-teal-100",
+  orange: "border-orange-500 bg-orange-100",
+  cyan: "border-cyan-500 bg-cyan-100",
+};

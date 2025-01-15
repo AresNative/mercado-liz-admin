@@ -1,3 +1,5 @@
+import { alertClasses } from "./colors";
+
 export type FieldType =
   | "Flex"
   | "INPUT"
@@ -121,9 +123,11 @@ export interface SearchableSelectProps {
 export interface ButtonProps {
   type?: "button" | "submit" | "reset";
   label?: string;
-  size?: string;
-  color?: "success" | "error" | "warning" | "completed" | "info";
-  onClick?: () => void;
+  size?: "small" | "medium" | "large";
+  color?: keyof typeof alertClasses;
+  children?: React.ReactNode;
+  disabled?: boolean;
+  onClick?: (...args: any[]) => any;
 }
 
 export interface UserRoleRendererProps {

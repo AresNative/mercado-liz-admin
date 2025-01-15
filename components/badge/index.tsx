@@ -5,7 +5,6 @@ interface BadgeProps {
     text: string;
 }
 
-
 export default function Badge(props: BadgeProps) {
     const { color, text } = props;
     const styles = colorClasses[color];

@@ -10,7 +10,7 @@ export default function Details({ title, description, type, children }: DetailsP
 
     if (type === 'form') {
         return (
-            <details className="mt-4 mb-4 border rounded-lg overflow-hidden group">
+            <details className="mt-4 mb-4 border rounded-lg overflow-auto group pb-4-">
                 <summary className="w-full text-left p-4 flex justify-between items-center bg-blue-50 hover:bg-blue-100 transition-colors cursor-pointer">
                     <span className="text-sm font-medium text-blue-700">{title}</span>
                     <Plus className="h-5 w-5 text-blue-500 transition-transform group-open:rotate-45" />
