@@ -11,9 +11,10 @@ interface ColumnProps {
     activeTask: Task | null;
     overColumn: string | null;
     statusColumns: string[];
+    refetch?: (...args: any[]) => any;
 }
 
-export const Column: React.FC<ColumnProps> = ({ status, tasks, activeTask, overColumn, statusColumns }) => {
+export const Column: React.FC<ColumnProps> = ({ status, tasks, activeTask, overColumn, statusColumns, refetch }) => {
     const { setNodeRef } = useDroppable({ id: status });
 
     // Memoize filtered tasks to avoid re-filtering on every render
@@ -59,7 +60,7 @@ export const Column: React.FC<ColumnProps> = ({ status, tasks, activeTask, overC
                 )}
                 <SortableContext items={filteredTasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
                     {filteredTasks.map((task) => (
-                        <SortableTask key={task.id} task={task} />
+                        <SortableTask key={task.id} task={task} refetch={refetch} />
                     ))}
                 </SortableContext>
             </div>

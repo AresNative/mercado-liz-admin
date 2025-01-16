@@ -53,12 +53,12 @@ export default function Estatico() {
 
 interface RenderChartProps {
     type: string;
-    barData: ChartData[];
-    treemapData: ChartData[];
+    barData: any[];
+    treemapData: any[];
 }
 
 function RenderChart({ type, barData, treemapData }: RenderChartProps) {
-    const categories: string[] = barData[0]?.data?.slice(0, 6).map((item) => item.x) || [];
+    const categories: string[] = barData[0]?.data?.slice(0, 6).map((item: any) => item.x) || [];
     console.log(treemapData);
 
     switch (type) {

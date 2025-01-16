@@ -1,10 +1,10 @@
-import React, { useMemo } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { usePutTaskStatusMutation } from "@/hooks/reducers/api";
 import { Button } from "@/components/button";
 import { Task } from "../constants/types";
 import { Archive, Eye } from "lucide-react";
+import Badge from "@/components/badge";
 
 interface SortableTaskProps {
     task: Task;
@@ -14,13 +14,13 @@ interface SortableTaskProps {
 const getPriorityClass = (priority: string) => {
     switch (priority) {
         case "alta":
-            return "bg-red-100 text-red-700";
+            return "red";
         case "media":
-            return "bg-yellow-100 text-yellow-700";
+            return "yellow";
         case "baja":
-            return "bg-green-100 text-green-700";
+            return "blue";
         default:
-            return "bg-gray-100 text-gray-700";
+            return "gray";
     }
 };
 
@@ -57,31 +57,32 @@ export const SortableTask: React.FC<SortableTaskProps> = ({ task, refetch }) => 
     };
 
     return (
-        <div
-            ref={setNodeRef}
-            style={style}
-            {...attributes}
-            {...listeners}
-            className="bg-white p-4 mb-4 rounded-lg shadow-lg cursor-move hover:shadow-xl transition-shadow"
-        >
-            {/* Encabezado */}
-            <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-gray-800 text-sm truncate">
-                    {task.nombre}
-                </h3>
-                <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityClass(task.prioridad)}`}
-                >
-                    {task.prioridad || "N/A"}
-                </span>
-            </div>
+        <section className="bg-white p-4 mb-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+            <div
+                ref={setNodeRef}
+                style={style}
+                {...attributes}
+                {...listeners}
+                className="cursor-move"
+            >
+                {/* Encabezado */}
+                <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-gray-800 text-sm truncate">
+                        {task.nombre}
+                    </h3>
+                    <Badge
+                        color={getPriorityClass(task.prioridad)}
+                        text={task.prioridad || "N/A"}
+                    />
+                </div>
 
-            {/* Descripción */}
-            <p className="text-sm text-gray-600 mt-2 truncate">
-                {task.descripcion || "Sin descripción"}
-            </p>
+                {/* Descripción */}
+                <p className="text-sm text-gray-600 mt-2 truncate">
+                    {task.descripcion || "Sin descripción"}
+                </p>
 
-            {/* Acciones */}
+
+            </div>{/* Acciones */}
             <ul className="flex justify-between items-center mt-3">
                 <span className="text-xs text-gray-500">
                     {task.fecha_vencimiento
@@ -109,6 +110,6 @@ export const SortableTask: React.FC<SortableTaskProps> = ({ task, refetch }) => 
                     </Button>
                 </li>
             </ul>
-        </div>
+        </section>
     );
 };

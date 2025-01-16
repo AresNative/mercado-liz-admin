@@ -6,7 +6,6 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const getUserData = () => getLocalStorageItem("user_data");
 
 const { api: apiUrl } = EnvConfig();
-console.log(apiUrl);
 
 export const auth = createApi({
     reducerPath: "auth",

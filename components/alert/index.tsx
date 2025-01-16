@@ -1,20 +1,34 @@
 'use client';
 
+import { useAppSelector } from "@/hooks/selector";
 import { alertClasses } from "@/utils/constants/colors";
-import { useState, useRef, ReactNode } from "react";
+import { useState, useRef, ReactNode, useEffect } from "react";
 
 interface AlertProps {
     message: string;
     icon: ReactNode;
     type: 'success' | 'error' | 'warning' | 'completed' | 'info';
-    action?: () => void;
+    action?: (...args: any[]) => any;
 }
 
-export default function Alert({ message, icon, type, action }: AlertProps) {
-    const [open, setOpen] = useState(true);
+export default function Alert({ message, action, type }: AlertProps) {
+    const selector = useAppSelector((state) => state.dropDownReducer);
+    const [open, setOpen] = useState(false);
     const dialogRef = useRef<HTMLDialogElement | null>(null);
 
     const styles = alertClasses[type];
+
+    useEffect(() => {
+        if (selector.message) {
+            setOpen(true);
+            // Ocultar la alerta automáticamente después de 'duration' milisegundos
+            const timer = setTimeout(() => {
+                setOpen(false);
+            }, selector.duration);
+
+            return () => clearTimeout(timer);
+        }
+    }, [selector]);
 
     const closeDialog = () => {
         setOpen(false);
@@ -45,10 +59,10 @@ export default function Alert({ message, icon, type, action }: AlertProps) {
                     <div
                         className={`flex items-center justify-center w-12 h-12 rounded-full ${styles.bg}`}
                     >
-                        {icon}
+                        {selector.icon}
                     </div>
                     <div>
-                        <h3 className={`text-lg font-semibold ${styles.text}`}>Deactivate account</h3>
+                        <h3 className={`text-lg font-semibold ${styles.text}`}>{selector.message}</h3>
                         <p className="mt-2 text-sm text-gray-500">{message}</p>
                     </div>
                 </div>

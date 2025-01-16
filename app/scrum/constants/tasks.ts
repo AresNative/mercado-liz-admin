@@ -7,15 +7,15 @@ export function TasksField(): Field[] {
       require: false,
       elements: [
         {
+          name: "nombre",
           type: "INPUT",
           require: true,
           label: "Titulo",
-          name: "titulo",
           placeholder: "Titulo de la tarea:",
         },
         {
-          type: "SELECT",
           name: "prioridad",
+          type: "SELECT",
           label: "Prioridad de la tarea...",
           require: true,
           multi: false,
@@ -25,10 +25,10 @@ export function TasksField(): Field[] {
     },
 
     {
+      name: "descripcion",
       type: "INPUT",
       require: true,
       label: "Descripcion",
-      name: "descripcion",
       placeholder: "Explica en breves palabras que es la tarea...",
       maxLength: 50,
     },

@@ -36,8 +36,12 @@ export default function Model() {
                     <Providers>
                         <MainForm
                             message_button={'Enviar'}
-                            actionType={"add-sprint"}
+                            actionType={"add-sprints"}
                             dataForm={ScrumField()}
+                            aditionalData={{
+                                estado: "nuevo",
+                                project_id: 18
+                            }}
                         />
                     </Providers>
                 }

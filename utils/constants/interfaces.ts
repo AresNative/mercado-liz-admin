@@ -37,6 +37,9 @@ export interface MainFormProps {
   message_button: string;
   actionType: string;
   dataForm: Field[];
+  aditionalData?: any;
+  valueAssign?: any;
+  action?: (...args: any[]) => any;
 }
 
 export interface ChecboxFormProps {

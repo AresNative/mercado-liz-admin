@@ -1,6 +1,6 @@
 import { Field } from "@/utils/constants/interfaces";
 
-export function SprintField(): Field[] {
+export function SprintField(data: any): Field[] {
   return [
     {
       type: "SELECT",
@@ -8,7 +8,7 @@ export function SprintField(): Field[] {
       label: "Sprints del proyecto...",
       require: true,
       multi: false,
-      options: ["11", "13"],
+      options: data.map((row: any) => row.id),
     },
   ];
 }

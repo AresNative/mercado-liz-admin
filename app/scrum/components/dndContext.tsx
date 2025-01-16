@@ -18,20 +18,21 @@ interface DNDContextProps {
 export default function DNDContext({ projectId, statusColumns }: DNDContextProps) {
     const [activeTask, setActiveTask] = useState<Task | null>(null);
     const [overColumn, setOverColumn] = useState<string | null>(null);
+    const [Sprint, SetSprint] = useState(projectId);
     const [tasks, setTasks] = useState<Task[]>([]);
 
     const [putTaskStatus] = usePutTaskStatusMutation();
     const [putTaskOrder] = usePutTaskOrderMutation();
 
-    const { data: sprintsData = [], isLoading: sprintsLoading } = useGetSprintsQuery(projectId);
-    const { data: tasksData = [], isLoading: tasksLoading } = useGetTasksQuery('11');
+    const { data: sprintsData = [], isLoading: sprintsLoading, refetch: refetchSprint } = useGetSprintsQuery(projectId);
+    const { data: tasksData = [], isLoading: tasksLoading, refetch: refetchTasks } = useGetTasksQuery(Sprint);
 
     useEffect(() => {
         if (tasksData.length > 0) {
             const filteredTasks = tasksData.filter((t: Task) => t.estado !== 'archivado');
             setTasks(filteredTasks);
         }
-    }, [tasksData]);
+    }, [tasksData, refetchTasks]);
 
     const handleDragStart = useCallback((event: DragStartEvent) => {
         const { active } = event;
@@ -124,13 +125,19 @@ export default function DNDContext({ projectId, statusColumns }: DNDContextProps
             <ul className="flex flex-wrap gap-4 justify-start">
                 <li className="flex-grow">
                     <Details
-                        title="Agregar Sprint"
+                        title="Agregar tarea"
                         type="form"
                         children={
                             <MainForm
                                 message_button={'Enviar'}
-                                actionType={"add-sprint"}
+                                actionType={"add-task"}
                                 dataForm={TasksField()}
+                                aditionalData={{
+                                    sprint_id: Sprint,
+                                    estado: statusColumns[0],
+                                    order: 1
+                                }}
+                                action={refetchTasks}
                             />
                         }
                     />
@@ -140,7 +147,13 @@ export default function DNDContext({ projectId, statusColumns }: DNDContextProps
                     <MainForm
                         message_button={'Buscar'}
                         actionType={"add-sprint"}
-                        dataForm={SprintField()}
+                        dataForm={SprintField(sprintsData)}
+                        action={async (data) => {
+                            SetSprint(data);
+                            setTasks([])
+                            await refetchTasks()
+                        }}
+                        valueAssign="sprint"
                     />
                 </li>
             </ul>

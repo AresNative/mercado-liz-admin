@@ -22,10 +22,11 @@ import { ImgComponent as Image } from "./img";
 import { Button } from "../button";
 
 import { usePostProjectsMutation, usePostSprintsMutation, usePostTasksMutation } from "@/hooks/reducers/api";
+//import { openAlertReducer } from "@/hooks/reducers/drop-down";
 
 //import { useAppDispatch } from "@/hooks/selector";
 
-export const MainForm = ({ message_button, dataForm, actionType }: MainFormProps) => {
+export const MainForm = ({ message_button, dataForm, actionType, aditionalData, action, valueAssign }: MainFormProps) => {
 
   //const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
@@ -60,17 +61,27 @@ export const MainForm = ({ message_button, dataForm, actionType }: MainFormProps
   }
 
   async function onSubmit(submitData: any) {
-    console.log(submitData);
-
     setLoading(true);
-    //const mutationFunction = getMutationFunction(actionType);
+    const combinedData = { ...submitData, ...aditionalData };
+    console.log(combinedData);
+    const mutationFunction = getMutationFunction(actionType);
     try {
-      //await mutationFunction(submitData);
+      await mutationFunction(combinedData);
+      if (valueAssign && action) {
 
+        // Elimina las comillas alrededor del valor devuelto por valueAssign
+        const key = valueAssign.replace(/^'|'$/g, ''); // Elimina comillas simples al inicio y al final
+        await action(submitData[key]);
+
+      } else
+        if (action) {
+          await action()
+        }
       /* dispatch(
         openAlertReducer({
           message: "Éxito! Operación realizada",
           type: "success", //? "info" |  "success" | "warning" | "error"
+          icon: <ArchiveRestore className="w-6 h-6 text-green-600" />
         })
       ); */
 
@@ -81,6 +92,7 @@ export const MainForm = ({ message_button, dataForm, actionType }: MainFormProps
         openAlertReducer({
           message: "Error! Algo salió mal",
           type: "error",
+          icon: <CircleAlert className="w-6 h-6 text-red-600" />
         })
       ); */
     } finally {
