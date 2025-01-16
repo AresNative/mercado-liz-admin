@@ -8,6 +8,7 @@ import { InputComponent as Input } from "./input";
 import { MailComponent as Mail } from "./mail";
 import { PhoneComponent as Phone } from "./phone";
 import { TextAreaComponent as TextArea } from "./text-area";
+import { PasswordComponent as Password } from "./password";
 
 import { SelectComponent as Select } from "./select";
 import { CheckboxComponent as Checkbox } from "./checkbox";
@@ -22,6 +23,7 @@ import { ImgComponent as Image } from "./img";
 import { Button } from "../button";
 
 import { usePostProjectsMutation, usePostSprintsMutation, usePostTasksMutation } from "@/hooks/reducers/api";
+import { usePostUserLoginMutation } from "@/hooks/reducers/auth";
 //import { openAlertReducer } from "@/hooks/reducers/drop-down";
 
 //import { useAppDispatch } from "@/hooks/selector";
@@ -43,6 +45,7 @@ export const MainForm = ({ message_button, dataForm, actionType, aditionalData, 
     formState: { errors },
   } = useForm();
 
+  const [postUserLogin] = usePostUserLoginMutation();
   const [postProjects] = usePostProjectsMutation();
   const [postSprint] = usePostSprintsMutation();
   const [postTask] = usePostTasksMutation();
@@ -55,6 +58,8 @@ export const MainForm = ({ message_button, dataForm, actionType, aditionalData, 
         return postSprint;
       case "add-task":
         return postTask;
+      case "post-login":
+        return postUserLogin
       default:
         return () => { };
     }
@@ -62,13 +67,13 @@ export const MainForm = ({ message_button, dataForm, actionType, aditionalData, 
 
   async function onSubmit(submitData: any) {
     setLoading(true);
-    const combinedData = { ...submitData, ...aditionalData };
-    console.log(combinedData);
+    let combinedData: any = {}
+    if (aditionalData) combinedData = { ...submitData, ...aditionalData };
+    else combinedData = submitData;
     const mutationFunction = getMutationFunction(actionType);
     try {
       await mutationFunction(combinedData);
       if (valueAssign && action) {
-
         // Elimina las comillas alrededor del valor devuelto por valueAssign
         const key = valueAssign.replace(/^'|'$/g, ''); // Elimina comillas simples al inicio y al final
         await action(submitData[key]);
@@ -130,6 +135,8 @@ export function SwitchTypeInputRender(props: any) {
   switch (type) {
     case "INPUT":
       return <Input {...props} />;
+    case "PASSWORD":
+      return <Password {...props} />
     case "PHONE":
       return <Phone {...props} />;
     case "TEXT_AREA":

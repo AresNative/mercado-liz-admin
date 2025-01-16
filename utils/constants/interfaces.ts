@@ -3,6 +3,7 @@ import { alertClasses } from "./colors";
 export type FieldType =
   | "Flex"
   | "INPUT"
+  | "PASSWORD"
   | "PHONE"
   | "TEXT_AREA"
   | "MAIL"
