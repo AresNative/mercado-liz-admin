@@ -172,7 +172,7 @@ const UserPage = () => {
     };
     return (
         <>
-            <div className="grid grid-cols-1 gap-4 mb-4 lg:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 mb-4">
                 <Box height="6rem">
                     <div className="w-full">
                         <ReportInputs
@@ -221,9 +221,9 @@ const UserPage = () => {
                         />
                     </div>
                 </Box>
-                <Box height="6rem" >
+                {/* <Box height="6rem" >
                     <FileList files={files} />
-                </Box>
+                </Box> */}
             </div>
             <DndContext
                 sensors={sensors}
