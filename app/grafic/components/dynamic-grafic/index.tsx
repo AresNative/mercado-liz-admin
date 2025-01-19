@@ -15,36 +15,57 @@ interface DynamicChartProps {
     height?: string | number; // Altura opcional del gráfico
 }
 
-const DynamicChart: React.FC<DynamicChartProps> = ({ type, categories, data, height = 350 }) => {
+const DynamicChart: React.FC<DynamicChartProps> = ({
+    type,
+    categories,
+    data,
+    height = 350,
+}) => {
     // Configuración común para los gráficos
-    const chartOptions: ApexOptions = {
-        chart: {
-            type: type,
-            toolbar: { show: true },
-            background: "transparent",
-        },
-        xaxis: type !== "pie" ? {
-            categories,
-            labels: { style: { colors: "#64748b", fontSize: "12px" } },
-        } : undefined,
-        stroke: {
-            curve: type === "area" || type === "line" ? "smooth" : "straight",
-            width: 2,
-        },
-        fill: type === "area" ? {
-            type: "gradient",
-            gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.3 },
-        } : { type: "solid" },
-        plotOptions: type === "bar" ? {
-            bar: { borderRadius: 4, horizontal: categories.length > 4 },
-        } : undefined,
-        dataLabels: { enabled: false },
-        tooltip: { theme: "dark" },
-        legend: { position: "bottom" },
-        labels: type === "pie" ? categories : undefined, // Solo para gráfico de pie
-    };
+    const chartOptions: ApexOptions =
+        type === "pie"
+            ? {
+                chart: { type: "pie" },
+                labels: categories,
+                fill: {
+                    type: "gradient",
+                    gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.3 },
+                },
+                legend: { position: "bottom" },
+                tooltip: { theme: "dark" },
+            }
+            : {
+                chart: { type, toolbar: { show: true }, background: "transparent" },
+                xaxis: {
+                    categories,
+                    labels: { style: { colors: "#64748b", fontSize: "12px" } },
+                },
+                stroke: {
+                    curve: type === "area" || type === "line" ? "smooth" : "straight",
+                    width: 2,
+                },
+                fill: {
+                    type: type === "area" ? "gradient" : "solid",
+                    gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.3 },
+                },
+                plotOptions: {
+                    bar: { borderRadius: 4, horizontal: type === "bar" && categories.length > 4 },
+                },
+                dataLabels: { enabled: false },
+                tooltip: { theme: "dark" },
+                legend: { position: "bottom" },
+            };
 
-    return <Chart options={chartOptions} series={data} type={type} height={height} />;
+    // Convertir datos al formato requerido para las series del gráfico
+    const series =
+        type === "pie"
+            ? data.flatMap((d) => d.data.map((item) => item.y))
+            : data.map((d) => ({
+                name: d.name,
+                data: d.data.map((item) => item.y),
+            }));
+
+    return <Chart options={chartOptions} series={series} type={type} height={height} />;
 };
 
 export default DynamicChart;

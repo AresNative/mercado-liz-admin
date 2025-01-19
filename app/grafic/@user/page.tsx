@@ -10,28 +10,30 @@ export interface ChartData {
 }
 
 export default function Estatico() {
-    const [chartType, setChartType] = useState("bar");
+    const [chartType, setChartType] = useState<RenderChartProps["type"]>("treemap");
     const [previewData, setPreviewData] = useState<ChartData[]>([]);
     const { data, isLoading, refetch } = useGetHistorialComprasQuery({});
 
     useEffect(() => {
-        if (data?.data?.length) {
+
+        if (data?.data) {
             const formattedData = [
                 {
                     name: "Proveedores",
                     data: data.data.map((item: any) => ({
-                        x: item.ProveedorNom || "Desconocido",
-                        y: item.Total || 0,
+                        x: item.ProveedorNom,
+                        y: item.Total,
                     })),
                 },
             ];
             setPreviewData(formattedData);
+
         } else {
             setPreviewData([]);
         }
     }, [data]);
 
-    const handleChartTypeChange = (type: string | undefined) => {
+    const handleChartTypeChange = (type: RenderChartProps["type"]) => {
         if (type) setChartType(type);
     };
 
@@ -52,21 +54,25 @@ export default function Estatico() {
 }
 
 interface RenderChartProps {
-    type: string;
-    barData: any[];
-    treemapData: any[];
+    type: "pie" | "bar" | "line" | "area" | "treemap";
+    barData: ChartData[];
+    treemapData: ChartData[];
 }
 
 function RenderChart({ type, barData, treemapData }: RenderChartProps) {
-    const categories: string[] = barData[0]?.data?.slice(0, 6).map((item: any) => item.x) || [];
-    console.log(treemapData);
+    const categories = barData.flatMap((data) =>
+        data.data.map((item) => item.x)
+    );
+
+    console.log(barData, categories);
+
 
     switch (type) {
         case "treemap":
             return treemapData ? <TreemapChart data={treemapData} /> : <p>No hay datos disponibles</p>;
         default:
             return barData ? (
-                <DynamicChart type="bar" categories={categories} data={barData} />
+                <DynamicChart type={type} categories={categories} data={barData} />
             ) : (
                 <p>No hay datos disponibles</p>
             );
