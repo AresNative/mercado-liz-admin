@@ -12,7 +12,7 @@ export interface ChartData {
 export default function Estatico() {
     const [chartType, setChartType] = useState<RenderChartProps["type"]>("treemap");
     const [previewData, setPreviewData] = useState<ChartData[]>([]);
-    const { data, isLoading, refetch } = useGetHistorialComprasQuery({});
+    const { data, isLoading } = useGetHistorialComprasQuery({});
 
     useEffect(() => {
 
