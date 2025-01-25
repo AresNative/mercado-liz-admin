@@ -3,13 +3,8 @@ import { EnvConfig } from "@/utils/constants/env.config";
 import { getLocalStorageItem, setLocalStorageItem } from "@/utils/functions/local-storage";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-import { useRouter } from "next/navigation";
-
-
 export const getUserData = () => getLocalStorageItem("user_data");
 const { api: apiUrl } = EnvConfig();
-
-
 
 export const auth = createApi({
     reducerPath: "auth",
@@ -44,8 +39,6 @@ export const auth = createApi({
                         setLocalStorageItem("user-role", "user")
                         setLocalStorageItem("token", responseData.token);
                     }
-                    const router = useRouter();
-                    router.push("/scrum")
                 } catch (error) {
                     console.error("Error al hacer login:", error);
                 }
