@@ -34,7 +34,7 @@ export const exportToPDF = (columns: string[], data: any[]) => {
     head: [columns],
     body: tableData,
     startY: 20, // Define la posición vertical inicial
-    margin: { top: 20, left: 10, right: 10, bottom: 20 }, // Márgenes personalizados
+    margin: { top: 12, left: 10, right: 10, bottom: 12 }, // Márgenes personalizados
     theme: "grid", // Opciones: "striped", "grid", "plain"
     styles: {
       fontSize: 10, // Tamaño de fuente
@@ -44,7 +44,7 @@ export const exportToPDF = (columns: string[], data: any[]) => {
   });
 
   // Guardar el archivo PDF
-  doc.save("tabla_dinamica.pdf");
+  doc.save(`tabla_dinamica${new Date().toISOString()}.pdf`);
 };
 
 export const handleFileUpload = (
