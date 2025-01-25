@@ -2,7 +2,7 @@
 import Table from "@/components/table";
 import Providers from "@/hooks/provider";
 
-export default function Report() {
+export default function Mermas() {
 
     return (
         <div>

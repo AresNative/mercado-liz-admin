@@ -1,8 +1,8 @@
-export default function Model() {
+export default function Report() {
 
     return (
         <div>
-            <h1>Model</h1>
+            <h1>Report</h1>
         </div>
     )
 }
