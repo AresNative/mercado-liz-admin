@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion"
-import { useState } from "react"
+import { ChevronDown, MoreVertical } from "lucide-react"
+import { useMemo, useState } from "react"
 
 type DataItem = {
     id: number
@@ -64,7 +65,11 @@ export default function Table() {
     const [sortColumn, setSortColumn] = useState<keyof DataItem | null>(null)
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
     const [searchQuery, setSearchQuery] = useState('')
+
     const [showColumnMenu, setShowColumnMenu] = useState<string | null>(null)
+    const [currentPage, setCurrentPage] = useState(1)
+    const itemsPerPage = 5
+
 
     const [data] = useState<DataItem[]>(initialData)
 
@@ -124,23 +129,24 @@ export default function Table() {
             if (a[sortColumn] > b[sortColumn]) return sortDirection === 'asc' ? 1 : -1
             return 0
         })
+
+    const paginatedData = useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage
+        return filteredAndSortedData.slice(startIndex, startIndex + itemsPerPage)
+    }, [filteredAndSortedData, currentPage])
     return (
-        <div className="rounded-lg border bg-white shadow">
-            <div className="relative w-full overflow-auto">
-                <table className="w-full text-sm">
+        <div className="bg-white shadow-md rounded-lg overflow-hidden">
+            <div className="overflow-x-auto">
+                <table className="w-full">
                     <thead className="bg-gray-50">
                         <tr>
-                            <th className="p-4 text-left font-medium text-gray-500">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 <input
                                     type="checkbox"
-                                    className="h-4 w-4 rounded border-gray-300"
+                                    className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                                     checked={selectedRows.length === data.length}
                                     onChange={() =>
-                                        setSelectedRows(
-                                            selectedRows.length === data.length
-                                                ? []
-                                                : data.map(item => item.id)
-                                        )
+                                        setSelectedRows(selectedRows.length === data.length ? [] : data.map((item) => item.id))
                                     }
                                 />
                             </th>
@@ -149,28 +155,24 @@ export default function Table() {
                                     isVisible && (
                                         <th
                                             key={column}
-                                            className="p-4 text-left font-medium text-gray-500"
+                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                         >
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center space-x-1">
                                                 <button
-                                                    className="flex items-center gap-2 hover:text-gray-700"
+                                                    className="flex items-center space-x-1 hover:text-gray-700"
                                                     onClick={() => toggleSort(column as keyof DataItem)}
                                                 >
-                                                    <span className="capitalize">{column.replace(/([A-Z])/g, ' $1').trim()}</span>
-                                                    {sortColumn === column && (
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${sortDirection === 'asc' ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
-                                                            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                                                        </svg>
-                                                    )}
+                                                    <span>{column.replace(/([A-Z])/g, " $1").trim()}</span>
+                                                    <ChevronDown
+                                                        className={`h-4 w-4 ${sortColumn === column ? (sortDirection === "asc" ? "transform rotate-180" : "") : ""}`}
+                                                    />
                                                 </button>
                                                 <div className="relative">
                                                     <button
                                                         onClick={() => setShowColumnMenu(showColumnMenu === column ? null : column)}
-                                                        className="p-1 hover:bg-gray-100 rounded"
+                                                        className="p-1 hover:bg-gray-100 rounded-full"
                                                     >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                                                        </svg>
+                                                        <MoreVertical className="h-4 w-4" />
                                                     </button>
                                                     <AnimatePresence>
                                                         {showColumnMenu === column && (
@@ -178,14 +180,14 @@ export default function Table() {
                                                                 initial={{ opacity: 0, y: -10 }}
                                                                 animate={{ opacity: 1, y: 0 }}
                                                                 exit={{ opacity: 0, y: -10 }}
-                                                                className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10"
+                                                                className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 ring-1 ring-black ring-opacity-5"
                                                             >
                                                                 <div className="py-1">
                                                                     <button
                                                                         onClick={() => toggleColumn(column as keyof typeof visibleColumns)}
-                                                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                                                                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                                                     >
-                                                                        {isVisible ? 'Hide column' : 'Show column'}
+                                                                        {isVisible ? "Hide column" : "Show column"}
                                                                     </button>
                                                                 </div>
                                                             </motion.div>
@@ -194,38 +196,41 @@ export default function Table() {
                                                 </div>
                                             </div>
                                         </th>
-                                    )
+                                    ),
                             )}
                         </tr>
                     </thead>
-                    <tbody>
-                        {filteredAndSortedData.map(item => (
+                    <tbody className="bg-white divide-y divide-gray-200">
+                        {paginatedData.map((item) => (
                             <motion.tr
                                 key={item.id}
-                                className={`border-t transition-colors hover:bg-gray-50 ${selectedRows.includes(item.id) ? 'bg-blue-50' : ''
-                                    }`}
+                                className={`${selectedRows.includes(item.id) ? "bg-blue-50" : ""} hover:bg-gray-50`}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
                             >
-                                <td className="p-4">
+                                <td className="px-6 py-4 whitespace-nowrap">
                                     <input
                                         type="checkbox"
-                                        className="h-4 w-4 rounded border-gray-300"
+                                        className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                                         checked={selectedRows.includes(item.id)}
                                         onChange={() => toggleRowSelection(item.id)}
                                     />
                                 </td>
                                 {visibleColumns.name && (
-                                    <td className="p-4 font-medium">{item.name}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="text-sm font-medium text-gray-900">{item.name}</div>
+                                    </td>
                                 )}
                                 {visibleColumns.email && (
-                                    <td className="p-4 text-gray-500">{item.email}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="text-sm text-gray-500">{item.email}</div>
+                                    </td>
                                 )}
                                 {visibleColumns.status && (
-                                    <td className="p-4">
+                                    <td className="px-6 py-4 whitespace-nowrap">
                                         <span
-                                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${item.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
                                                 }`}
                                         >
                                             {item.status}
@@ -233,19 +238,13 @@ export default function Table() {
                                     </td>
                                 )}
                                 {visibleColumns.role && (
-                                    <td className="p-4">
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                            {item.role}
-                                        </span>
-                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.role}</td>
                                 )}
                                 {visibleColumns.lastActive && (
-                                    <td className="p-4 text-gray-500">
-                                        {item.lastActive}
-                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.lastActive}</td>
                                 )}
                                 {visibleColumns.date && (
-                                    <td className="p-4 text-gray-500">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {item.date.toLocaleDateString()}
                                     </td>
                                 )}
