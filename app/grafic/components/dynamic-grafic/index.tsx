@@ -29,10 +29,10 @@ const DynamicChart: React.FC<DynamicChartProps> = ({
                 labels: categories,
                 fill: {
                     type: "gradient",
-                    gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.3 },
+                    gradient: { shadeIntensity: 0, opacityFrom: 2, opacityTo: 1 },
                 },
+                colors: ["#6366f1", "#8b5cf6", "#ec4899", "#f43f5e", "#f97316"],
                 legend: { position: "bottom" },
-                tooltip: { theme: "dark" },
             }
             : {
                 chart: { type, toolbar: { show: true }, background: "transparent" },
@@ -49,8 +49,9 @@ const DynamicChart: React.FC<DynamicChartProps> = ({
                     gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.3 },
                 },
                 plotOptions: {
-                    bar: { borderRadius: 4, horizontal: type === "bar" && categories.length > 4 },
+                    bar: { borderRadius: 4, distributed: true, horizontal: type === "bar" && categories.length > 4 },
                 },
+                colors: ["#6366f1", "#8b5cf6", "#ec4899", "#f43f5e", "#f97316"],
                 dataLabels: { enabled: false },
                 tooltip: { theme: "dark" },
                 legend: { position: "bottom" },
