@@ -4,8 +4,8 @@ interface INavigation {
 }
 
 export const navigation: INavigation[] = [
-  { name: "Product", href: "#" },
-  { name: "Features", href: "#" },
-  { name: "Marketplace", href: "#" },
-  { name: "Company", href: "#" },
+  { name: "Mermas", href: "/mermas" },
+  { name: "Scrum", href: "/scrum" },
+  { name: "Reportes", href: "/report" },
+  { name: "Graficas", href: "/grafic" },
 ];

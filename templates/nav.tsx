@@ -1,6 +1,7 @@
 'use client';
 import { navigation } from '@/utils/constants/router';
 import { Menu } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 
 
@@ -18,18 +19,18 @@ export default function Nav() {
                         <div className="flex items-center">
                             <img
                                 alt="Logo"
-                                src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600"
+                                src="logo.png"
                                 className="h-8 w-auto"
                             />
                             <div className="hidden sm:flex space-x-6 ml-10">
                                 {navigation.map((item) => (
-                                    <a
+                                    <Link
                                         key={item.name}
                                         href={item.href}
                                         className="text-sm font-medium text-gray-900 hover:text-indigo-600 transition-colors"
                                     >
                                         {item.name}
-                                    </a>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
@@ -73,12 +74,12 @@ export default function Nav() {
                         <ul className="flex flex-col space-y-4">
                             {navigation.map((item) => (
                                 <li key={item.name}>
-                                    <a
+                                    <Link
                                         href={item.href}
                                         className="text-lg font-medium text-gray-900 hover:text-indigo-600 transition-colors"
                                     >
                                         {item.name}
-                                    </a>
+                                    </Link>
                                 </li>
                             ))}
                         </ul>

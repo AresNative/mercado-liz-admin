@@ -7,11 +7,11 @@ export default function Footer() {
                 <div className="flex items-center gap-x-2">
                     <img
                         alt="Logo"
-                        src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600"
+                        src="logo.png"
                         className="h-8 w-auto"
                     />
                     <span className="text-sm text-gray-500">
-                        © {date} Mercado Liz. All rights reserved.
+                        © {date} Mercado Liz. Todos los derechos reservados.
                     </span>
                 </div>
 
