@@ -1,9 +1,8 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import TreemapChart from "../components/term-grafic";
-import DynamicChart from "../components/dynamic-grafic";
+import { useEffect, useState } from "react";
 import { useGetHistorialComprasQuery } from "@/hooks/reducers/api";
 import MainForm from "@/components/form/main-form";
+import { RenderChartProps, RenderChart } from "../components/render-grafic";
 
 export interface ChartData {
     name: string;
@@ -68,26 +67,3 @@ export default function Estatico() {
     );
 }
 
-interface RenderChartProps {
-    type: "pie" | "bar" | "line" | "area" | "treemap";
-    barData: ChartData[];
-    treemapData: ChartData[];
-}
-
-export function RenderChart({ type, barData, treemapData }: RenderChartProps) {
-    const categories = barData.flatMap((data) =>
-        data.data.map((item) => item.x)
-    );
-
-
-    switch (type) {
-        case "treemap":
-            return treemapData ? <TreemapChart data={treemapData} /> : <p>No hay datos disponibles</p>;
-        default:
-            return barData ? (
-                <DynamicChart type={type} categories={categories} data={barData} />
-            ) : (
-                <p>No hay datos disponibles</p>
-            );
-    }
-}
