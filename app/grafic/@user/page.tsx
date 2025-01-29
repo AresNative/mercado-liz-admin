@@ -15,7 +15,6 @@ export default function Estatico() {
     const { data, isLoading } = useGetHistorialComprasQuery({});
 
     useEffect(() => {
-
         if (data?.data) {
             const formattedData = [
                 {
@@ -32,6 +31,7 @@ export default function Estatico() {
             setPreviewData([]);
         }
     }, [data]);
+
     if (isLoading) return <p>Cargando...</p>;
 
     return (

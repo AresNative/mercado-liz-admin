@@ -28,15 +28,15 @@ export const api = createApi({
         getCompras: builder.query({
             query: (params) => `reporteria/compras?${params}`,
         }),
-        getVentas: builder.query({
+        /* getVentas: builder.query({
             query: (params) => `reporteria/ventas?${params}`,
-        }),
+        }), */
         getAlmacen: builder.query({
             query: (params) => `reporteria/almacen?${params}`,
         }),
-        getMermas: builder.query({
+        /* getMermas: builder.query({
             query: (params) => `reporteria/mermas?${params}`,
-        }),
+        }), */
         getMovimientos: builder.query({
             query: (params) => `reporteria/movimientos?${params}`,
         }),
@@ -128,6 +128,21 @@ export const api = createApi({
         getHistorialCompras: builder.query({
             query: () => `estatico/historial-compras`,
         }),
+
+        getMermas: builder.mutation({
+            query: (data) => ({
+                url: `reporteria/mermas?sum=${data.sum}&page=${data.page}`,
+                method: "POST",
+                body: data.filters,
+            }),
+        }),
+        getVentas: builder.mutation({
+            query: (data) => ({
+                url: `reporteria/ventas?sum=${data.sum}&page=${data.page}`,
+                method: "POST",
+                body: data.filters,
+            }),
+        }),
         /* 
         ? Formato de update ↡
         
@@ -139,10 +154,11 @@ export const {
     useGetReportQuery,
 
     useGetComprasQuery,
-    useGetVentasQuery,
     useGetAlmacenQuery,
-    useGetMermasQuery,
     useGetMovimientosQuery,
+
+    useGetMermasMutation,
+    useGetVentasMutation,
 
     useGetProjectsQuery,
     useGetSprintsQuery,

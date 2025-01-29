@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
 import { ChartData } from "../../@user/page";
+import { formatValue } from "@/utils/constants/format-values";
 
 // Carga dinámica de ApexCharts para evitar problemas en el servidor de Next.js
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
@@ -35,7 +36,11 @@ const TreemapChart: React.FC<TreemapChartProps> = ({ data, height = 350 }) => {
                 fontWeight: "bold",
             },
         },
-        tooltip: { theme: "dark" },
+        tooltip: {
+            y: {
+                formatter: (value) => (formatValue(value, "currency")),
+            },
+        },
     };
 
     return <Chart options={chartOptions} series={data} type="treemap" height={height} />;
