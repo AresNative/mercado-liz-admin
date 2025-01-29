@@ -1,14 +1,13 @@
 "use client"
-import Table from "@/components/table";
 import Providers from "@/hooks/provider";
 
 export default function Report() {
 
     return (
         <div>
-            <Providers>
-                <Table />
-            </Providers>
+            {/* <Providers>
+                <Table /> 
+            </Providers>*/}
         </div>
     )
 }
