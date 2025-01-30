@@ -71,7 +71,7 @@ export function SelectComponent(props: SearchableSelectProps) {
                     <ChevronDown className="w-4 h-4" />
                 </div>
                 {showSkillsDropdown && (
-                    <div className="absolute z-10 w-full bg-white border border-gray-300 mt-1 rounded-md shadow-lg">
+                    <div className="absolute z-30 w-full bg-white border border-gray-300 mt-1 rounded-md shadow-lg">
                         <div className="p-2">
                             <input
                                 type="text"
