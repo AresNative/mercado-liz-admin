@@ -30,7 +30,7 @@ export function MailComponent(props: InputFormProps) {
                     type="email"
                     name="email"
                     onChange={handleInputChange}
-                    className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
+                    className="px-4 py-2 border focus:ring-purple-500 focus:border-purple-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
                     placeholder="ejemplo@correo.com"
                     {...props.register(cuestion.name,
                         cuestion.require

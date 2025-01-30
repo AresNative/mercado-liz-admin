@@ -42,7 +42,7 @@ export function DateRangeComponent(props: InputFormProps) {
                     value={formData.interviewDateStart && formData.interviewDateEnd ? `${formData.interviewDateStart} - ${formData.interviewDateEnd}` : ''}
                     onClick={() => setShowInterviewDatePicker(true)}
                     readOnly
-                    className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600 cursor-pointer"
+                    className="px-4 py-2 border focus:ring-purple-500 focus:border-purple-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600 cursor-pointer"
                     placeholder="Seleccionar fechas"
 
                 />

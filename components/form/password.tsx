@@ -36,7 +36,7 @@ export function PasswordComponent(props: InputFormProps) {
                     type={showPassword ? "text" : "password"}
                     name={cuestion.name}
                     onChange={handleInputChange}
-                    className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
+                    className="px-4 py-2 border focus:ring-purple-500 focus:border-purple-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
                     placeholder={cuestion.placeholder}
                     maxLength={cuestion.maxLength}
                     {...props.register(cuestion.name,

@@ -38,7 +38,7 @@ export function PhoneComponent(props: InputFormProps) {
             <div className="relative flex gap-2">
                 <select
                     name="countryCode"
-                    className="px-2 py-2 border focus:ring-gray-500 focus:border-gray-900 sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
+                    className="px-2 py-2 border focus:ring-purple-500 focus:border-purple-900 sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
                     defaultValue="+52"
                 >
                     <option value="+1">+1</option>
@@ -52,7 +52,7 @@ export function PhoneComponent(props: InputFormProps) {
                     name="phone"
                     value={formatPhoneNumber(currentValue)}
                     onChange={handleInputChange}
-                    className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
+                    className="px-4 py-2 border focus:ring-purple-500 focus:border-purple-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
                     placeholder="123-456-7890"
                     maxLength={12}
                     {...props.register(cuestion.name,

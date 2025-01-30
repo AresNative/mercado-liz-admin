@@ -13,7 +13,8 @@ export type FieldType =
   | "CHECKBOX_GROUP"
   | "SELECT"
   | "FILE"
-  | "IMG";
+  | "IMG"
+  | "SEARCH";
 
 export interface SelectOption {
   value: string;

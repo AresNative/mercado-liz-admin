@@ -23,15 +23,17 @@ export default function Home() {
   return (
     <Layout>
       <Providers>
-        <MainForm
-          message_button={'Enviar'}
-          actionType={"post-login"}
-          dataForm={LogInField()}
-          action={() => {
-            saveCokie();
-            router.push("/scrum");
-          }}
-        />
+        <section className="max-w-prose m-auto">
+          <MainForm
+            message_button={'Enviar'}
+            actionType={"post-login"}
+            dataForm={LogInField()}
+            action={() => {
+              saveCokie();
+              router.push("/scrum");
+            }}
+          />
+        </section>
       </Providers>
     </Layout>
   )

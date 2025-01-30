@@ -10,6 +10,7 @@ import { PhoneComponent as Phone } from "./phone";
 import { TextAreaComponent as TextArea } from "./text-area";
 import { PasswordComponent as Password } from "./password";
 
+import { SearchComponent as Search } from "./search"
 import { SelectComponent as Select } from "./select";
 import { CheckboxComponent as Checkbox } from "./checkbox";
 import { CheckboxGroupComponent as CheckboxGroup } from "./checkbox-group";
@@ -106,7 +107,7 @@ export const MainForm = ({ message_button, dataForm, actionType, aditionalData, 
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2 max-w-prose m-auto">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2 my-2 m-auto">
       {dataForm.map((field, key) => (
         <SwitchTypeInputRender
           key={key}
@@ -157,6 +158,8 @@ export function SwitchTypeInputRender(props: any) {
       return <File {...props} />;
     case "IMG":
       return <Image {...props} />;
+    case "SEARCH":
+      return <Search {...props} />
     case "Flex":
       return <FlexComponent {...props} elements={props.cuestion.elements} />;
     default:
