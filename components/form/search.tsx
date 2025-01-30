@@ -8,7 +8,7 @@ export function SearchComponent(props: SearchableSelectProps) {
 
     useEffect(() => {
         props.setValue(cuestion.name, searchTerm);
-    }, [cuestion.multi, cuestion.name, props]);
+    }, [cuestion.multi, cuestion.name, props, searchTerm]);
 
     return (
         <div className="flex flex-col">
