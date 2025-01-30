@@ -20,7 +20,7 @@ export function SearchComponent(props: SearchableSelectProps) {
                 <Search className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                     type="text"
-                    placeholder="Buscar productos..."
+                    placeholder={cuestion.placeholder}
                     className="py-2 pl-10 w-full rounded-md focus:outline-none border focus:ring-purple-500 focus:border-purple-900 border-gray-300 shadow-md focus:border-indigo-500 focus:ring-indigo-500"
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />

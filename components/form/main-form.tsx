@@ -75,10 +75,15 @@ export const MainForm = ({ message_button, dataForm, actionType, aditionalData, 
     try {
       await mutationFunction(combinedData);
       if (valueAssign && action) {
-        // Elimina las comillas alrededor del valor devuelto por valueAssign
-        const key = valueAssign.replace(/^'|'$/g, ''); // Elimina comillas simples al inicio y al final
-        await action(submitData[key]);
+        // Normaliza valueAssign para manejar tanto strings como arrays
+        const keys = Array.isArray(valueAssign)
+          ? valueAssign.map(v => v.replace(/^'|'$/g, '')) // Limpia comillas en cada elemento
+          : [valueAssign.replace(/^'|'$/g, '')]; // Si es string, lo convierte en array
 
+        // Ejecuta la acción para cada clave encontrada
+        for (const key of keys) {
+          await action(submitData[key]);
+        }
       } else
         if (action) {
           await action()
