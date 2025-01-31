@@ -1,50 +1,62 @@
 "use client"
 import { ChartData } from "@/app/grafic/@user/page";
 import { RenderChart } from "@/app/grafic/components/render-grafic";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import DynamicTable from "@/components/table";
 import CardResumen from "../components/card-resumen";
 import { ChartBarIncreasing, ChartNetwork, ChevronLeft, ChevronRight, CircleDollarSign, Search } from "lucide-react";
 import { formatLoadDate, loadDataMermas, loadDataMermasGrafic } from "@/app/grafic/constants/load-data";
 import { useGetMermasMutation } from "@/hooks/reducers/api";
 import { formatJSON, formatValue } from "@/utils/constants/format-values";
+import MainForm from "@/components/form/main-form";
 
+interface formatFilter {
+    key: string;
+    value: string;
+    operator: "like" | "=" | ">=" | "<=" | ">" | "<" | "<>" | "";
+}
 export default function Mermas() {
     const [previewData, setPreviewData] = useState<ChartData[]>([]);
+    const [dataTable, setDataTable] = useState<any[]>([]);
     const [total, setTotal] = useState("$000,000.00");
     const [cantidad, setCantidad] = useState("000");
-    const [dataTable, setDataTable] = useState<any[]>([])
     const [getMermas] = useGetMermasMutation();
 
+    const [serachParam, setSerachParam] = useState("");
+    const [sucursal, setSucursal] = useState("");
+
+    const [fechaInicial, setFechaInicial] = useState("");
+    const [fechaFinal, setFechaFinal] = useState("");
 
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
     async function load() {
+        const filtros: formatFilter[] = [
+            { key: "Nombre", value: `%${serachParam}%`, operator: "like" },
+            { key: "Sucursal", value: `%${sucursal}%`, operator: "like" }
+        ];
+
+        if (fechaInicial || fechaFinal) {
+            filtros.push({ key: "FechaEmision", value: fechaInicial, operator: ">=" });
+            filtros.push({ key: "FechaEmision", value: fechaFinal, operator: "<=" });
+        }
+
         const dataFilter: formatLoadDate = {
             filters: {
-                filtros: [
-                    {
-                        key: "Categoria",
-                        value: "NULL",
-                        operator: "<>", // Operador vacío como en el formato esperado.
-                    },
-                ],
-                sumas: [
-                    {
-                        key: "Categoria",
-                    },
-                ],
+                filtros,
+                sumas: [{ key: "Categoria" }],
             },
             page: 1,
             sum: true,
         };
+
         const response: ChartData[] = await loadDataMermasGrafic(getMermas, dataFilter) ?? [];
         setPreviewData(response);
 
         const dataTotal: formatLoadDate = {
             filters: {
-                filtros: [],
+                filtros,
                 sumas: [],
             },
             page: 1,
@@ -53,19 +65,17 @@ export default function Mermas() {
 
         const responseTotal = await loadDataMermas(getMermas, dataTotal) ?? { data: [], totalPages: 0 };
 
-        setTotal(formatValue(responseTotal.data[0].Importe, "currency"));
-        setCantidad(formatValue(responseTotal.data[0].Cantidad, "number"));
+        setTotal(formatValue(responseTotal.data[0]?.Importe || 0, "currency"));
+        setCantidad(formatValue(responseTotal.data[0]?.Cantidad || 0, "number"));
 
         const dataTable: formatLoadDate = {
             filters: {
-                filtros: [],
+                filtros,
                 sumas: [
-                    {
-                        key: "Nombre",
-                    },
-                    {
-                        key: "Categoria",
-                    },
+                    { key: "Nombre" },
+                    { key: "Sucursal" },
+                    { key: "FechaEmision" },
+                    { key: "Categoria" }
                 ],
             },
             page: currentPage,
@@ -73,34 +83,74 @@ export default function Mermas() {
         };
 
         const responseTable = await loadDataMermas(getMermas, dataTable) ?? { data: [], totalPages: 0 };
-        const arrayTable: any[] = formatJSON(responseTable.data);
-        setTotalPages(responseTable.totalPages)
-        setDataTable(arrayTable);
-        //Cantidad
+        setTotalPages(responseTable.totalPages);
+        setDataTable(formatJSON(responseTable.data));
     }
+
 
     useEffect(() => {
         load()
-    }, [currentPage]);
+    }, [currentPage, serachParam, sucursal, fechaInicial, fechaFinal]);
 
     return (
         <div>
-            <div className="flex flex-col  sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 my-4">
-                <div className="relative flex-1">
-                    <Search className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
-                        type="text"
-                        placeholder="Buscar productos..."
-                        className="pl-10 w-full rounded-md border-gray-300 shadow-md focus:border-indigo-500 focus:ring-indigo-500"
-                    />
-                </div>
-                {/* <button
-                     onClick={showAllColumns}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                >
-                    Show All Columns
-                </button> */}
-            </div>
+            <MainForm
+                actionType="Buscar"
+                dataForm={[
+                    {
+                        type: "Flex",
+                        require: false,
+                        elements: [
+                            {
+                                name: "search",
+                                type: "SEARCH",
+                                label: "Busca algun dato de interes",
+                                placeholder: "Buscar productos...",
+                                require: false,
+                            },
+                            {
+                                name: "sucursal",
+                                type: "SELECT",
+                                options: [
+                                    "Guadalupe", "Testerazo", "Palmas", "Myoreo"
+                                ],
+                                multi: true,
+                                label: "Seleccione sucursal...",
+                                placeholder: "Minimo 3 dias mayor a la fecha de inicio",
+                                require: false,
+                            },
+                        ],
+                    },
+                    {
+                        type: "Flex",
+                        require: false,
+                        elements: [
+                            {
+                                name: "fecha_inicial",
+                                type: "DATE",
+                                label: "Fecha de inicio",
+                                placeholder: "Buscar por fecha...",
+                                require: false,
+                            },
+                            {
+                                name: "fecha_final",
+                                type: "DATE",
+                                label: "Fecha final",
+                                placeholder: "Buscar por fecha...",
+                                require: false,
+                            },
+                        ],
+                    },
+                ]}
+                valueAssign={["search", "sucursal", "fecha_inicial", "fecha_final"]}
+                action={(values) => {
+                    setSerachParam(values.search);
+                    setSucursal(values.sucursal);
+                    setFechaInicial(new Date(values.fecha_inicial).toISOString());
+                    setFechaFinal(new Date(values.fecha_final).toISOString());
+                }}
+                message_button="Buscar"
+            />
             {/* Stats */}
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
                 <CardResumen
@@ -111,7 +161,8 @@ export default function Mermas() {
                 />
                 <CardResumen
                     icon={<ChartBarIncreasing className="text-white" />}
-                    subText={"último mes"}
+                    /* subText={"último mes"} */
+                    subText={"general"}
                     title="Productos Afectados"
                     value={cantidad}
                 />
@@ -142,8 +193,7 @@ export default function Mermas() {
                 </button>
                 <span
                     className="px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-700"
-                >{currentPage}</span>
-
+                >{currentPage} de {totalPages}</span>
                 <button
                     onClick={() =>
                         setCurrentPage((prev) => Math.min(prev + 1, totalPages))
@@ -153,6 +203,8 @@ export default function Mermas() {
                 >
                     <ChevronRight className="h-5 w-5" />
                 </button>
+
+
             </div>
         </div>
     )

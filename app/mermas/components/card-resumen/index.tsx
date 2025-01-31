@@ -10,7 +10,7 @@ interface Resumen {
 
 export default function CardResumen(props: Resumen) {
     return (
-        <motion.div whileHover={{ scale: 1.02 }} className="bg-white overflow-hidden shadow rounded-lg">
+        <motion.div whileHover={{ scale: 1.02 }} className="bg-white border overflow-hidden shadow rounded-lg">
             <div className="p-5">
                 <div className="flex items-center">
                     <div className="flex-shrink-0 bg-indigo-500 rounded-md p-3">

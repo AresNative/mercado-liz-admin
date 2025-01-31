@@ -52,7 +52,6 @@ export default function Estatico() {
                 valueAssign="select_grafic"
                 message_button="Cargar"
                 action={(data) => {
-                    console.log(data);
                     setChartType(() => data)
                 }}
             />

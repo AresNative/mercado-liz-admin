@@ -53,11 +53,10 @@ export const SortableTask: React.FC<SortableTaskProps> = ({ task, refetch }) => 
 
     const handleView = (event: React.MouseEvent): void => {
         event.stopPropagation(); // Evitar conflicto con el drag
-        console.log("Botón Ver presionado.");
     };
 
     return (
-        <section className="bg-white p-4 mb-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+        <section className="bg-white border p-4 mb-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
             <div
                 ref={setNodeRef}
                 style={style}

@@ -75,16 +75,22 @@ export const MainForm = ({ message_button, dataForm, actionType, aditionalData, 
     try {
       await mutationFunction(combinedData);
       if (valueAssign && action) {
-        // Normaliza valueAssign para manejar tanto strings como arrays
-        const keys = Array.isArray(valueAssign)
-          ? valueAssign.map(v => v.replace(/^'|'$/g, '')) // Limpia comillas en cada elemento
-          : [valueAssign.replace(/^'|'$/g, '')]; // Si es string, lo convierte en array
+        if (Array.isArray(valueAssign)) {
+          // Si es un array, mapeamos los valores y creamos un objeto
+          const result = valueAssign.reduce((acc, v) => {
+            const key = v.replace(/^'|'$/g, ''); // Limpia comillas
+            acc[key] = submitData[key];
+            return acc;
+          }, {} as Record<string, any>);
 
-        // Ejecuta la acción para cada clave encontrada
-        for (const key of keys) {
+          await action(result);
+        } else {
+          // Si es un solo valor, lo procesamos directamente
+          const key = valueAssign.replace(/^'|'$/g, ''); // Limpia comillas
           await action(submitData[key]);
         }
-      } else
+      }
+      else
         if (action) {
           await action()
         }
