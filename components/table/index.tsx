@@ -143,11 +143,9 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
                                                                         <div className="py-1">
                                                                             <button
                                                                                 onClick={() => toggleColumn(column)}
-                                                                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                                className="block w-full z-30 text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                                                             >
-                                                                                {visibleColumns[column]
-                                                                                    ? "Hide column"
-                                                                                    : "Show column"}
+                                                                                Ocultar columna
                                                                             </button>
                                                                         </div>
                                                                     </motion.div>
@@ -174,8 +172,8 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
                                             <input
                                                 type="checkbox"
                                                 className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                                                checked={selectedRows.includes(item.Nombre)}
-                                                onChange={() => toggleRowSelection(item.Nombre)}
+                                                checked={selectedRows.includes(item.ID)}
+                                                onChange={() => toggleRowSelection(item.ID)}
                                             />
                                         </td>
                                         {columns.map(
@@ -200,10 +198,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
 
                 <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
                     <div className="text-sm text-gray-700">
-                        {selectedRows.length} of {filteredAndSortedData.length} row(s) selected
-                    </div>
-                    <div className="text-sm text-gray-700">
-                        Showing {paginatedData.length} of {filteredAndSortedData.length} results
+                        {selectedRows.length} columna(s) seleccionada(s)
                     </div>
                 </div>
             </div>

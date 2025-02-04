@@ -1,7 +1,7 @@
 import { financial } from "@/utils/functions/format-financial";
 import { ChartData } from "../@user/page";
 
-interface formatFilter {
+export interface formatFilter {
   key: string;
   value: string;
   operator: "like" | "=" | ">=" | "<=" | ">" | "<" | "<>" | ""; // Incluí "" como opción para el operador.

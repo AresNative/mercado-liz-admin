@@ -1,20 +1,15 @@
 "use client"
 import { ChartData } from "@/app/grafic/@user/page";
 import { RenderChart } from "@/app/grafic/components/render-grafic";
-import { use, useEffect, useState } from "react";
-import DynamicTable from "@/components/table";
-import CardResumen from "../components/card-resumen";
+import { useEffect, useState } from "react";
 import { ChartBarIncreasing, ChartNetwork, ChevronLeft, ChevronRight, CircleDollarSign, Search } from "lucide-react";
-import { formatLoadDate, loadDataMermas, loadDataMermasGrafic } from "@/app/grafic/constants/load-data";
+import { formatFilter, formatLoadDate, loadDataMermas, loadDataMermasGrafic } from "@/app/grafic/constants/load-data";
 import { useGetMermasMutation } from "@/hooks/reducers/api";
 import { formatJSON, formatValue } from "@/utils/constants/format-values";
 import MainForm from "@/components/form/main-form";
+import DynamicTable from "@/components/table";
+import CardResumen from "../components/card-resumen";
 
-interface formatFilter {
-    key: string;
-    value: string;
-    operator: "like" | "=" | ">=" | "<=" | ">" | "<" | "<>" | "";
-}
 export default function Mermas() {
     const [previewData, setPreviewData] = useState<ChartData[]>([]);
     const [dataTable, setDataTable] = useState<any[]>([]);
@@ -56,8 +51,14 @@ export default function Mermas() {
 
         const dataTotal: formatLoadDate = {
             filters: {
-                filtros,
-                sumas: [],
+                filtros: [
+                    {
+                        key: "",
+                        value: "",
+                        operator: ""
+                    }
+                ],
+                sumas: [{ key: "Categoria" }],
             },
             page: 1,
             sum: true,
@@ -146,9 +147,14 @@ export default function Mermas() {
                 action={(values) => {
                     setSerachParam(values.search);
                     setSucursal(values.sucursal);
-                    setFechaInicial(new Date(values.fecha_inicial).toISOString());
-                    setFechaFinal(new Date(values.fecha_final).toISOString());
+
+                    const fechaInicial = values.fecha_inicial?.trim();
+                    const fechaFinal = values.fecha_final?.trim();
+
+                    setFechaInicial(fechaInicial ? new Date(fechaInicial).toISOString() : "");
+                    setFechaFinal(fechaFinal ? new Date(fechaFinal).toISOString() : "");
                 }}
+
                 message_button="Buscar"
             />
             {/* Stats */}
