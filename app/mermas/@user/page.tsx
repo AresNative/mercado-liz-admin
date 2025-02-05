@@ -27,14 +27,25 @@ export default function Mermas() {
     const [totalPages, setTotalPages] = useState(1);
 
     async function load() {
-        const filtros: formatFilter[] = [
-            { key: "Nombre", value: `%${serachParam}%`, operator: "like" },
-            { key: "Sucursal", value: `%${sucursal}%`, operator: "like" }
-        ];
+        const filtros: formatFilter[] = [];
+        if (serachParam) {
+            filtros.push({ key: "Nombre", value: `%${serachParam}%`, operator: "like" });
+        }
 
-        if (fechaInicial || fechaFinal) {
-            filtros.push({ key: "FechaEmision", value: fechaInicial, operator: ">=" });
-            filtros.push({ key: "FechaEmision", value: fechaFinal, operator: "<=" });
+        if (sucursal) {
+            filtros.push({ key: "Sucursal", value: `%${sucursal}%`, operator: "like" });
+        }
+
+        if (fechaInicial && fechaFinal) {
+            filtros.push({ key: "FechaEmision", value: `${fechaInicial.slice(0, -1)}`, operator: ">=" });
+            filtros.push({ key: "FechaEmision", value: `${fechaFinal.slice(0, -1)}`, operator: "<=" });
+        } else {
+            if (fechaInicial) {
+                filtros.push({ key: "FechaEmision", value: `${fechaInicial.slice(0, -1)}`, operator: "=" });
+            }
+            if (fechaFinal) {
+                filtros.push({ key: "FechaEmision", value: `${fechaFinal.slice(0, -1)}`, operator: "=" });
+            }
         }
 
         const dataFilter: formatLoadDate = {
@@ -52,7 +63,7 @@ export default function Mermas() {
         const dataTotal: formatLoadDate = {
             filters: {
                 filtros,
-                sumas: [{ key: "Categoria" }],
+                sumas: [],
             },
             page: 1,
             sum: true,
