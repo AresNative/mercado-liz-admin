@@ -11,7 +11,7 @@ export const EnvConfig = (): EnvConfigType => {
     mode === "production"
       ? process.env.NEXT_PUBLIC_API_URL ||
         "https://api.mercadosliz.com:8080/api/v1/"
-      : process.env.NEXT_TEST_API_URL || "http://localhost:5077/api/v2/";
+      : process.env.NEXT_TEST_API_URL || "http://localhost:5000/api/v1/";
 
   const itemsPerPage = parseInt(process.env.ITEMS_PER_PAGE || "10", 10); // Fallback a 10 si no está definido
 
