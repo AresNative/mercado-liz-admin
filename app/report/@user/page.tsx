@@ -3,7 +3,7 @@ import { ChartData } from "@/app/grafic/@user/page";
 import { RenderChart } from "@/app/grafic/components/render-grafic";
 import { useEffect, useState } from "react";
 import { ChartBarIncreasing, ChartNetwork, ChevronLeft, ChevronRight, CircleDollarSign, Search } from "lucide-react";
-import { formatFilter, formatLoadDate, loadDataMermas, loadDataGrafic } from "@/app/grafic/constants/load-data";
+import { formatFilter, formatLoadDate, loadData, loadDataGrafic } from "@/app/grafic/constants/load-data";
 import { useGetVentasMutation } from "@/hooks/reducers/api";
 import { formatJSON, formatValue } from "@/utils/constants/format-values";
 import MainForm from "@/components/form/main-form";
@@ -58,8 +58,6 @@ export default function Ventas() {
         };
 
         const response: ChartData[] = await loadDataGrafic(getVentas, dataFilter, "Nombre") ?? [];
-        console.log(response);
-
         setPreviewData(response);
 
         const dataTotal: formatLoadDate = {
@@ -71,7 +69,7 @@ export default function Ventas() {
             sum: true,
         };
 
-        const responseTotal = await loadDataMermas(getVentas, dataTotal) ?? { data: [], totalPages: 0 };
+        const responseTotal = await loadData(getVentas, dataTotal) ?? { data: [], totalPages: 0 };
 
         setTotal(formatValue(responseTotal.data[0]?.Importe || 0, "currency"));
         setCantidad(formatValue(responseTotal.data[0]?.Cantidad || 0, "number"));
@@ -88,7 +86,7 @@ export default function Ventas() {
             sum: true,
         };
 
-        const responseTable = await loadDataMermas(getVentas, dataTable) ?? { data: [], totalPages: 0 };
+        const responseTable = await loadData(getVentas, dataTable) ?? { data: [], totalPages: 0 };
         setTotalPages(responseTable.totalPages);
         setDataTable(formatJSON(responseTable.data));
     }

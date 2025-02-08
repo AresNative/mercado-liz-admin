@@ -45,7 +45,7 @@ export async function loadDataGrafic(
   }
 }
 
-export async function loadDataMermas(
+export async function loadData(
   functionLoad: any,
   filter: formatLoadDate
 ): Promise<{ data: any; totalPages: number } | undefined> {
