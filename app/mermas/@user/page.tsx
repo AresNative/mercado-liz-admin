@@ -3,7 +3,7 @@ import { ChartData } from "@/app/grafic/@user/page";
 import { RenderChart } from "@/app/grafic/components/render-grafic";
 import { useEffect, useState } from "react";
 import { ChartBarIncreasing, ChartNetwork, ChevronLeft, ChevronRight, CircleDollarSign, Search } from "lucide-react";
-import { formatFilter, formatLoadDate, loadDataMermas, loadDataMermasGrafic } from "@/app/grafic/constants/load-data";
+import { formatFilter, formatLoadDate, loadDataMermas, loadDataGrafic } from "@/app/grafic/constants/load-data";
 import { useGetMermasMutation } from "@/hooks/reducers/api";
 import { formatJSON, formatValue } from "@/utils/constants/format-values";
 import MainForm from "@/components/form/main-form";
@@ -57,7 +57,7 @@ export default function Mermas() {
             sum: true,
         };
 
-        const response: ChartData[] = await loadDataMermasGrafic(getMermas, dataFilter) ?? [];
+        const response: ChartData[] = await loadDataGrafic(getMermas, dataFilter, "Categoria") ?? [];
         setPreviewData(response);
 
         const dataTotal: formatLoadDate = {

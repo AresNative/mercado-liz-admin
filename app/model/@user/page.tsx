@@ -33,10 +33,10 @@ export default function Postulaciones() {
             state: "Disponible",
             porcentaje: "16"
         }/* {
-            nombre: 'Juan',
-            apellido_paterno: 'Pérez',
-            apellido_materno: 'Gómez',
-            edad: 30,
+            nombre: '',
+            apellido_paterno: '',
+            apellido_materno: '',
+            edad: ,
             fecha_nacimiento: '1993-01-01',
             correo_electronico: 'juan.perez@example.com',
             numero_telefono: '1234567890',

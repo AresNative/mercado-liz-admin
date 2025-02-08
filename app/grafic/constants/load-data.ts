@@ -20,9 +20,10 @@ export interface formatLoadDate {
   sum: boolean;
 }
 
-export async function loadDataMermasGrafic(
+export async function loadDataGrafic(
   functionLoad: any,
-  filter: formatLoadDate
+  filter: formatLoadDate,
+  name: string
 ) {
   try {
     const response: any = await functionLoad(filter);
@@ -30,9 +31,9 @@ export async function loadDataMermasGrafic(
     const dataTable = response.data.data;
     const formattedData: ChartData[] = [
       {
-        name: "Categoria",
+        name: name,
         data: dataTable.slice(0, 5).map((item: any) => ({
-          x: item.Categoria,
+          x: item[name],
           y: financial(item.Importe),
         })),
       },
