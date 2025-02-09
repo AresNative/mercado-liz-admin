@@ -17,6 +17,7 @@ export interface formatLoadDate {
     sumas: formatSuma[];
   };
   page: number;
+  pageSize?: number;
   sum: boolean;
 }
 
