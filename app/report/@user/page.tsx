@@ -16,6 +16,7 @@ export default function Ventas() {
     const [total, setTotal] = useState("$000,000.00");
     const [cantidad, setCantidad] = useState("000");
     const [motivo, setMotivo] = useState("N/A");
+    const [porcentajemotivo, setporcentajeMotivo] = useState("N/A");
     const [getVentas] = useGetVentasMutation();
 
     const [serachParam, setSerachParam] = useState("");
@@ -72,9 +73,31 @@ export default function Ventas() {
 
         const responseTotal = await loadData(getVentas, dataTotal) ?? { data: [], totalPages: 0 };
 
-        setTotal(formatValue(responseTotal.data[0]?.Importe || 0, "currency"));
-        setCantidad(formatValue(responseTotal.data[0]?.Cantidad || 0, "number"));
-        setMotivo(responseTotal.data[0]?.Cliente)
+        type ResponseItem = {
+            Importe: number;
+            Cantidad: number;
+            Cliente: string;
+        };
+
+        if (responseTotal.data.length > 0) {
+            const totalImporte = responseTotal.data.reduce((acc: number, item: ResponseItem) => acc + item.Importe, 0);
+            const totalCantidad = responseTotal.data.reduce((acc: number, item: ResponseItem) => acc + item.Cantidad, 0);
+
+            const clienteMasImporte = responseTotal.data.reduce((max: ResponseItem, item: ResponseItem) =>
+                item.Importe > max.Importe ? item : max, responseTotal.data[0]);
+
+            const porcentajeCliente = ((clienteMasImporte.Importe / totalImporte) * 100).toFixed(2);
+
+            setTotal(formatValue(totalImporte, "currency"));
+            setCantidad(formatValue(totalCantidad, "number"));
+            setMotivo(`${clienteMasImporte.Cliente}`);
+            setporcentajeMotivo(porcentajeCliente)
+        } else {
+            setTotal(formatValue(0, "currency"));
+            setCantidad(formatValue(0, "number"));
+            setMotivo("Sin datos");
+        }
+
 
         const dataTable: formatLoadDate = {
             filters: {
@@ -166,7 +189,7 @@ export default function Ventas() {
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
                 <CardResumen
                     icon={<CircleDollarSign className="text-white" />}
-                    subText={"+ 5.2%"}
+                    subText={""}
                     title="Total Ventas"
                     value={total}
                 />
@@ -182,7 +205,7 @@ export default function Ventas() {
                     icon={<ChartNetwork className="text-white" />}
                     value={motivo}
                     title="Causa Principal"
-                    subText={"45%"}
+                    subText={porcentajemotivo + "%"}
                 />
             </div>
             <section className="my-2 p-2 bg-white shadow-md rounded-lg">
