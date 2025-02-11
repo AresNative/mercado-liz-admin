@@ -70,8 +70,18 @@ export default function Ventas() {
         if (debouncedSearch) {
             arr.push({ key: "Nombre", value: `%${debouncedSearch}%`, operator: "like" });
         }
-        if (debouncedSucursal) {
-            arr.push({ key: "Sucursal", value: `%${debouncedSucursal}%`, operator: "like" });
+        if (debouncedSucursal) {// Dividir el valor por comas y crear un objeto por cada elemento
+            debouncedSucursal
+                ?.split(',') // Separa los valores por coma
+                ?.map(s => s.trim()) // Elimina espacios en blanco alrededor de cada valor
+                ?.filter(s => s) // Filtra valores vacíos (por si hay comas duplicadas)
+                ?.forEach(sucursal => {
+                    arr.push({
+                        key: "Almacen",
+                        value: `%${sucursal}%`,
+                        operator: "like"
+                    });
+                });
         }
         if (debouncedFechaInicial && debouncedFechaFinal) {
             arr.push({
@@ -232,7 +242,11 @@ export default function Ventas() {
                             {
                                 name: "sucursal",
                                 type: "SELECT",
-                                options: ["Guadalupe", "Testerazo", "Palmas", "Myoreo"],
+                                options: [
+                                    { label: "Guadalupe", value: "LIZ" },
+                                    { label: "Testerazo", value: "TESTERAZO" },
+                                    { label: "Palmas", value: "PALMAS" },
+                                    { label: "Myoreo", value: "Myoreo" }],
                                 multi: true,
                                 label: "Seleccione sucursal...",
                                 placeholder: "Mínimo 3 días mayor a la fecha de inicio",

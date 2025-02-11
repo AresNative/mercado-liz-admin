@@ -83,18 +83,28 @@ export function SelectComponent(props: SearchableSelectProps) {
                         </div>
                         <ul className="max-h-60 overflow-y-auto">
                             {cuestion.options && cuestion.options
-                                .filter(skill =>
-                                    skill.toString().toLowerCase().includes(searchTerm.toLowerCase())
-                                )
-                                .map(skill => (
-                                    <li
-                                        key={skill}
-                                        className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.skills.includes(skill) ? 'bg-blue-100' : ''}`}
-                                        onClick={() => handleSkillToggle(skill.toString())}
-                                    >
-                                        {skill}
-                                    </li>
-                                ))}
+                                .filter((skill: any) => {
+                                    const searchText = typeof skill === 'object' && skill !== null
+                                        ? skill.label
+                                        : skill.toString();
+                                    return searchText.toLowerCase().includes(searchTerm.toLowerCase());
+                                })
+                                .map((skill: any) => {
+                                    const isObject = typeof skill === 'object' && skill !== null;
+                                    const value = isObject ? skill.value.toString() : skill.toString();
+                                    const label = isObject ? skill.label : skill.toString();
+
+                                    return (
+                                        <li
+                                            key={value}
+                                            className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.skills.includes(value) ? 'bg-blue-100' : ''
+                                                }`}
+                                            onClick={() => handleSkillToggle(value)}
+                                        >
+                                            {label}
+                                        </li>
+                                    );
+                                })}
                         </ul>
                     </div>
                 )}
