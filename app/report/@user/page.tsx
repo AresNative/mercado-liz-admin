@@ -30,16 +30,19 @@ export default function Ventas() {
     const [motivo, setMotivo] = useState("N/A");
     const [porcentajeMotivo, setPorcentajeMotivo] = useState("N/A");
 
+    // Estados de carga para cada sección
+    const [loadingChart, setLoadingChart] = useState(false);
+    const [loadingSummary, setLoadingSummary] = useState(false);
+    const [loadingTable, setLoadingTable] = useState(false);
+
     // Hook para la llamada a la API
     const [getVentas] = useGetVentasMutation();
 
-    // Estados para filtros
+    // Estados para filtros y paginación
     const [searchParam, setSearchParam] = useState("");
     const [sucursal, setSucursal] = useState("");
     const [fechaInicial, setFechaInicial] = useState("");
     const [fechaFinal, setFechaFinal] = useState("");
-
-    // Estados para la paginación
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
@@ -57,12 +60,11 @@ export default function Ventas() {
             setDebouncedFechaInicial(fechaInicial);
             setDebouncedFechaFinal(fechaFinal);
             setCurrentPage(1); // Reinicia la paginación al cambiar los filtros
-        }, 50);
-
+        }, 500);
         return () => clearTimeout(timer);
     }, [searchParam, sucursal, fechaInicial, fechaFinal]);
 
-    // Memoiza la generación de los filtros para evitar cálculos innecesarios
+    // Genera los filtros de búsqueda (se memoiza para evitar cálculos innecesarios)
     const filtros: formatFilter[] = useMemo(() => {
         const arr: formatFilter[] = [];
         if (debouncedSearch) {
@@ -72,22 +74,38 @@ export default function Ventas() {
             arr.push({ key: "Sucursal", value: `%${debouncedSucursal}%`, operator: "like" });
         }
         if (debouncedFechaInicial && debouncedFechaFinal) {
-            arr.push({ key: "FechaEmision", value: debouncedFechaInicial.slice(0, -1), operator: ">=" });
-            arr.push({ key: "FechaEmision", value: debouncedFechaFinal.slice(0, -1), operator: "<=" });
+            arr.push({
+                key: "FechaEmision",
+                value: debouncedFechaInicial.slice(0, -1),
+                operator: ">=",
+            });
+            arr.push({
+                key: "FechaEmision",
+                value: debouncedFechaFinal.slice(0, -1),
+                operator: "<=",
+            });
         } else {
             if (debouncedFechaInicial) {
-                arr.push({ key: "FechaEmision", value: debouncedFechaInicial.slice(0, -1), operator: "=" });
+                arr.push({
+                    key: "FechaEmision",
+                    value: debouncedFechaInicial.slice(0, -1),
+                    operator: "=",
+                });
             }
             if (debouncedFechaFinal) {
-                arr.push({ key: "FechaEmision", value: debouncedFechaFinal.slice(0, -1), operator: "=" });
+                arr.push({
+                    key: "FechaEmision",
+                    value: debouncedFechaFinal.slice(0, -1),
+                    operator: "=",
+                });
             }
         }
         return arr;
     }, [debouncedSearch, debouncedSucursal, debouncedFechaInicial, debouncedFechaFinal]);
 
-    // Función que carga los datos; se usa useCallback para evitar recrearla en cada render
+    // Función que carga la data desde la API
     const loadDataFromAPI = useCallback(async () => {
-        // Configuración para cada llamada:
+        // Configuración de filtros para cada sección
         const chartFilter: formatLoadDate = {
             filters: { filtros, sumas: [{ key: "Categoria" }] },
             page: 1,
@@ -107,59 +125,90 @@ export default function Ventas() {
             sum: true,
         };
 
+        // Inicia los estados de carga
+        setLoadingChart(true);
+        setLoadingSummary(true);
+        setLoadingTable(true);
+
         try {
-            // Ejecuta las 3 peticiones en paralelo
-            const [chartResponse, totalResponse, tableResponse] = await Promise.all([
+            // Se ejecutan las tres peticiones de forma concurrente con Promise.allSettled
+            const [chartResult, totalResult, tableResult] = await Promise.allSettled([
                 loadDataGrafic(getVentas, chartFilter, "Categoria"),
                 loadData(getVentas, totalFilter),
                 loadData(getVentas, tableFilter),
             ]);
 
-            setPreviewData(chartResponse ?? []);
-
-            // Procesa los totales y el elemento con mayor importe en una sola pasada
-            const totalData = totalResponse ?? { data: [], totalPages: 0 };
-            if (totalData.data.length > 0) {
-                const { totalImporte, totalCantidad, maxItem } = totalData.data.reduce(
-                    (acc: any, item: any) => {
-                        acc.totalImporte += item.Importe;
-                        acc.totalCantidad += item.Cantidad;
-                        if (item.Importe > acc.maxItem.Importe) {
-                            acc.maxItem = item;
-                        }
-                        return acc;
-                    },
-                    {
-                        totalImporte: 0,
-                        totalCantidad: 0,
-                        maxItem: totalData.data[0],
-                    }
-                );
-
-                const porcentajeCliente = totalImporte
-                    ? ((maxItem.Importe / totalImporte) * 100).toFixed(2)
-                    : "0.00";
-
-                setTotal(formatValue(totalImporte, "currency"));
-                setCantidad(formatValue(totalCantidad, "number"));
-                setMotivo(maxItem.Cliente || "Sin datos");
-                setPorcentajeMotivo(porcentajeCliente);
+            // Procesa la respuesta del gráfico
+            if (chartResult.status === "fulfilled") {
+                setPreviewData(chartResult.value ?? []);
             } else {
+                console.error("Error al cargar datos del gráfico:", chartResult.reason);
+                setPreviewData([]);
+            }
+            setLoadingChart(false);
+
+            // Procesa la respuesta para los resúmenes y totales
+            if (totalResult.status === "fulfilled") {
+                const totalData = totalResult.value ?? { data: [], totalPages: 0 };
+                if (totalData.data.length > 0) {
+                    const { totalImporte, totalCantidad, maxItem } = totalData.data.reduce(
+                        (acc: any, item: any) => {
+                            acc.totalImporte += item.Importe;
+                            acc.totalCantidad += item.Cantidad;
+                            if (!acc.maxItem || item.Importe > acc.maxItem.Importe) {
+                                acc.maxItem = item;
+                            }
+                            return acc;
+                        },
+                        {
+                            totalImporte: 0,
+                            totalCantidad: 0,
+                            maxItem: totalData.data[0],
+                        }
+                    );
+                    const porcentajeCliente = totalImporte
+                        ? ((maxItem.Importe / totalImporte) * 100).toFixed(2)
+                        : "0.00";
+
+                    setTotal(formatValue(totalImporte, "currency"));
+                    setCantidad(formatValue(totalCantidad, "number"));
+                    setMotivo(maxItem.Cliente || "Sin datos");
+                    setPorcentajeMotivo(porcentajeCliente);
+                } else {
+                    setTotal(formatValue(0, "currency"));
+                    setCantidad(formatValue(0, "number"));
+                    setMotivo("Sin datos");
+                    setPorcentajeMotivo("0.00");
+                }
+            } else {
+                console.error("Error al cargar datos del resumen:", totalResult.reason);
                 setTotal(formatValue(0, "currency"));
                 setCantidad(formatValue(0, "number"));
                 setMotivo("Sin datos");
+                setPorcentajeMotivo("0.00");
             }
+            setLoadingSummary(false);
 
-            // Procesa la tabla de datos
-            const tableData = tableResponse ?? { data: [], totalPages: 0 };
-            setTotalPages(tableData.totalPages);
-            setDataTable(formatJSON(tableData.data));
+            // Procesa la respuesta para la tabla
+            if (tableResult.status === "fulfilled") {
+                const tableData = tableResult.value ?? { data: [], totalPages: 0 };
+                setTotalPages(tableData.totalPages);
+                setDataTable(formatJSON(tableData.data));
+            } else {
+                console.error("Error al cargar datos de la tabla:", tableResult.reason);
+                setTotalPages(0);
+                setDataTable([]);
+            }
+            setLoadingTable(false);
         } catch (error) {
-            console.error("Error fetching data:", error);
+            console.error("Error general en la carga de datos:", error);
+            setLoadingChart(false);
+            setLoadingSummary(false);
+            setLoadingTable(false);
         }
     }, [getVentas, filtros, currentPage]);
 
-    // Llama a la función de carga cada vez que cambian los filtros o la página
+    // Se ejecuta la carga de datos cada vez que cambian los filtros o la paginación
     useEffect(() => {
         loadDataFromAPI();
     }, [loadDataFromAPI]);
@@ -186,7 +235,7 @@ export default function Ventas() {
                                 options: ["Guadalupe", "Testerazo", "Palmas", "Myoreo"],
                                 multi: true,
                                 label: "Seleccione sucursal...",
-                                placeholder: "Minimo 3 días mayor a la fecha de inicio",
+                                placeholder: "Mínimo 3 días mayor a la fecha de inicio",
                                 require: false,
                             },
                         ],
@@ -232,35 +281,73 @@ export default function Ventas() {
                     icon={<CircleDollarSign className="text-white" />}
                     subText=""
                     title="Total Ventas"
-                    value={total}
+                    value={
+                        loadingSummary ? (
+                            <div className="animate-pulse">Cargando...</div>
+                        ) : (
+                            total
+                        )
+                    }
                 />
                 <CardResumen
                     icon={<ChartBarIncreasing className="text-white" />}
                     subText="general"
                     title="Productos Afectados"
-                    value={cantidad}
+                    value={
+                        loadingSummary ? (
+                            <div className="animate-pulse">Cargando...</div>
+                        ) : (
+                            cantidad
+                        )
+                    }
                 />
                 <CardResumen
                     icon={<ChartNetwork className="text-white" />}
-                    value={motivo}
                     title="Causa Principal"
-                    subText={`${porcentajeMotivo}%`}
+                    value={
+                        loadingSummary ? (
+                            <div className="animate-pulse">Cargando...</div>
+                        ) : (
+                            motivo
+                        )
+                    }
+                    subText={
+                        loadingSummary ? (
+                            <div className="animate-pulse">Cargando...</div>
+                        ) : (
+                            `${porcentajeMotivo}%`
+                        )
+                    }
                 />
             </div>
 
-            {/* Gráfico */}
+            {/* Sección del gráfico */}
             <section className="my-2 p-2 bg-white shadow-md rounded-lg">
-                <RenderChart type="bar" barData={previewData} treemapData={previewData} />
+                {loadingChart ? (
+                    <div className="flex items-center justify-center h-64">
+                        <div className="animate-pulse">Cargando gráfico...</div>
+                    </div>
+                ) : (
+                    <RenderChart type="bar" barData={previewData} treemapData={previewData} />
+                )}
             </section>
 
-            {/* Tabla de datos */}
-            <DynamicTable data={dataTable} />
+            {/* Sección de la tabla */}
+            <section className="my-2">
+                {loadingTable ? (
+                    <div className="flex items-center justify-center h-64">
+                        <div className="animate-pulse">Cargando tabla...</div>
+                    </div>
+                ) : (
+                    <DynamicTable data={dataTable} />
+                )}
+            </section>
 
             {/* Paginación */}
             <div className="flex items-center justify-center space-x-2">
                 <button
                     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
+                    disabled={currentPage === 1 || loadingTable}
                     className="px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <ChevronLeft className="h-5 w-5" />
@@ -272,7 +359,7 @@ export default function Ventas() {
                     onClick={() =>
                         setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                     }
-                    disabled={currentPage === totalPages}
+                    disabled={currentPage === totalPages || loadingTable}
                     className="px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <ChevronRight className="h-5 w-5" />
