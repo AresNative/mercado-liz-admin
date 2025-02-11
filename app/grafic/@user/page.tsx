@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useGetHistorialComprasQuery } from "@/hooks/reducers/api";
+import { useGetVentasMutation } from "@/hooks/reducers/api";
 import MainForm from "@/components/form/main-form";
 import { RenderChartProps, RenderChart } from "../components/render-grafic";
+import { formatLoadDate, loadDataGrafic } from "../constants/load-data";
 
 export interface ChartData {
     name: string;
@@ -12,27 +13,23 @@ export interface ChartData {
 export default function Estatico() {
     const [chartType, setChartType] = useState<RenderChartProps["type"]>("bar");
     const [previewData, setPreviewData] = useState<ChartData[]>([]);
-    const { data, isLoading } = useGetHistorialComprasQuery({});
+    const [getVentas] = useGetVentasMutation({});
+    async function load() {
+        const dataFilter: formatLoadDate = {
+            filters: {
+                filtros: [],
+                sumas: [{ key: "Nombre" }],
+            },
+            page: 1,
+            sum: true,
+        };
 
+        const response: ChartData[] = await loadDataGrafic(getVentas, dataFilter, "Nombre") ?? [];
+        setPreviewData(response);
+    }
     useEffect(() => {
-        if (data?.data) {
-            const formattedData = [
-                {
-                    name: "Proveedores",
-                    data: data.data.map((item: any) => ({
-                        x: item.ProveedorNom,
-                        y: item.Total,
-                    })),
-                },
-            ];
-            setPreviewData(formattedData);
-
-        } else {
-            setPreviewData([]);
-        }
-    }, [data]);
-
-    if (isLoading) return <p>Cargando...</p>;
+        load()
+    }, []);
 
     return (
         <>
@@ -52,6 +49,8 @@ export default function Estatico() {
                 valueAssign="select_grafic"
                 message_button="Cargar"
                 action={(data) => {
+                    console.log(data);
+
                     setChartType(() => data)
                 }}
             />
