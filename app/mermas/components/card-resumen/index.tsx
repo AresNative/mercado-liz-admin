@@ -18,9 +18,9 @@ export default function CardResumen(props: Resumen) {
                     </div>
                     <div className="ml-5 w-0 flex-1">
                         <dl>
-                            <dt className="text-sm font-medium text-gray-500 truncate">{props.title}</dt>
+                            <dt className="text-xs font-medium text-gray-500 truncate">{props.title}</dt>
                             <dd className="flex items-baseline">
-                                <div className="text-2xl font-semibold text-gray-900">{props.value}</div>
+                                <div className="text-xl text-pretty font-semibold text-gray-900">{props.value}</div>
                                 <div className="ml-2 flex items-baseline text-sm font-semibold text-green-600">
                                     <span>{props.subText}</span>
                                 </div>
