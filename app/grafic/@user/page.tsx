@@ -21,10 +21,12 @@ export default function Estatico() {
                 sumas: [{ key: "Nombre" }],
             },
             page: 1,
+            pageSize: 5,
             sum: true,
         };
 
         const response: ChartData[] = await loadDataGrafic(getVentas, dataFilter, "Nombre") ?? [];
+        console.log(response);
         setPreviewData(response);
     }
     useEffect(() => {
@@ -49,8 +51,6 @@ export default function Estatico() {
                 valueAssign="select_grafic"
                 message_button="Cargar"
                 action={(data) => {
-                    console.log(data);
-
                     setChartType(() => data)
                 }}
             />

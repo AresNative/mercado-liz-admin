@@ -15,6 +15,7 @@ export default function Ventas() {
     const [dataTable, setDataTable] = useState<any[]>([]);
     const [total, setTotal] = useState("$000,000.00");
     const [cantidad, setCantidad] = useState("000");
+    const [motivo, setMotivo] = useState("N/A");
     const [getVentas] = useGetVentasMutation();
 
     const [serachParam, setSerachParam] = useState("");
@@ -63,7 +64,7 @@ export default function Ventas() {
         const dataTotal: formatLoadDate = {
             filters: {
                 filtros,
-                sumas: [],
+                sumas: [{ key: "[Cliente]" }],
             },
             page: 1,
             sum: true,
@@ -73,13 +74,14 @@ export default function Ventas() {
 
         setTotal(formatValue(responseTotal.data[0]?.Importe || 0, "currency"));
         setCantidad(formatValue(responseTotal.data[0]?.Cantidad || 0, "number"));
+        setMotivo(responseTotal.data[0]?.Cliente)
 
         const dataTable: formatLoadDate = {
             filters: {
                 filtros,
                 sumas: [
                     { key: "Nombre" },
-                    { key: "Sucursal" }
+                    { key: "Almacen" }
                 ],
             },
             page: currentPage,
@@ -178,7 +180,7 @@ export default function Ventas() {
 
                 <CardResumen
                     icon={<ChartNetwork className="text-white" />}
-                    value={"Caducidad"}
+                    value={motivo}
                     title="Causa Principal"
                     subText={"45%"}
                 />
