@@ -130,7 +130,7 @@ export default function Ventas() {
         };
 
         const tableFilter: formatLoadDate = {
-            filters: { filtros, sumas: [{ key: "Nombre" }, { key: "Almacen" }] },
+            filters: { filtros, sumas: [{ key: "Nombre" }, { key: "Almacen" }, { key: "FechaEmision" }] },
             page: currentPage,
             sum: true,
         };
@@ -246,7 +246,7 @@ export default function Ventas() {
                                     { label: "Guadalupe", value: "LIZ" },
                                     { label: "Testerazo", value: "TESTERAZO" },
                                     { label: "Palmas", value: "PALMAS" },
-                                    { label: "Myoreo", value: "Myoreo" }],
+                                    { label: "Mayoreo", value: "MAYOREO" }],
                                 multi: true,
                                 label: "Seleccione sucursal...",
                                 placeholder: "Mínimo 3 días mayor a la fecha de inicio",
