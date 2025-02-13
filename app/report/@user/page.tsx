@@ -20,6 +20,7 @@ import { formatJSON, formatValue } from "@/utils/constants/format-values";
 import MainForm from "@/components/form/main-form";
 import DynamicTable from "@/components/table";
 import CardResumen from "@/app/mermas/components/card-resumen";
+import { FiltersField } from "../constants/filters";
 
 export default function Ventas() {
     // Estados para datos y resúmenes
@@ -227,54 +228,7 @@ export default function Ventas() {
         <div>
             <MainForm
                 actionType="Buscar"
-                dataForm={[
-                    {
-                        type: "Flex",
-                        require: false,
-                        elements: [
-                            {
-                                name: "search",
-                                type: "SEARCH",
-                                label: "Busca algún dato de interés",
-                                placeholder: "Buscar productos...",
-                                require: false,
-                            },
-                            {
-                                name: "sucursal",
-                                type: "SELECT",
-                                options: [
-                                    { label: "Guadalupe", value: "LIZ" },
-                                    { label: "Testerazo", value: "TESTERAZO" },
-                                    { label: "Palmas", value: "PALMAS" },
-                                    { label: "Mayoreo", value: "MAYOREO" }],
-                                multi: true,
-                                label: "Seleccione sucursal...",
-                                placeholder: "Mínimo 3 días mayor a la fecha de inicio",
-                                require: false,
-                            },
-                        ],
-                    },
-                    {
-                        type: "Flex",
-                        require: false,
-                        elements: [
-                            {
-                                name: "fecha_inicial",
-                                type: "DATE",
-                                label: "Fecha de inicio",
-                                placeholder: "Buscar por fecha...",
-                                require: false,
-                            },
-                            {
-                                name: "fecha_final",
-                                type: "DATE",
-                                label: "Fecha final",
-                                placeholder: "Buscar por fecha...",
-                                require: false,
-                            },
-                        ],
-                    },
-                ]}
+                dataForm={FiltersField()}
                 valueAssign={["search", "sucursal", "fecha_inicial", "fecha_final"]}
                 action={(values) => {
                     setSearchParam(values.search);
