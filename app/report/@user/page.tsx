@@ -3,8 +3,6 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import {
     ChartBarIncreasing,
     ChartNetwork,
-    ChevronLeft,
-    ChevronRight,
     CircleDollarSign,
 } from "lucide-react";
 import { ChartData } from "@/app/grafic/@user/page";
@@ -21,6 +19,7 @@ import MainForm from "@/components/form/main-form";
 import DynamicTable from "@/components/table";
 import CardResumen from "@/app/mermas/components/card-resumen";
 import { FiltersField } from "../constants/filters";
+import Pagination from "@/components/pagination";
 
 export default function Ventas() {
     // Estados para datos y resúmenes
@@ -312,27 +311,7 @@ export default function Ventas() {
             </section>
 
             {/* Paginación */}
-            <div className="flex items-center justify-center space-x-2">
-                <button
-                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1 || loadingTable}
-                    className="px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <ChevronLeft className="h-5 w-5" />
-                </button>
-                <span className="px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-700">
-                    {currentPage} de {totalPages}
-                </span>
-                <button
-                    onClick={() =>
-                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                    }
-                    disabled={currentPage === totalPages || loadingTable}
-                    className="px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <ChevronRight className="h-5 w-5" />
-                </button>
-            </div>
+            <Pagination currentPage={currentPage} loadingTable={loadingTable} setCurrentPage={setCurrentPage} totalPages={totalPages} />
         </div>
     );
 }
