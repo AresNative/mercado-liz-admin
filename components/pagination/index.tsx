@@ -5,20 +5,20 @@ interface PaginationProps {
     setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
     currentPage: number;
     totalPages: number;
-    loadingTable: boolean;
+    loading: boolean;
 }
 
 export default function Pagination({
     setCurrentPage,
     currentPage,
     totalPages,
-    loadingTable,
+    loading,
 }: PaginationProps) {
     return (
         <div className="flex items-center justify-center space-x-2">
             <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1 || loadingTable}
+                disabled={currentPage === 1 || loading}
                 className="px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 <ChevronLeft className="h-5 w-5" />
@@ -30,7 +30,7 @@ export default function Pagination({
                 onClick={() =>
                     setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
-                disabled={currentPage === totalPages || loadingTable}
+                disabled={currentPage === totalPages || loading}
                 className="px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 <ChevronRight className="h-5 w-5" />
