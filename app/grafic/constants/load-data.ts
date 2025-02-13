@@ -24,7 +24,8 @@ export interface formatLoadDate {
 export async function loadDataGrafic(
   functionLoad: any,
   filter: formatLoadDate,
-  name: string
+  nameX: string,
+  nameY: string
 ) {
   try {
     const response: any = await functionLoad(filter);
@@ -32,10 +33,10 @@ export async function loadDataGrafic(
     const dataTable = response.data.data;
     const formattedData: ChartData[] = [
       {
-        name: name,
+        name: nameX,
         data: dataTable.slice(0, 5).map((item: any) => ({
-          x: item[name],
-          y: financial(item.Importe),
+          x: item[nameX],
+          y: financial(item[nameY]),
         })),
       },
     ];
