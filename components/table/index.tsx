@@ -88,7 +88,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
 
         // Formato de precios
         if (
-            (key.toLowerCase().includes('price') || key.toLowerCase().includes('importe')) &&
+            (key.toLowerCase().includes('price') || key.toLowerCase().includes('importe') || key.toLowerCase().includes('costo')) &&
             typeof value === 'number'
         ) {
             return `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;

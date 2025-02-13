@@ -25,9 +25,9 @@ export const api = createApi({
             query: (params) => `reporteria/${params}`,
         }),
 
-        getCompras: builder.query({
+        /* getCompras: builder.query({
             query: (params) => `reporteria/compras?${params}`,
-        }),
+        }), */
         /* getVentas: builder.query({
             query: (params) => `reporteria/ventas?${params}`,
         }), */
@@ -143,6 +143,13 @@ export const api = createApi({
                 body: data.filters,
             }),
         }),
+        getCompras: builder.mutation({
+            query: (data) => ({
+                url: `reporteria/compras?sum=${data.sum}&page=${data.page}&pageSize=5`,
+                method: "POST",
+                body: data.filters,
+            }),
+        }),
         /* 
         ? Formato de update ↡
         
@@ -153,12 +160,13 @@ export const api = createApi({
 export const {
     useGetReportQuery,
 
-    useGetComprasQuery,
+
     useGetAlmacenQuery,
     useGetMovimientosQuery,
 
     useGetMermasMutation,
     useGetVentasMutation,
+    useGetComprasMutation,
 
     useGetProjectsQuery,
     useGetSprintsQuery,
