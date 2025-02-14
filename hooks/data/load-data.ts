@@ -1,7 +1,7 @@
 import {
   useGetAlmacenQuery,
-  useGetComprasQuery /* 
-  useGetMermasQuery, */,
+  /* useGetComprasQuery
+  useGetMermasQuery, ,*/
   useGetMovimientosQuery,
   /* useGetVentasQuery, */
   useGetAutocompletarComprasQuery,
@@ -17,10 +17,10 @@ export function useQueryByType(
   const queryString = buildQueryString();
 
   // Llama todos los hooks con skip: true excepto el seleccionado
-  const comprasQuery = useGetComprasQuery(queryString, {
+  /* const comprasQuery = useGetComprasQuery(queryString, {
     skip: selectedQueryType !== "get-compras",
     refetchOnMountOrArgChange: true,
-  });
+  }); */
 
   /* const ventasQuery = useGetVentasQuery(queryString, {
     skip: selectedQueryType !== "get-ventas",
@@ -44,7 +44,7 @@ export function useQueryByType(
 
   // Mapear resultados dinámicamente
   const queryResults: Record<string, any> = {
-    "get-compras": comprasQuery,
+    /* "get-compras": comprasQuery, */
     /* "get-ventas": ventasQuery, */
     "get-almacen": almacenQuery,
     /* "get-mermas": mermasQuery, */
