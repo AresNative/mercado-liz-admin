@@ -12,7 +12,7 @@ import {
     loadDataGrafic,
     formatFilter,
 } from "@/app/grafic/constants/load-data";
-import { useGetVentasMutation } from "@/hooks/reducers/api";
+import { useGetComprasMutation, useGetVentasMutation } from "@/hooks/reducers/api";
 import { formatJSON, formatValue } from "@/utils/constants/format-values";
 import MainForm from "@/components/form/main-form";
 import DynamicTable from "@/components/table";
@@ -20,43 +20,57 @@ import CardResumen from "@/app/mermas/components/card-resumen";
 import { FiltersField } from "../constants/filters";
 import Pagination from "@/components/pagination";
 
-interface VentasTableItem {
+interface ReportConfig {
+    type: 'compras' | 'ventas';
+    title: string;
+    amountKey: 'Costo' | 'Importe';
+    mainField: string;
+    sumKey: string;
+}
+
+interface DynamicTableItem {
     id: string;
     Nombre: string;
     Almacen: string;
     FechaEmision: string;
-    Importe: number;
-    Cantidad: number;
     [key: string]: any;
 }
 
 const formatAPIDate = (dateString: string) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    return date.toISOString().split('T')[0];
 };
 
-export default function Ventas() {
-    // Estados para datos y resúmenes
+export default function DynamicReport() {
+    const [config, setconfig] = useState<ReportConfig>({
+        amountKey: 'Costo',
+        mainField: '5',
+        sumKey: 'Cantidad',
+        title: 'Compras',
+        type: "compras"
+    })
+    // Estados compartidos
     const [previewData, setPreviewData] = useState<ChartData[]>([]);
-    const [dataTable, setDataTable] = useState<VentasTableItem[]>([]);
+    const [dataTable, setDataTable] = useState<DynamicTableItem[]>([]);
     const [total, setTotal] = useState("$0.00");
     const [cantidad, setCantidad] = useState("0");
     const [motivo, setMotivo] = useState("N/A");
     const [porcentajeMotivo, setPorcentajeMotivo] = useState("N/A");
     const [error, setError] = useState<string | null>(null);
 
-    // Estados de carga
     const [loading, setLoading] = useState({
         chart: false,
         summary: false,
         table: false,
     });
 
-    // Hook para la llamada a la API
+    // Configuración dinámica de API
+    const [getCompras] = useGetComprasMutation();
     const [getVentas] = useGetVentasMutation();
+    const getAPI = config.type === 'compras' ? getCompras : getVentas;
 
-    // Estados para filtros y paginación
+    // Estados de filtros
     const [searchParam, setSearchParam] = useState("");
     const [sucursal, setSucursal] = useState("");
     const [fechaInicial, setFechaInicial] = useState("");
@@ -70,7 +84,6 @@ export default function Ventas() {
     const [debouncedFechaInicial, setDebouncedFechaInicial] = useState("");
     const [debouncedFechaFinal, setDebouncedFechaFinal] = useState("");
 
-    // Debounce de 50ms para filtros
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedSearch(searchParam);
@@ -82,7 +95,6 @@ export default function Ventas() {
         return () => clearTimeout(timer);
     }, [searchParam, sucursal, fechaInicial, fechaFinal]);
 
-    // Generación de filtros optimizada
     const filtros = useMemo(() => {
         const arr: formatFilter[] = [];
 
@@ -123,51 +135,49 @@ export default function Ventas() {
         return arr;
     }, [debouncedSearch, debouncedSucursal, debouncedFechaInicial, debouncedFechaFinal]);
 
-    // Función para procesar totales
     const processTotals = (data: any[]) => {
         if (data.length === 0) {
             return {
-                totalImporte: 0,
+                [config.amountKey]: 0,
                 totalCantidad: 0,
-                maxItem: { Cliente: "Sin datos", Importe: 0 }
+                maxItem: { [config.mainField]: "Sin datos", [config.amountKey]: 0 }
             };
         }
 
         return data.reduce((acc, item) => {
-            acc.totalImporte += item.Importe || 0;
+            acc[config.amountKey] += item[config.amountKey] || 0;
             acc.totalCantidad += item.Cantidad || 0;
 
-            if (item.Importe > (acc.maxItem?.Importe || 0)) {
+            if (item[config.amountKey] > (acc.maxItem?.[config.amountKey] || 0)) {
                 acc.maxItem = item;
             }
 
             return acc;
         }, {
-            totalImporte: 0,
+            [config.amountKey]: 0,
             totalCantidad: 0,
             maxItem: data[0]
         });
     };
 
-    // Carga de datos
     const loadDataFromAPI = useCallback(async () => {
         setError(null);
         setLoading({ chart: true, summary: true, table: true });
 
         try {
             const [chartResult, totalResult, tableResult] = await Promise.allSettled([
-                loadDataGrafic(getVentas, {
+                loadDataGrafic(getAPI, {
                     filters: { filtros, sumas: [{ key: "Categoria" }] },
                     page: 1,
                     sum: true
-                }, "Categoria"),
-                loadData(getVentas, {
-                    filters: { filtros, sumas: [{ key: "Cliente" }] },
+                }, "Categoria", config.amountKey),
+                loadData(getAPI, {
+                    filters: { filtros, sumas: [{ key: config.sumKey }] },
                     page: 1,
                     pageSize: 100,
                     sum: true
                 }),
-                loadData(getVentas, {
+                loadData(getAPI, {
                     filters: { filtros, sumas: [{ key: "Nombre" }, { key: "Almacen" }, { key: "FechaEmision" }] },
                     page: currentPage,
                     sum: true
@@ -185,14 +195,14 @@ export default function Ventas() {
             // Procesar totales
             if (totalResult.status === "fulfilled") {
                 const resultData = totalResult.value?.data || [];
-                const { totalImporte, totalCantidad, maxItem } = processTotals(resultData);
+                const totals = processTotals(resultData);
 
-                setTotal(formatValue(totalImporte, "currency"));
-                setCantidad(formatValue(totalCantidad, "number"));
-                setMotivo(maxItem.Cliente || "Sin datos");
+                setTotal(formatValue(totals[config.amountKey], "currency"));
+                setCantidad(formatValue(totals.totalCantidad, "number"));
+                setMotivo(totals.maxItem[config.mainField] || "Sin datos");
                 setPorcentajeMotivo(
-                    totalImporte
-                        ? ((maxItem.Importe / totalImporte) * 100).toFixed(2)
+                    totals[config.amountKey]
+                        ? ((totals.maxItem[config.amountKey] / totals[config.amountKey]) * 100).toFixed(2)
                         : "0.00"
                 );
             }
@@ -202,7 +212,7 @@ export default function Ventas() {
             if (tableResult.status === "fulfilled") {
                 const tableData = tableResult.value ?? { data: [], totalPages: 0 };
                 setTotalPages(tableData.totalPages);
-                setDataTable(formatJSON(tableData.data) as VentasTableItem[]);
+                setDataTable(formatJSON(tableData.data) as DynamicTableItem[]);
             }
             setLoading(prev => ({ ...prev, table: false }));
 
@@ -211,7 +221,7 @@ export default function Ventas() {
             setError("Error al cargar datos. Intente nuevamente.");
             setLoading({ chart: false, summary: false, table: false });
         }
-    }, [getVentas, filtros, currentPage]);
+    }, [getAPI, filtros, currentPage, config]);
 
     useEffect(() => {
         loadDataFromAPI();
@@ -241,17 +251,17 @@ export default function Ventas() {
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
                 <CardResumen
                     icon={<CircleDollarSign className="text-white" />}
-                    title="Total Ventas"
+                    title={`Total ${config.title}`}
                     value={loading.summary ? "Cargando..." : total}
                 />
                 <CardResumen
                     icon={<ChartBarIncreasing className="text-white" />}
-                    title="Productos Afectados"
+                    title="Productos Movidos"
                     value={loading.summary ? "Cargando..." : cantidad}
                 />
                 <CardResumen
                     icon={<ChartNetwork className="text-white" />}
-                    title="Causa Principal"
+                    title={config.type === 'compras' ? "Proveedor Principal" : "Cliente Principal"}
                     value={loading.summary ? "Cargando..." : motivo}
                     subText={loading.summary ? "" : `${porcentajeMotivo}%`}
                 />
@@ -275,6 +285,7 @@ export default function Ventas() {
                 ) : (
                     <DynamicTable
                         data={dataTable}
+
                     />
                 )}
             </section>
@@ -288,3 +299,24 @@ export default function Ventas() {
         </div>
     );
 }
+
+// Componentes específicos
+/* export function Compras() {
+    return <DynamicReport config={{
+        type: 'compras',
+        title: 'Compras',
+        amountKey: 'Costo',
+        mainField: 'Proveedor',
+        sumKey: 'Proveedor'
+    }} />;
+}
+export function Ventas() {
+    return <DynamicReport config={{
+        type: 'ventas',
+        title: 'Ventas',
+        amountKey: 'Importe',
+        mainField: 'Cliente',
+        sumKey: 'Cliente'
+    }} />;
+}
+ */
