@@ -45,8 +45,8 @@ const formatAPIDate = (dateString: string) => {
 export default function DynamicReport() {
     const [config, setconfig] = useState<ReportConfig>({
         amountKey: 'Costo',
-        mainField: '5',
-        sumKey: 'Cantidad',
+        mainField: 'Proveedor',
+        sumKey: 'Proveedor',
         title: 'Compras',
         type: "compras"
     })
