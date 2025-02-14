@@ -57,7 +57,7 @@ export default function Mermas() {
             sum: true,
         };
 
-        const response: ChartData[] = await loadDataGrafic(getMermas, dataFilter, "Categoria") ?? [];
+        const response: ChartData[] = await loadDataGrafic(getMermas, dataFilter, "Categoria", "Importe") ?? [];
         setPreviewData(response);
 
         const dataTotal: formatLoadDate = {
