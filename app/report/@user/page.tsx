@@ -178,7 +178,7 @@ export default function DynamicReport() {
                     sum: true
                 }),
                 loadData(getAPI, {
-                    filters: { filtros, sumas: [{ key: "Nombre" }, { key: "Almacen" }, { key: "FechaEmision" }] },
+                    filters: { filtros, sumas: [{ key: "Nombre" }, { key: "Almacen" }] },
                     page: currentPage,
                     sum: true
                 })
