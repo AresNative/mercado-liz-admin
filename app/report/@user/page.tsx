@@ -42,13 +42,13 @@ const formatAPIDate = (dateString: string) => {
     return date.toISOString().split('T')[0];
 };
 
-export default function DynamicReport() {
+export default function DynamicReport(/* { config }: { config: ReportConfig } */) {
     const [config, setconfig] = useState<ReportConfig>({
+        type: 'compras',
+        title: 'Compras',
         amountKey: 'Costo',
         mainField: 'Proveedor',
-        sumKey: 'Proveedor',
-        title: 'Compras',
-        type: "compras"
+        sumKey: 'Proveedor'
     })
     // Estados compartidos
     const [previewData, setPreviewData] = useState<ChartData[]>([]);

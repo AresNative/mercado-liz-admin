@@ -9,6 +9,7 @@ export function FiltersField(): Field[] {
         {
           name: "search",
           type: "SEARCH",
+          options: ["Guadalupe", "TESTERAZO", "Palmas", "MAYOREO"],
           label: "Busca algún dato de interés",
           placeholder: "Buscar productos...",
           require: false,
