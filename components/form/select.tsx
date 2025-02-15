@@ -56,7 +56,7 @@ export function SelectComponent(props: SearchableSelectProps) {
                 <Star className="w-4 h-4" />
                 {cuestion.label}
             </label>
-            <div className="relative">
+            <div className="relative bg-white">
                 <div
                     className="px-4 py-2 border focus:ring-purple-500 focus:border-purple-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600 cursor-pointer flex items-center justify-between"
                     onClick={() => setShowSkillsDropdown(!showSkillsDropdown)}
@@ -110,7 +110,7 @@ export function SelectComponent(props: SearchableSelectProps) {
                 )}
             </div>
             {cuestion.multi && (
-                <div className="flex flex-wrap gap-2 mt-2">
+                <div className="flex flex-wrap gap-2 mt-2 ">
                     {formData.skills.map(skill => (
                         <div key={skill}>
                             <Badge text={skill} color="purple" />
