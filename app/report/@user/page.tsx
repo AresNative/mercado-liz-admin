@@ -133,7 +133,7 @@ export default function DynamicReport(/* { config }: { config: ReportConfig } */
         }
 
         return arr;
-    }, [debouncedSearch, debouncedSucursal, debouncedFechaInicial, debouncedFechaFinal]);
+    }, [debouncedSearch, debouncedSucursal, debouncedFechaInicial, debouncedFechaFinal, config]);
 
     const processTotals = (data: any[]) => {
         if (data.length === 0) {
@@ -225,10 +225,37 @@ export default function DynamicReport(/* { config }: { config: ReportConfig } */
 
     useEffect(() => {
         loadDataFromAPI();
-    }, [loadDataFromAPI]);
+    }, [loadDataFromAPI, config]);
 
     return (
         <div>
+            <section className="w-full py-2 flex gap-2">
+                <button
+                    className="p-2 border rounded-lg bg-white"
+                    onClick={() => setconfig({
+                        type: 'ventas',
+                        title: 'Ventas',
+                        amountKey: 'Importe',
+                        mainField: 'Cliente',
+                        sumKey: 'Cliente'
+                    })}
+                >
+                    Ventas
+                </button>
+                <button
+                    className="p-2 border rounded-lg bg-white"
+                    onClick={() => setconfig({
+                        type: 'compras',
+                        title: 'Compras',
+                        amountKey: 'Costo',
+                        mainField: 'Proveedor',
+                        sumKey: 'Proveedor'
+                    })}
+                >
+                    Compras
+                </button>
+
+            </section>
             {error && (
                 <div className="p-3 mb-4 text-red-700 bg-red-100 rounded-lg">
                     {error}
