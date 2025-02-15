@@ -1,29 +1,30 @@
 'use client';
 
+import { DropDowState } from "@/hooks/reducers/drop-down";
 import { useAppSelector } from "@/hooks/selector";
 import { alertClasses } from "@/utils/constants/colors";
-import { useState, useRef, ReactNode, useEffect } from "react";
+import { ArchiveRestore, CircleAlert } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 
-interface AlertProps {
-    message: string;
-    icon: ReactNode;
-    type: 'success' | 'error' | 'warning' | 'completed' | 'info';
-    action?: (...args: any[]) => any;
-}
-
-export default function Alert({ message, action, type }: AlertProps) {
-    const selector = useAppSelector((state) => state.dropDownReducer);
-    const [open, setOpen] = useState(false);
+export default function Alert() {
+    const selector: DropDowState = useAppSelector((state) => state.dropDownReducer);
+    const { type, icon, title, message, buttonText, action } = selector;
+    const [show, setShow] = useState(false);
     const dialogRef = useRef<HTMLDialogElement | null>(null);
 
     const styles = alertClasses[type];
 
+    const iconsMap = {
+        archivo: <ArchiveRestore className={`${styles.text}`} />,
+        alert: <CircleAlert className={`${styles.text}`} />
+    };
+
     useEffect(() => {
         if (selector.message) {
-            setOpen(true);
+            setShow(true);
             // Ocultar la alerta automáticamente después de 'duration' milisegundos
             const timer = setTimeout(() => {
-                setOpen(false);
+                setShow(false);
             }, selector.duration);
 
             return () => clearTimeout(timer);
@@ -31,7 +32,7 @@ export default function Alert({ message, action, type }: AlertProps) {
     }, [selector]);
 
     const closeDialog = () => {
-        setOpen(false);
+        setShow(false);
         dialogRef.current?.close();
     };
 
@@ -39,19 +40,19 @@ export default function Alert({ message, action, type }: AlertProps) {
         if (action) {
             action(); // Ejecutar la acción si está definida
         }
-        setOpen(false); // Cerrar la alerta
+        setShow(false); // Cerrar la alerta
     };
     return (
         <section
             className={
-                open
+                show
                     ? "absolute inset-x-0 top-0 z-50 h-screen flex items-center justify-center backdrop-blur-lg bg-black bg-opacity-20"
                     : "hidden"
             }
         >
             <dialog
                 ref={dialogRef}
-                open={open}
+                open={show}
                 className="max-w-lg w-full rounded-lg bg-white shadow-xl p-6 z-20 backdrop-blur-lg"
             >
                 <div className="flex items-start space-x-4">
@@ -59,14 +60,14 @@ export default function Alert({ message, action, type }: AlertProps) {
                     <div
                         className={`flex items-center justify-center w-12 h-12 rounded-full ${styles.bg}`}
                     >
-                        {selector.icon}
+                        {iconsMap[icon] ?? null}
                     </div>
                     <div>
-                        <h3 className={`text-lg font-semibold ${styles.text}`}>{selector.message}</h3>
+                        <h3 className={`text-lg font-semibold ${styles.text}`}>{title}</h3>
                         <p className="mt-2 text-sm text-gray-500">{message}</p>
                     </div>
                 </div>
-                <div className="mt-6 flex justify-end space-x-4">
+                {buttonText && (<div className="mt-6 flex justify-end space-x-4">
                     {/* Botón de Cancelar */}
                     <button
                         onClick={closeDialog}
@@ -79,9 +80,9 @@ export default function Alert({ message, action, type }: AlertProps) {
                         onClick={handleAction}
                         className={`px-4 py-2 text-sm font-semibold ${styles.text} ${styles.bg} ring-1 ring-inset ${styles.ring} rounded-md ${styles.hover} transition-all`}
                     >
-                        Deactivate
+                        {buttonText}
                     </button>
-                </div>
+                </div>)}
             </dialog>
         </section>
     );

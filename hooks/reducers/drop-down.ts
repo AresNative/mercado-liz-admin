@@ -1,27 +1,34 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ReactElement } from "react";
 
-interface AlertProps {
+// Interfaz base con propiedades comunes
+export interface BaseAlertProps {
+  title?: string;
   message: string;
-  icon: ReactElement;
+  buttonText?: string;
+  icon: "archivo" | "alert";
   type: "success" | "error" | "warning" | "completed" | "info";
+  duration?: number;
   action?: (...args: any[]) => any;
 }
 
-interface DropDowState {
-  message: string;
-  type: string;
-  duration: number;
-  icon: ReactElement | string;
+// Interfaz específica para AlertProps
+export interface AlertProps extends BaseAlertProps {
+  // Aquí puedes agregar propiedades específicas si es necesario
+}
+
+// Interfaz específica para DropDowState
+export interface DropDowState extends BaseAlertProps {
   modals: Record<string, boolean>;
-  cuestionActivate: any; // Ajustar si tienes un tipo específico para `cuestionActivate`
+  cuestionActivate: unknown; // Cambiado de `any` a `unknown` para mayor seguridad
 }
 
 const initialState: DropDowState = {
+  title: "",
   message: "",
-  type: "",
+  buttonText: "",
+  type: "completed",
   duration: 0,
-  icon: "",
+  icon: "archivo",
   modals: {},
   cuestionActivate: null,
 };
@@ -34,11 +41,17 @@ export const dropDow = createSlice({
       state,
       action: PayloadAction<AlertProps & { duration?: number }>
     ) => {
-      const { message, type, duration, icon } = action.payload;
-      state.message = message;
-      state.type = type;
-      state.icon = icon;
-      state.duration = duration ?? 3000;
+      const { title, message, buttonText, type, duration, icon } =
+        action.payload;
+
+      Object.assign(state, {
+        title,
+        message,
+        buttonText,
+        type,
+        icon,
+        duration: duration ?? 3000,
+      });
     },
     openModal: (
       state,
