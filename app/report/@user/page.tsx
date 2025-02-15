@@ -1,9 +1,11 @@
 "use client";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import {
+    BadgeDollarSign,
     ChartBarIncreasing,
     ChartNetwork,
     CircleDollarSign,
+    ScanBarcode,
 } from "lucide-react";
 import { ChartData } from "@/app/grafic/@user/page";
 import { RenderChart } from "@/app/grafic/components/render-grafic";
@@ -231,7 +233,7 @@ export default function DynamicReport(/* { config }: { config: ReportConfig } */
         <div>
             <section className="w-full py-2 flex gap-2">
                 <button
-                    className="p-2 border rounded-lg bg-white"
+                    className="p-2 border rounded-lg bg-white flex gap-2 items-center"
                     onClick={() => setconfig({
                         type: 'ventas',
                         title: 'Ventas',
@@ -240,10 +242,11 @@ export default function DynamicReport(/* { config }: { config: ReportConfig } */
                         sumKey: 'Cliente'
                     })}
                 >
+                    <BadgeDollarSign className="text-gray-400 size-5" />
                     Ventas
                 </button>
                 <button
-                    className="p-2 border rounded-lg bg-white"
+                    className="p-2 border rounded-lg bg-white flex gap-2"
                     onClick={() => setconfig({
                         type: 'compras',
                         title: 'Compras',
@@ -252,6 +255,7 @@ export default function DynamicReport(/* { config }: { config: ReportConfig } */
                         sumKey: 'Proveedor'
                     })}
                 >
+                    <ScanBarcode className="text-gray-400 size-5" />
                     Compras
                 </button>
 
