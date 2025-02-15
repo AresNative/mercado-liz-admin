@@ -25,13 +25,13 @@ import { Button } from "../button";
 
 import { usePostProjectsMutation, usePostSprintsMutation, usePostTasksMutation } from "@/hooks/reducers/api";
 import { usePostUserLoginMutation } from "@/hooks/reducers/auth";
-//import { openAlertReducer } from "@/hooks/reducers/drop-down";
+import { openAlertReducer } from "@/hooks/reducers/drop-down";
 
-//import { useAppDispatch } from "@/hooks/selector";
+import { useAppDispatch } from "@/hooks/selector";
 
 export const MainForm = ({ message_button, dataForm, actionType, aditionalData, action, valueAssign }: MainFormProps) => {
 
-  //const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
 
   const {
@@ -94,24 +94,29 @@ export const MainForm = ({ message_button, dataForm, actionType, aditionalData, 
         if (action) {
           await action()
         }
-      /* dispatch(
+      dispatch(
         openAlertReducer({
+          title: "Cambio echo!",
           message: "Éxito! Operación realizada",
-          type: "success", //? "info" |  "success" | "warning" | "error"
-          icon: <ArchiveRestore className="w-6 h-6 text-green-600" />
+          type: "success",
+          icon: "archivo",
+          duration: 5000
         })
-      ); */
+      );
 
       /* dispatch(closeModal({ modalName: actionType })); */
     } catch (error) {
       console.error("Error en el envío del formulario:", error);
-      /* dispatch(
+
+      dispatch(
         openAlertReducer({
-          message: "Error! Algo salió mal",
+          title: "Error! Algo salió mal",
+          message: `${error}`,
           type: "error",
-          icon: <CircleAlert className="w-6 h-6 text-red-600" />
+          icon: "alert",
+          duration: 5000
         })
-      ); */
+      );
     } finally {
       setLoading(false);
     }

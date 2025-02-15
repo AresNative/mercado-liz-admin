@@ -40,8 +40,7 @@ interface DynamicTableItem {
 
 const formatAPIDate = (dateString: string) => {
     if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
+    return new Date(dateString).toISOString();
 };
 
 export default function DynamicReport(/* { config }: { config: ReportConfig } */) {
@@ -130,8 +129,8 @@ export default function DynamicReport(/* { config }: { config: ReportConfig } */
                 { key: "FechaEmision", value: ff, operator: "<=" }
             );
         } else {
-            if (fi) arr.push({ key: "FechaEmision", value: fi, operator: ">=" });
-            if (ff) arr.push({ key: "FechaEmision", value: ff, operator: "<=" });
+            if (fi) arr.push({ key: "FechaEmision", value: fi, operator: "=" });
+            if (ff) arr.push({ key: "FechaEmision", value: ff, operator: "=" });
         }
 
         return arr;
