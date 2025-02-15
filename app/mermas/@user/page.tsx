@@ -96,6 +96,9 @@ export default function Mermas() {
         load()
     }, [currentPage, serachParam, sucursal, fechaInicial, fechaFinal]);
 
+    const ayer = new Date(new Date());
+    ayer.setDate(new Date().getDate() - 1);
+
     return (
         <div>
             <MainForm
@@ -135,6 +138,7 @@ export default function Mermas() {
                                 label: "Fecha de inicio",
                                 placeholder: "Buscar por fecha...",
                                 require: false,
+                                valueDefined: ayer.toISOString()
                             },
                             {
                                 name: "fecha_final",

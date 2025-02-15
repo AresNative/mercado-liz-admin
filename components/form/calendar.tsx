@@ -31,6 +31,20 @@ export function CalendarComponent({ cuestion, setValue, register, errors }: Inpu
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    // Ajuste para formatear correctamente el valor definido
+    useEffect(() => {
+        if (cuestion.valueDefined) {
+            const parsedDate = new Date(cuestion.valueDefined);
+            if (!isNaN(parsedDate.getTime())) {
+                const formattedDate = parsedDate.toISOString().split("T")[0];
+                setBirthDate(formattedDate);
+                setYear(parsedDate.getFullYear());
+                setMonth(parsedDate.getMonth());
+                setDay(parsedDate.getDate());
+            }
+        }
+    }, [cuestion.valueDefined]);
+
     const handleAccept = () => {
         const selectedDate = new Date(year, month, day);
         setBirthDate(selectedDate.toISOString().split("T")[0]);
