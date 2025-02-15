@@ -37,6 +37,12 @@ export function CalendarComponent({ cuestion, setValue, register, errors }: Inpu
         setShowDatePicker(false);
     };
 
+    const handleClear = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setBirthDate("");
+        setValue(cuestion.name, "");
+    };
+
     return (
         <div className="flex flex-col" ref={dropdownRef}>
             <label className="leading-loose flex items-center gap-2">
@@ -56,10 +62,20 @@ export function CalendarComponent({ cuestion, setValue, register, errors }: Inpu
                         setDay(today.getDate());
                     }}
                     readOnly
-                    className="px-4 py-2 border focus:ring-purple-500 focus:border-purple-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600 cursor-pointer"
+                    className="px-4 py-2 border focus:ring-purple-500 focus:border-purple-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600 cursor-pointer pr-8"
                     placeholder={cuestion.placeholder}
                     {...register(cuestion.name, cuestion.require ? { required: "El campo es obligatorio." } : {})}
                 />
+                {birthDate && (
+                    <button
+                        type="button"
+                        onClick={handleClear}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        aria-label="Limpiar fecha"
+                    >
+                        ×
+                    </button>
+                )}
                 {showDatePicker && (
                     <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg p-2">
                         <div className="grid grid-cols-3 gap-2">

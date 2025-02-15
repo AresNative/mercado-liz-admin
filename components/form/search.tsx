@@ -47,8 +47,8 @@ export function SearchComponent(props: SearchableSelectProps) {
                     onChange={(e) => { setSearchTerm(e.target.value); setShowSkillsDropdown(true) }}
                 />
             </div>
-            {showSkillsDropdown && (
-                <div className="absolute z-30 top-[4.4rem] w-full bg-white border border-gray-300 mt-1 rounded-md shadow-lg">
+            {cuestion.options && showSkillsDropdown && (
+                <div className="absolute z-30 top-[4.6rem] w-full bg-white border border-gray-300 mt-1 rounded-md shadow-lg">
                     <div className="p-2">
                         <ul className="max-h-60 overflow-y-auto">
                             {cuestion.options && cuestion.options
