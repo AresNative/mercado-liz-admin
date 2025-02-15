@@ -3,33 +3,32 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface FilterProps {
   value: string;
   key: string;
-  type: "table" | "grafic" | "multi" | "info";
+  type: "form" | "grafic" | "multi";
 }
 
-const initialState = {
-  type: "",
+const initialState: FilterProps = {
+  type: "form",
+  key: "",
+  value: "",
 };
 
-export const dropDow = createSlice({
-  name: "dropDow",
+export const filterData = createSlice({
+  name: "filterData",
   initialState,
   reducers: {
-    openAlertReducer: (
-      state,
-      action: PayloadAction<FilterProps & { duration?: number }>
-    ) => {
+    dataFilter: (state, action: PayloadAction<FilterProps>) => {
       const { key, value, type } = action.payload;
-      state.type = type;
+      state = { type: type, key: key, value: value };
+      return state;
     },
-    openModal: (
-      state,
-      action: PayloadAction<{ modalName: string; isOpen: boolean }>
-    ) => {
-      const { modalName, isOpen } = action.payload;
+    searchData: (state, action: PayloadAction<{ param: string }>) => {
+      const { param } = action.payload;
+      state.value = param;
+      return state;
     },
   },
 });
 
-export const { openAlertReducer, openModal } = dropDow.actions;
+export const { dataFilter, searchData } = filterData.actions;
 
-export default dropDow.reducer;
+export default filterData.reducer;
