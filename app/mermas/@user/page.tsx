@@ -79,8 +79,6 @@ export default function Mermas() {
                 filtros,
                 sumas: [
                     { key: "Nombre" },
-                    { key: "Sucursal" },
-                    { key: "FechaEmision" },
                     { key: "Categoria" }
                 ],
             },

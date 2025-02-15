@@ -33,6 +33,7 @@ export interface Field {
   enableAutocomplete?: string; // Changed to string to match "true"
   multi?: boolean; // For SELECT
   maxLength?: number; // For TEXT_AREA and INPUT
+  valueDefined?: any;
 }
 
 export interface MainFormProps {
