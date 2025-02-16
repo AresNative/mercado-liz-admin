@@ -42,6 +42,7 @@ export interface MainFormProps {
   dataForm: Field[];
   aditionalData?: any;
   valueAssign?: any;
+  alert?: boolean;
   action?: (...args: any[]) => any;
 }
 

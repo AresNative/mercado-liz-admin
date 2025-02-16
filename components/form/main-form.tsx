@@ -29,7 +29,7 @@ import { openAlertReducer } from "@/hooks/reducers/drop-down";
 
 import { useAppDispatch } from "@/hooks/selector";
 
-export const MainForm = ({ message_button, dataForm, actionType, aditionalData, action, valueAssign }: MainFormProps) => {
+export const MainForm = ({ message_button, dataForm, actionType, aditionalData, action, valueAssign, alert }: MainFormProps) => {
 
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
@@ -94,7 +94,8 @@ export const MainForm = ({ message_button, dataForm, actionType, aditionalData, 
         if (action) {
           await action()
         }
-      dispatch(
+
+      if (alert) dispatch(
         openAlertReducer({
           title: "Cambio echo!",
           message: "Éxito! Operación realizada",

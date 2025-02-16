@@ -5,6 +5,7 @@ import { DashboardLayoutProps } from "@/utils/constants/interfaces";
 
 import Providers from "@/hooks/provider";
 import Layout from "@/templates/layout";
+import Alert from "@/components/alert";
 
 const DashboardLayout = async ({ admin, user }: DashboardLayoutProps) => {
   // Función para obtener el rol del usuario desde las cookies en el lado del servidor
@@ -34,6 +35,9 @@ const DashboardLayout = async ({ admin, user }: DashboardLayoutProps) => {
       ) : (
         <>Acceso no autorizado</>
       )}
+      <Providers>
+        <Alert />
+      </Providers>
     </Layout>
   );
 };
