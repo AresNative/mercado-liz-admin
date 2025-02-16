@@ -43,7 +43,7 @@ const formatAPIDate = (dateString: string) => {
     return new Date(dateString).toISOString();
 };
 
-export default function DynamicReport(/* { config }: { config: ReportConfig } */) {
+export default function DynamicReport() {
     const [config, setconfig] = useState<ReportConfig>({
         type: 'compras',
         title: 'Compras',
@@ -276,6 +276,7 @@ export default function DynamicReport(/* { config }: { config: ReportConfig } */
                     setFechaFinal(values.fecha_final || "");
                 }}
                 message_button="Buscar"
+            /* alert */
             />
 
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
@@ -329,24 +330,3 @@ export default function DynamicReport(/* { config }: { config: ReportConfig } */
         </div>
     );
 }
-
-// Componentes específicos
-/* export function Compras() {
-    return <DynamicReport config={{
-        type: 'compras',
-        title: 'Compras',
-        amountKey: 'Costo',
-        mainField: 'Proveedor',
-        sumKey: 'Proveedor'
-    }} />;
-}
-export function Ventas() {
-    return <DynamicReport config={{
-        type: 'ventas',
-        title: 'Ventas',
-        amountKey: 'Importe',
-        mainField: 'Cliente',
-        sumKey: 'Cliente'
-    }} />;
-}
- */

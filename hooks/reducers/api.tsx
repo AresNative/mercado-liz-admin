@@ -87,7 +87,7 @@ export const api = createApi({
             query: ({ dataForm, idEdit }) => {
                 return {
                     url: `tasks/${idEdit}/assing-user`,
-                    method: "PUT",
+                    method: "POST",
                     body: dataForm,
                 };
             },
@@ -96,7 +96,7 @@ export const api = createApi({
             query: (data) => {
                 return {
                     url: `tasks/${data.taskId}/update-status`,
-                    method: "PUT",
+                    method: "POST",
                     body: data,
                 };
             },
@@ -105,7 +105,7 @@ export const api = createApi({
             query: (data) => {
                 return {
                     url: `tasks/${data.taskId}/update-order?order=${data.order}`,
-                    method: "PUT",
+                    method: "POST",
                 };
             },
         }),
