@@ -90,10 +90,9 @@ export const MainForm = ({ message_button, dataForm, actionType, aditionalData, 
           await action(submitData[key]);
         }
       }
-      else
-        if (action) {
-          await action()
-        }
+      else if (action) {
+        await action()
+      }
 
       if (alert) dispatch(
         openAlertReducer({
