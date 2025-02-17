@@ -28,9 +28,12 @@ export default function Home() {
             message_button={'Enviar'}
             actionType={"post-login"}
             dataForm={LogInField()}
-            action={() => {
-              saveCokie();
-              router.push("/scrum");
+            onSuccess={(result) => {
+              const token = result.data.token;
+              if (token) {
+                saveCokie();
+                router.push("/scrum");
+              }
             }}
           />
         </section>

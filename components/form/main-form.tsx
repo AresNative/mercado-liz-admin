@@ -27,13 +27,13 @@ import { Button } from "../button";
 
 import { usePostProjectsMutation, usePostSprintsMutation, usePostTasksMutation } from "@/hooks/reducers/api";
 import { usePostUserLoginMutation } from "@/hooks/reducers/auth";
-import { openAlertReducer } from "@/hooks/reducers/drop-down";
+/* import { openAlertReducer } from "@/hooks/reducers/drop-down"; */
 
-import { useAppDispatch } from "@/hooks/selector";
+/* import { useAppDispatch } from "@/hooks/selector"; */
 
-export const MainForm = ({ message_button, dataForm, actionType, aditionalData, action, valueAssign }: MainFormProps) => {
+export const MainForm = ({ message_button, dataForm, actionType, aditionalData, action, valueAssign, onSuccess }: MainFormProps) => {
 
-  const dispatch = useAppDispatch();
+  /* const dispatch = useAppDispatch(); */
   const [loading, setLoading] = useState(false);
 
   const {
@@ -75,23 +75,28 @@ export const MainForm = ({ message_button, dataForm, actionType, aditionalData, 
     else combinedData = submitData;
     const mutationFunction = getMutationFunction(actionType);
     try {
-      await mutationFunction(combinedData);
-
-      if (valueAssign && Array.isArray(valueAssign) && action) {
-        // Si es un array, mapeamos los valores y creamos un objeto
-        const result = valueAssign.reduce((acc, v) => {
-          const key = v.replace(/^'|'$/g, ''); // Limpia comillas
-          acc[key] = submitData[key];
-          return acc;
-        }, {} as Record<string, any>);
-
-        await action(result);
-      } else {
-        const key = valueAssign.replace(/^'|'$/g, ''); // Limpia comillas
-        if (action) await action(submitData[key]);
+      const result = await mutationFunction(combinedData);
+      if (onSuccess) {
+        onSuccess(result, combinedData);
       }
+      if (action) {
+        const cleanKey = (key: string) => key.replace(/^'|'$/g, '');
 
-      if (action) await action();
+        try {
+          const payload = valueAssign
+            ? Array.isArray(valueAssign)
+              ? Object.fromEntries(
+                valueAssign.map(key => [cleanKey(key), submitData[cleanKey(key)]])
+              )
+              : submitData[cleanKey(valueAssign)]
+            : undefined;
+
+          await (payload !== undefined ? action(payload) : action());
+        } catch (error) {
+          console.error('Error processing action:', error);
+          // Considerar propagar el error o manejar según necesidad
+        }
+      }
 
       /* if (alert) dispatch(
         openAlertReducer({

@@ -45,6 +45,7 @@ export interface MainFormProps {
   aditionalData?: any;
   valueAssign?: any;
   action?: (...args: any[]) => any;
+  onSuccess?: (result: any, formData: any) => void;
 }
 
 export interface ChecboxFormProps {
