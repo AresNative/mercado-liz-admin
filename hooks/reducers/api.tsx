@@ -128,7 +128,9 @@ export const api = createApi({
         getHistorialCompras: builder.query({
             query: () => `estatico/historial-compras`,
         }),
-
+        /* 
+        ? Formato de consulta - glosarios y tablas dinamicas
+        */
         getMermas: builder.mutation({
             query: (data) => ({
                 url: `reporteria/mermas?sum=${data.sum}&page=${data.page}`,
@@ -136,6 +138,7 @@ export const api = createApi({
                 body: data.filters,
             }),
         }),
+
         getVentas: builder.mutation({
             query: (data) => ({
                 url: `reporteria/ventas?sum=${data.sum}&page=${data.page}&pageSize=5`,
@@ -143,6 +146,10 @@ export const api = createApi({
                 body: data.filters,
             }),
         }),
+        getGlosariosVentas: builder.query({
+            query: () => `glosario/glosario-ventas`
+        }),
+
         getCompras: builder.mutation({
             query: (data) => ({
                 url: `reporteria/compras?sum=${data.sum}&page=${data.page}&pageSize=5`,
@@ -150,9 +157,12 @@ export const api = createApi({
                 body: data.filters,
             }),
         }),
-        /* 
-        ? Formato de update ↡
-        
+        getGlosariosCompras: builder.query({
+            query: () => `glosario/glosario-compras`
+        }),
+
+        /*
+        ? Formato de consulta - glosarios y tablas dinamicas
         */
     }),
 });
@@ -166,6 +176,7 @@ export const {
 
     useGetMermasMutation,
     useGetVentasMutation,
+    useGetGlosariosVentasQuery,
     useGetComprasMutation,
 
     useGetProjectsQuery,
