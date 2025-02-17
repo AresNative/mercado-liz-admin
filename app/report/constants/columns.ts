@@ -1,7 +1,7 @@
 import { Field } from "@/utils/constants/interfaces";
 import { useMemo } from "react";
 
-interface RowData {
+export interface RowData {
   Nombre: string;
 }
 

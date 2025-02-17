@@ -54,7 +54,8 @@ export default function DynamicReport() {
         mainField: 'Proveedor',
         sumKey: 'Proveedor'
     })
-    const [columns, setcolumns] = useState([{ key: "Nombre" }, { key: "Almacen" }])
+    const [columns, setcolumns] = useState([{ key: "Nombre" }, { key: "Almacen" }]);
+    const [For, setFor] = useState([{ key: "Nombre" }, { key: "Almacen" }])
     // Estados compartidos
     const [previewData, setPreviewData] = useState<ChartData[]>([]);
     const [dataTable, setDataTable] = useState<DynamicTableItem[]>([]);
@@ -104,10 +105,14 @@ export default function DynamicReport() {
         const arr: formatFilter[] = [];
 
         if (debouncedSearch) {
-            arr.push({
-                key: "Nombre",
-                value: `%${debouncedSearch}%`,
-                operator: "like"
+            For.forEach((col) => {
+                if (["Nombre", "Proveedor", "Codigo"].includes(col.key)) {
+                    arr.push({
+                        key: col.key,
+                        value: `%${debouncedSearch}%`,
+                        operator: "like",
+                    });
+                }
             });
         }
 
@@ -270,9 +275,10 @@ export default function DynamicReport() {
             )}
             <MainForm
                 actionType="Buscar"
-                dataForm={ColumnsField(glosarioCompras)}
-                valueAssign={["columnas"]}
+                dataForm={FiltersField(glosarioCompras)}
+                valueAssign={["search", "columnas", "sucursal", "fecha_inicial", "fecha_final"]}
                 action={(values) => {
+
                     let columnas: any = []
                     values.columnas.split(',')
                         .map((s: any) => s.trim())
@@ -282,16 +288,7 @@ export default function DynamicReport() {
                                 key: row
                             });
                         });
-                    setcolumns(columnas)
-                }}
-                message_button="cargar"
-            /* alert */
-            />
-            <MainForm
-                actionType="Buscar"
-                dataForm={FiltersField()}
-                valueAssign={["search", "sucursal", "fecha_inicial", "fecha_final"]}
-                action={(values) => {
+                    setFor(columnas)
                     setSearchParam(values.search);
                     setSucursal(values.sucursal);
                     setFechaInicial(values.fecha_inicial || "");
@@ -331,7 +328,24 @@ export default function DynamicReport() {
                     />
                 )}
             </section>
-
+            <MainForm
+                actionType="Buscar"
+                dataForm={ColumnsField(glosarioCompras)}
+                valueAssign={["columnas"]}
+                action={(values) => {
+                    let columnas: any = []
+                    values.columnas.split(',')
+                        .map((s: any) => s.trim())
+                        .filter(Boolean)
+                        .forEach((row: any) => {
+                            columnas.push({
+                                key: row
+                            });
+                        });
+                    setcolumns(columnas)
+                }}
+                message_button="cargar"
+            />
             <section className="my-2">
                 {loading.table ? (
                     <div className="h-64 animate-pulse bg-gray-100 rounded-lg" />
