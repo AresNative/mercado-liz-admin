@@ -27,13 +27,9 @@ import { Button } from "../button";
 
 import { usePostProjectsMutation, usePostSprintsMutation, usePostTasksMutation } from "@/hooks/reducers/api";
 import { usePostUserLoginMutation } from "@/hooks/reducers/auth";
-/* import { openAlertReducer } from "@/hooks/reducers/drop-down"; */
-
-/* import { useAppDispatch } from "@/hooks/selector"; */
 
 export const MainForm = ({ message_button, dataForm, actionType, aditionalData, action, valueAssign, onSuccess }: MainFormProps) => {
 
-  /* const dispatch = useAppDispatch(); */
   const [loading, setLoading] = useState(false);
 
   const {
@@ -79,6 +75,7 @@ export const MainForm = ({ message_button, dataForm, actionType, aditionalData, 
       if (onSuccess) {
         onSuccess(result, combinedData);
       }
+
       if (action) {
         const cleanKey = (key: string) => key.replace(/^'|'$/g, '');
 
@@ -93,34 +90,12 @@ export const MainForm = ({ message_button, dataForm, actionType, aditionalData, 
 
           await (payload !== undefined ? action(payload) : action());
         } catch (error) {
-          console.error('Error processing action:', error);
+          console.log('Error processing action:', error);
           // Considerar propagar el error o manejar según necesidad
         }
       }
-
-      /* if (alert) dispatch(
-        openAlertReducer({
-          title: "Cambio echo!",
-          message: "Éxito! Operación realizada",
-          type: "success",
-          icon: "archivo",
-          duration: 5000
-        })
-      ); */
-
-      /* dispatch(closeModal({ modalName: actionType })); */
     } catch (error) {
-      console.error("Error en el envío del formulario:", error);
-
-      /* dispatch(
-        openAlertReducer({
-          title: "Error! Algo salió mal",
-          message: `${error}`,
-          type: "error",
-          icon: "alert",
-          duration: 5000
-        })
-      ); */
+      console.log("Error en el envío del formulario:", error)
     } finally {
       setLoading(false);
     }
