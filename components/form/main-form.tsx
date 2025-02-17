@@ -21,6 +21,8 @@ import { DateRangeComponent as DateRange } from "./date-range";
 import { FileComponent as File } from "./file";
 import { ImgComponent as Image } from "./img";
 
+import { LinkForm as Link } from "@/components/link"
+
 import { Button } from "../button";
 
 import { usePostProjectsMutation, usePostSprintsMutation, usePostTasksMutation } from "@/hooks/reducers/api";
@@ -29,7 +31,7 @@ import { openAlertReducer } from "@/hooks/reducers/drop-down";
 
 import { useAppDispatch } from "@/hooks/selector";
 
-export const MainForm = ({ message_button, dataForm, actionType, aditionalData, action, valueAssign, alert }: MainFormProps) => {
+export const MainForm = ({ message_button, dataForm, actionType, aditionalData, action, valueAssign }: MainFormProps) => {
 
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
@@ -74,27 +76,24 @@ export const MainForm = ({ message_button, dataForm, actionType, aditionalData, 
     const mutationFunction = getMutationFunction(actionType);
     try {
       await mutationFunction(combinedData);
-      if (valueAssign && action) {
-        if (Array.isArray(valueAssign)) {
-          // Si es un array, mapeamos los valores y creamos un objeto
-          const result = valueAssign.reduce((acc, v) => {
-            const key = v.replace(/^'|'$/g, ''); // Limpia comillas
-            acc[key] = submitData[key];
-            return acc;
-          }, {} as Record<string, any>);
 
-          await action(result);
-        } else {
-          // Si es un solo valor, lo procesamos directamente
-          const key = valueAssign.replace(/^'|'$/g, ''); // Limpia comillas
-          await action(submitData[key]);
-        }
-      }
-      else if (action) {
-        await action()
+      if (valueAssign && Array.isArray(valueAssign) && action) {
+        // Si es un array, mapeamos los valores y creamos un objeto
+        const result = valueAssign.reduce((acc, v) => {
+          const key = v.replace(/^'|'$/g, ''); // Limpia comillas
+          acc[key] = submitData[key];
+          return acc;
+        }, {} as Record<string, any>);
+
+        await action(result);
+      } else {
+        const key = valueAssign.replace(/^'|'$/g, ''); // Limpia comillas
+        if (action) await action(submitData[key]);
       }
 
-      if (alert) dispatch(
+      if (action) await action();
+
+      /* if (alert) dispatch(
         openAlertReducer({
           title: "Cambio echo!",
           message: "Éxito! Operación realizada",
@@ -102,13 +101,13 @@ export const MainForm = ({ message_button, dataForm, actionType, aditionalData, 
           icon: "archivo",
           duration: 5000
         })
-      );
+      ); */
 
       /* dispatch(closeModal({ modalName: actionType })); */
     } catch (error) {
       console.error("Error en el envío del formulario:", error);
 
-      dispatch(
+      /* dispatch(
         openAlertReducer({
           title: "Error! Algo salió mal",
           message: `${error}`,
@@ -116,7 +115,7 @@ export const MainForm = ({ message_button, dataForm, actionType, aditionalData, 
           icon: "alert",
           duration: 5000
         })
-      );
+      ); */
     } finally {
       setLoading(false);
     }
@@ -139,7 +138,7 @@ export const MainForm = ({ message_button, dataForm, actionType, aditionalData, 
         />
       ))}
       <Button
-        color="success"
+        color="info"
         type="submit"
         label={loading ? "Loading..." : message_button}
       />
@@ -175,7 +174,9 @@ export function SwitchTypeInputRender(props: any) {
     case "IMG":
       return <Image {...props} />;
     case "SEARCH":
-      return <Search {...props} />
+      return <Search {...props} />;
+    case "LINK":
+      return <Link {...props} />;
     case "Flex":
       return <FlexComponent {...props} elements={props.cuestion.elements} />;
     default:
@@ -206,7 +207,7 @@ export const FlexComponent: React.FC<FlexProps> = ({
   setValue,
 }) => {
   return (
-    <div className="flex flex-wrap gap-4 justify-start">
+    <div className="flex flex-wrap gap-4 justify-between min-w-full">
       {elements.map((element, index) => (
         <div key={index} className="flex-grow">
           <SwitchTypeInputRender

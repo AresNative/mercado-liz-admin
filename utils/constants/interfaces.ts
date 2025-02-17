@@ -14,7 +14,8 @@ export type FieldType =
   | "SELECT"
   | "FILE"
   | "IMG"
-  | "SEARCH";
+  | "SEARCH"
+  | "LINK";
 
 export interface SelectOption {
   value: string;
@@ -34,6 +35,7 @@ export interface Field {
   multi?: boolean; // For SELECT
   maxLength?: number; // For TEXT_AREA and INPUT
   valueDefined?: any;
+  href?: string;
 }
 
 export interface MainFormProps {
@@ -42,7 +44,6 @@ export interface MainFormProps {
   dataForm: Field[];
   aditionalData?: any;
   valueAssign?: any;
-  alert?: boolean;
   action?: (...args: any[]) => any;
 }
 
@@ -75,7 +76,7 @@ export interface DateRangeInputProps {
   errors: Record<string, { message?: string } | undefined>;
 }
 
-export interface InputFormProps {
+export interface InputFormProps /* extends Field */ {
   cuestion: {
     name: string;
     placeholder?: string;
@@ -85,6 +86,7 @@ export interface InputFormProps {
     type: "password" | "number" | "email" | "phone" | "text";
     icon?: React.ElementType<any>;
     maxLength?: number;
+    href?: string;
   };
   watch: (name: string) => string;
   getValues: (name: string) => string;

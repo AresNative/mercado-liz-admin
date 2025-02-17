@@ -37,7 +37,7 @@ export function FiltersField(): Field[] {
         {
           name: "fecha_inicial",
           type: "DATE",
-          label: "Fecha de inicio",
+          label: "Fecha inicial",
           placeholder: "Buscar por fecha...",
           require: false,
         },
