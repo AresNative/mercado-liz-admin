@@ -1,7 +1,6 @@
 
 
 "use client"
-import Alert from "@/components/alert";
 import MainForm from "@/components/form/main-form";
 import { openAlertReducer } from "@/hooks/reducers/drop-down";
 import { useAppDispatch } from "@/hooks/selector";
@@ -59,8 +58,6 @@ export default function FormLogin() {
                     }
                 }}
             />
-
-            <Alert />
         </section>
     )
 }
