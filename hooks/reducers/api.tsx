@@ -24,19 +24,9 @@ export const api = createApi({
         getReport: builder.query({
             query: (params) => `reporteria/${params}`,
         }),
-
-        /* getCompras: builder.query({
-            query: (params) => `reporteria/compras?${params}`,
-        }), */
-        /* getVentas: builder.query({
-            query: (params) => `reporteria/ventas?${params}`,
-        }), */
         getAlmacen: builder.query({
             query: (params) => `reporteria/almacen?${params}`,
         }),
-        /* getMermas: builder.query({
-            query: (params) => `reporteria/mermas?${params}`,
-        }), */
         getMovimientos: builder.query({
             query: (params) => `reporteria/movimientos?${params}`,
         }),
@@ -110,24 +100,6 @@ export const api = createApi({
             },
         }),
         /// * scrum
-
-        getAutocompletarCompras: builder.query({
-            query: (params) => `filtros/autocompletar-compras?${params}`,
-        }),
-        getAutocompletarVentas: builder.query({
-            query: (params) => `filtros/autocompletar-ventas?${params}`,
-        }),
-
-        getGlosarioCompras: builder.query({
-            query: (params) => `filtros/glosario-compras?${params}`,
-        }),
-        getGlosarioVentas: builder.query({
-            query: (params) => `filtros/glosario-ventas?${params}`,
-        }),
-
-        getHistorialCompras: builder.query({
-            query: () => `estatico/historial-compras`,
-        }),
         /* 
         ? Formato de consulta - glosarios y tablas dinamicas
         */
@@ -147,7 +119,7 @@ export const api = createApi({
             }),
         }),
         getGlosariosVentas: builder.query({
-            query: () => `glosario/glosario-ventas`
+            query: () => "glosarios/glosario-ventas"
         }),
 
         getCompras: builder.mutation({
@@ -158,7 +130,7 @@ export const api = createApi({
             }),
         }),
         getGlosariosCompras: builder.query({
-            query: () => `glosario/glosario-compras`
+            query: () => "glosarios/glosario-compras"
         }),
 
         /*
@@ -190,13 +162,5 @@ export const {
     usePostCommentsMutation,
     usePutTaskMutation,
     usePutTaskStatusMutation,
-    usePutTaskOrderMutation,
-
-    useGetAutocompletarComprasQuery,
-    useGetAutocompletarVentasQuery,
-
-    useGetGlosarioComprasQuery,
-    useGetGlosarioVentasQuery,
-
-    useGetHistorialComprasQuery
+    usePutTaskOrderMutation
 } = api;

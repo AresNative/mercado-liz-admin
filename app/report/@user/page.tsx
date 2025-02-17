@@ -14,13 +14,14 @@ import {
     loadDataGrafic,
     formatFilter,
 } from "@/app/grafic/constants/load-data";
-import { useGetComprasMutation, useGetVentasMutation } from "@/hooks/reducers/api";
+import { useGetComprasMutation, useGetGlosariosComprasQuery, useGetVentasMutation } from "@/hooks/reducers/api";
 import { formatJSON, formatValue } from "@/utils/constants/format-values";
 import MainForm from "@/components/form/main-form";
 import DynamicTable from "@/components/table";
 import CardResumen from "@/app/mermas/components/card-resumen";
 import { FiltersField } from "../constants/filters";
 import Pagination from "@/components/pagination";
+import { skip } from "node:test";
 
 interface ReportConfig {
     type: 'compras' | 'ventas';
@@ -44,6 +45,8 @@ const formatAPIDate = (dateString: string) => {
 };
 
 export default function DynamicReport() {
+
+    const { data: glosarioCompras } = useGetGlosariosComprasQuery("")
     const [config, setconfig] = useState<ReportConfig>({
         type: 'compras',
         title: 'Compras',
