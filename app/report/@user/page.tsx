@@ -21,7 +21,7 @@ import DynamicTable from "@/components/table";
 import CardResumen from "@/app/mermas/components/card-resumen";
 import { FiltersField } from "../constants/filters";
 import Pagination from "@/components/pagination";
-import { skip } from "node:test";
+import { ColumnsField } from "../constants/columns";
 
 interface ReportConfig {
     type: 'compras' | 'ventas';
@@ -54,6 +54,7 @@ export default function DynamicReport() {
         mainField: 'Proveedor',
         sumKey: 'Proveedor'
     })
+    const [columns, setcolumns] = useState([{ key: "Nombre" }, { key: "Almacen" }])
     // Estados compartidos
     const [previewData, setPreviewData] = useState<ChartData[]>([]);
     const [dataTable, setDataTable] = useState<DynamicTableItem[]>([]);
@@ -182,7 +183,7 @@ export default function DynamicReport() {
                     sum: true
                 }),
                 loadData(getAPI, {
-                    filters: { filtros, sumas: [{ key: "Nombre" }, { key: "Almacen" }] },
+                    filters: { filtros, sumas: columns },
                     page: currentPage,
                     sum: true
                 })
@@ -225,11 +226,11 @@ export default function DynamicReport() {
             setError("Error al cargar datos. Intente nuevamente.");
             setLoading({ chart: false, summary: false, table: false });
         }
-    }, [getAPI, filtros, currentPage, config]);
+    }, [getAPI, filtros, currentPage, config, columns]);
 
     useEffect(() => {
         loadDataFromAPI();
-    }, [loadDataFromAPI, config]);
+    }, [loadDataFromAPI, config, columns]);
 
     return (
         <div>
@@ -267,7 +268,25 @@ export default function DynamicReport() {
                     {error}
                 </div>
             )}
-
+            <MainForm
+                actionType="Buscar"
+                dataForm={ColumnsField(glosarioCompras)}
+                valueAssign={["columnas"]}
+                action={(values) => {
+                    let columnas: any = []
+                    values.columnas.split(',')
+                        .map((s: any) => s.trim())
+                        .filter(Boolean)
+                        .forEach((row: any) => {
+                            columnas.push({
+                                key: row
+                            });
+                        });
+                    setcolumns(columnas)
+                }}
+                message_button="cargar"
+            /* alert */
+            />
             <MainForm
                 actionType="Buscar"
                 dataForm={FiltersField()}
