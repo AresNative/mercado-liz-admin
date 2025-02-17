@@ -178,6 +178,7 @@ export const {
     useGetVentasMutation,
     useGetGlosariosVentasQuery,
     useGetComprasMutation,
+    useGetGlosariosComprasQuery,
 
     useGetProjectsQuery,
     useGetSprintsQuery,
