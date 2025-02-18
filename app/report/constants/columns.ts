@@ -11,13 +11,26 @@ export function ColumnsField(data: RowData[] = []): Field[] {
   return useMemo(
     () => [
       {
-        name: "columnas",
-        type: "SELECT",
-        options: options,
-        multi: true,
-        label: "Seleccione columna(s)...",
-        placeholder: "Mínimo 3 días mayor a la fecha de inicio",
+        type: "Flex",
         require: false,
+        elements: [
+          {
+            name: "columnas",
+            type: "SELECT",
+            options: options,
+            multi: true,
+            label: "Seleccione columna(s)...",
+            placeholder: "Mínimo 3 días mayor a la fecha de inicio",
+            require: false,
+          },
+          {
+            name: "rows",
+            type: "INPUT",
+            label: "Ingrese NUMERO de columnas",
+            placeholder: "5 - 10 - 15 ...",
+            require: false,
+          },
+        ],
       },
     ],
     [options]

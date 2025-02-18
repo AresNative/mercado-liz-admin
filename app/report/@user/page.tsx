@@ -16,11 +16,11 @@ import {
 } from "@/app/grafic/constants/load-data";
 import { useGetComprasMutation, useGetGlosariosComprasQuery, useGetVentasMutation } from "@/hooks/reducers/api";
 import { formatJSON, formatValue } from "@/utils/constants/format-values";
-import MainForm from "@/components/form/main-form";
 import DynamicTable from "@/components/table";
+import Pagination from "@/components/pagination";
+import MainForm from "@/components/form/main-form";
 import CardResumen from "@/app/mermas/components/card-resumen";
 import { FiltersField } from "../constants/filters";
-import Pagination from "@/components/pagination";
 import { ColumnsField } from "../constants/columns";
 
 interface ReportConfig {
@@ -54,6 +54,7 @@ export default function DynamicReport() {
         mainField: 'Proveedor',
         sumKey: 'Proveedor'
     })
+    const [rows, setrows] = useState<number>(5);
     const [columns, setcolumns] = useState([{ key: "Nombre" }, { key: "Almacen" }]);
     const [For, setFor] = useState([{ key: "Nombre" }, { key: "Almacen" }])
     // Estados compartidos
@@ -182,14 +183,14 @@ export default function DynamicReport() {
                     sum: true
                 }, "Categoria", config.amountKey),
                 loadData(getAPI, {
-                    filters: { filtros, sumas: [] },
+                    filters: { filtros, sumas: [{ key: config.sumKey }] },
                     page: 1,
-                    pageSize: 100,
                     sum: true
                 }),
                 loadData(getAPI, {
                     filters: { filtros, sumas: columns },
                     page: currentPage,
+                    pageSize: rows,
                     sum: true
                 })
             ]);
@@ -322,7 +323,7 @@ export default function DynamicReport() {
                     <div className="h-64 animate-pulse bg-gray-100 rounded-lg" />
                 ) : (
                     <RenderChart
-                        type="bar"
+                        type="area"
                         barData={previewData}
                         treemapData={previewData}
                     />
@@ -331,8 +332,10 @@ export default function DynamicReport() {
             <MainForm
                 actionType="Buscar"
                 dataForm={ColumnsField(glosarioCompras)}
-                valueAssign={["columnas"]}
+                valueAssign={["columnas", "rows"]}
                 action={(values) => {
+                    setrows(values.rows);
+
                     let columnas: any = []
                     values.columnas.split(',')
                         .map((s: any) => s.trim())
@@ -342,7 +345,7 @@ export default function DynamicReport() {
                                 key: row
                             });
                         });
-                    setcolumns(columnas)
+                    setcolumns(columnas);
                 }}
                 message_button="cargar"
             />

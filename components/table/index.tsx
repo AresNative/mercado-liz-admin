@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, ChevronDown, Download, Grid2x2X, MoreVertical, X } from "lucide-react";
 
@@ -17,20 +17,11 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
         return data.length > 0 ? Object.keys(data[0]).filter(Boolean) : [];
     }, [data]);
 
-    const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>({});
     const [selectedRows, setSelectedRows] = useState<number[]>([]);
     const [sortColumn, setSortColumn] = useState<string | null>(null);
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
     const [showColumnMenu, setShowColumnMenu] = useState<string | null>(null);
 
-    // Sincroniza las columnas visibles con las columnas disponibles
-    useEffect(() => {
-        setVisibleColumns(columns.reduce((acc, column) => ({ ...acc, [column]: true }), {}));
-    }, [columns]);
-
-    const toggleColumn = (column: string) => {
-        setVisibleColumns((prev) => ({ ...prev, [column]: !prev[column] }));
-    };
 
 
     const toggleRowSelection = (id: number) => {
@@ -45,11 +36,6 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
             setSortDirection("asc");
         }
     };
-
-    const showAllColumns = () => {
-        setVisibleColumns(columns.reduce((acc, column) => ({ ...acc, [column]: true }), {}))
-    }
-
     const formatValue = (key: string, value: any) => {
         if (value === null || value === undefined) return '-';
 
@@ -150,11 +136,6 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
 
     return (
         <>
-            <button
-                onClick={showAllColumns}
-                className="border bg-indigo-600 text-white p-2 rounded-lg mb-2 hover:scale-105 transition-all">
-                ver todo
-            </button>
             <div className="w-full mx-auto space-y-8">
                 <div className="bg-white border shadow-xl rounded-lg overflow-hidden">
                     <div className="overflow-x-auto">
@@ -177,60 +158,41 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
                                     </th>
                                     {columns.map(
                                         (column) =>
-                                            visibleColumns[column] && (
-                                                <th
-                                                    key={column}
-                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                                >
-                                                    <div className="flex items-center space-x-1">
-                                                        <button
-                                                            className="flex items-center space-x-1 hover:text-gray-700"
-                                                            onClick={() => toggleSort(column)}
-                                                        >
-                                                            <span>{column}</span>
-                                                            <ChevronDown
-                                                                className={`h-4 w-4 ${sortColumn === column
-                                                                    ? sortDirection === "asc"
-                                                                        ? "transform rotate-180"
-                                                                        : ""
+                                        (
+                                            <th
+                                                key={column}
+                                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                            >
+                                                <div className="flex items-center space-x-1">
+                                                    <button
+                                                        className="flex items-center space-x-1 hover:text-gray-700"
+                                                        onClick={() => toggleSort(column)}
+                                                    >
+                                                        <span>{column}</span>
+                                                        <ChevronDown
+                                                            className={`h-4 w-4 ${sortColumn === column
+                                                                ? sortDirection === "asc"
+                                                                    ? "transform rotate-180"
                                                                     : ""
-                                                                    }`}
-                                                            />
+                                                                : ""
+                                                                }`}
+                                                        />
+                                                    </button>
+                                                    <div className="relative">
+                                                        <button
+                                                            onClick={() =>
+                                                                setShowColumnMenu(
+                                                                    showColumnMenu === column ? null : column
+                                                                )
+                                                            }
+                                                            className="p-1 hover:bg-gray-100 rounded-full"
+                                                        >
+                                                            <MoreVertical className="h-4 w-4" />
                                                         </button>
-                                                        <div className="relative">
-                                                            <button
-                                                                onClick={() =>
-                                                                    setShowColumnMenu(
-                                                                        showColumnMenu === column ? null : column
-                                                                    )
-                                                                }
-                                                                className="p-1 hover:bg-gray-100 rounded-full"
-                                                            >
-                                                                <MoreVertical className="h-4 w-4" />
-                                                            </button>
-                                                            <AnimatePresence>
-                                                                {showColumnMenu === column && (
-                                                                    <motion.div
-                                                                        initial={{ opacity: 0, y: -10 }}
-                                                                        animate={{ opacity: 1, y: 0 }}
-                                                                        exit={{ opacity: 0, y: -10 }}
-                                                                        className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 ring-1 ring-black ring-opacity-5"
-                                                                    >
-                                                                        <div className="py-1">
-                                                                            <button
-                                                                                onClick={() => toggleColumn(column)}
-                                                                                className="block w-full z-30 text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                                                            >
-                                                                                Ocultar columna
-                                                                            </button>
-                                                                        </div>
-                                                                    </motion.div>
-                                                                )}
-                                                            </AnimatePresence>
-                                                        </div>
                                                     </div>
-                                                </th>
-                                            )
+                                                </div>
+                                            </th>
+                                        )
                                     )}
                                 </tr>
                             </thead>
@@ -253,17 +215,16 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
                                             />
                                         </td>
                                         {columns.map(
-                                            (column) =>
-                                                visibleColumns[column] && (
-                                                    <td
-                                                        key={column}
-                                                        className="px-6 py-4 whitespace-nowrap"
-                                                    >
-                                                        <div className="text-sm text-gray-900">
-                                                            {formatValue(column, item[column])}
-                                                        </div>
-                                                    </td>
-                                                )
+                                            (column) => (
+                                                <td
+                                                    key={column}
+                                                    className="px-6 py-4 whitespace-nowrap"
+                                                >
+                                                    <div className="text-sm text-gray-900">
+                                                        {formatValue(column, item[column])}
+                                                    </div>
+                                                </td>
+                                            )
                                         )}
                                     </motion.tr>
                                 ))}

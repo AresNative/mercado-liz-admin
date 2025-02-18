@@ -113,7 +113,7 @@ export const api = createApi({
 
         getVentas: builder.mutation({
             query: (data) => ({
-                url: `reporteria/ventas?sum=${data.sum}&page=${data.page}&pageSize=5`,
+                url: `reporteria/ventas?sum=${data.sum}&page=${data.page}&pageSize=${data.pageSize}`,
                 method: "POST",
                 body: data.filters,
             }),
@@ -124,7 +124,7 @@ export const api = createApi({
 
         getCompras: builder.mutation({
             query: (data) => ({
-                url: `reporteria/compras?sum=${data.sum}&page=${data.page}&pageSize=5`,
+                url: `reporteria/compras?sum=${data.sum}&page=${data.page}&pageSize=${data.pageSize}`,
                 method: "POST",
                 body: data.filters,
             }),
