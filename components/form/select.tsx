@@ -50,6 +50,26 @@ export function SelectComponent(props: SearchableSelectProps) {
         props.setValue(cuestion.name, cuestion.multi ? formData.skills.join(', ') : formData.skills[0] || '');
     }, [formData.skills, cuestion.multi, cuestion.name, props]);
 
+    useEffect(() => {
+        // Prepara el valor a setear: si es multi, lo junta en un string, de lo contrario toma el primer elemento
+        const value = cuestion.multi
+            ? formData.skills.join(", ")
+            : formData.skills[0] || "";
+        props.setValue(cuestion.name, value);
+
+        // Valida el campo. Si se definió que es requerido y el valor está vacío,
+        // se dispara el setError. De lo contrario se limpian los errores.
+        if (cuestion.require && !value) {
+            props.setError(cuestion.name, {
+                type: "required",
+                message: "Este campo es obligatorio.",
+            });
+        } else {
+            props.clearErrors(cuestion.name);
+        }
+    }, [
+        formData.skills,
+    ]);
     return (
         <div className="flex flex-col" ref={skillsRef}>
             <label className="leading-loose flex items-center gap-2">

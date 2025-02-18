@@ -182,7 +182,7 @@ export default function DynamicReport() {
                     sum: true
                 }, "Categoria", config.amountKey),
                 loadData(getAPI, {
-                    filters: { filtros, sumas: [{ key: config.sumKey }] },
+                    filters: { filtros, sumas: [] },
                     page: 1,
                     pageSize: 100,
                     sum: true

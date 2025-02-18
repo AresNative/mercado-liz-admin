@@ -25,7 +25,7 @@ export function FiltersField(data: RowData[] = []): Field[] {
             multi: true,
             label: "Seleccione columna(s)...",
             placeholder: "Mínimo 3 días mayor a la fecha de inicio",
-            require: false,
+            require: true,
           },
           {
             name: "sucursal",

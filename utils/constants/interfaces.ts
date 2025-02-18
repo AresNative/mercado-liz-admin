@@ -60,6 +60,7 @@ export interface ChecboxFormProps {
   setValue: (name: string, value: boolean) => Promise<void>;
   register: (name: string, options: { required?: string }) => void;
   setError: (name: string, error: object) => void;
+  clearErrors: (name: string) => void;
   watch: (name: string) => string;
   errors: Record<string, { message?: string } | undefined>;
 }
@@ -74,6 +75,7 @@ export interface DateRangeInputProps {
   control: any; // Replace with the actual type from react-hook-form
   setValue: (name: string, value: string) => void;
   setError: (name: string, error: object) => void;
+  clearErrors: (name: string) => void;
   errors: Record<string, { message?: string } | undefined>;
 }
 
@@ -93,6 +95,7 @@ export interface InputFormProps /* extends Field */ {
   getValues: (name: string) => string;
   setValue: (name: string, value: string) => void;
   setError: (name: string, error: object) => void;
+  clearErrors: (name: string) => void;
   register: (name: string, options: { required?: string }) => object;
   errors: Record<string, { message?: string } | undefined>;
 }
@@ -123,6 +126,8 @@ export interface SearchableSelectProps {
     enableAutocomplete?: boolean;
   };
   setValue: (name: string, value: string) => void;
+  setError: (name: string, error: object) => void;
+  clearErrors: (name: string) => void;
   register: (
     name: string,
     options: Record<string, unknown>
