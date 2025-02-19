@@ -226,7 +226,7 @@ export default function DynamicReport() {
                     }
                 ]
                 setPreviewData(() => [...reversedData]); */
-                setPreviewData((last) => [...last, ...(chartResult.value ?? [])]);
+                setPreviewData(/* (last) => [...last, ...( */chartResult.value ?? []/* )] */);
             } else {
                 console.error("Error gráfico:", chartResult.reason);
             }
