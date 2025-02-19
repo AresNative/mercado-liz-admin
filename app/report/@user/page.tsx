@@ -14,7 +14,7 @@ import {
     loadDataGrafic,
     formatFilter,
 } from "@/app/grafic/constants/load-data";
-import { useGetComprasMutation, useGetGlosariosComprasQuery, useGetVentasMutation } from "@/hooks/reducers/api";
+import { useGetComprasMutation, useGetGlosariosComprasQuery, useGetGlosariosVentasQuery, useGetVentasMutation } from "@/hooks/reducers/api";
 import { formatJSON, formatValue } from "@/utils/constants/format-values";
 import DynamicTable from "@/components/table";
 import Pagination from "@/components/pagination";
@@ -46,7 +46,8 @@ const formatAPIDate = (dateString: string) => {
 
 export default function DynamicReport() {
 
-    const { data: glosarioCompras } = useGetGlosariosComprasQuery("")
+    const { data: glosarioCompras } = useGetGlosariosComprasQuery("");
+    const { data: glosarioVentas } = useGetGlosariosVentasQuery("");
     const [config, setconfig] = useState<ReportConfig>({
         type: 'compras',
         title: 'Compras',
@@ -197,7 +198,35 @@ export default function DynamicReport() {
 
             // Procesar gráfico
             if (chartResult.status === "fulfilled") {
-                setPreviewData(chartResult.value ?? []);
+                /* const reversedData: ChartData[] = [
+                    {
+                        name: "Categoria",
+                        data: [
+                            {
+                                x: "ABARROTES",
+                                y: 88453474.92
+                            },
+                            {
+                                x: "PERECEDEROS",
+                                y: 1369842.52
+                            },
+                            {
+                                x: "MERCANCIAS GENERALES",
+                                y: 6073004.39
+                            },
+                            {
+                                x: "VARIEDADES",
+                                y: 100506223.39
+                            },
+                            {
+                                x: "FARMACIA",
+                                y: 2295156.72
+                            }
+                        ]
+                    }
+                ]
+                setPreviewData(() => [...reversedData]); */
+                setPreviewData((last) => [...last, ...(chartResult.value ?? [])]);
             } else {
                 console.error("Error gráfico:", chartResult.reason);
             }
@@ -276,7 +305,7 @@ export default function DynamicReport() {
             )}
             <MainForm
                 actionType="Buscar"
-                dataForm={FiltersField(glosarioCompras)}
+                dataForm={FiltersField(config.type === "compras" ? glosarioCompras : glosarioVentas)}
                 valueAssign={["search", "columnas", "sucursal", "fecha_inicial", "fecha_final"]}
                 action={(values) => {
 
@@ -331,10 +360,10 @@ export default function DynamicReport() {
             </section>
             <MainForm
                 actionType="Buscar"
-                dataForm={ColumnsField(glosarioCompras)}
+                dataForm={ColumnsField(config.type === "compras" ? glosarioCompras : glosarioVentas)}
                 valueAssign={["columnas", "rows"]}
                 action={(values) => {
-                    setrows(values.rows);
+                    if (values.rows) setrows(values.rows);
 
                     let columnas: any = []
                     values.columnas.split(',')

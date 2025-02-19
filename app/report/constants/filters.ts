@@ -3,7 +3,14 @@ import { useMemo } from "react";
 import { RowData } from "./columns";
 
 export function FiltersField(data: RowData[] = []): Field[] {
-  const options = useMemo(() => data.map((row) => row.Nombre), [data]);
+  const options = useMemo(
+    () =>
+      data.map((row) => ({
+        label: `${row.Nombre} - ${row.Descripcion}`,
+        value: row.Nombre,
+      })),
+    [data]
+  );
   return useMemo(
     () => [
       {

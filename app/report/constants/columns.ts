@@ -3,10 +3,18 @@ import { useMemo } from "react";
 
 export interface RowData {
   Nombre: string;
+  Descripcion: string;
 }
 
 export function ColumnsField(data: RowData[] = []): Field[] {
-  const options = useMemo(() => data.map((row) => row.Nombre), [data]);
+  const options = useMemo(
+    () =>
+      data.map((row) => ({
+        label: `${row.Nombre} - ${row.Descripcion}`,
+        value: row.Nombre,
+      })),
+    [data]
+  );
 
   return useMemo(
     () => [
