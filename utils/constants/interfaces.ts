@@ -24,8 +24,8 @@ export interface SelectOption {
 
 export interface Field {
   id?: number;
-  accept?: string;
   type: FieldType;
+  name?: string;
   label?: string;
   placeholder?: string;
   require: boolean;
@@ -49,10 +49,16 @@ export interface MainFormProps {
 }
 
 export interface ChecboxFormProps {
-  cuestion: Field;
+  cuestion: {
+    name: string;
+    placeholder?: string;
+    label?: string;
+    require: boolean;
+    options: string[];
+  };
   control: any;
   setValue: (name: string, value: boolean) => Promise<void>;
-  register: (name: string, options: { required?: string }) => void;
+  register: (name: string, options: { required?: string }) => object;
   setError: (name: string, error: object) => void;
   clearErrors: (name: string) => void;
   watch: (name: string) => string;
@@ -60,7 +66,12 @@ export interface ChecboxFormProps {
 }
 
 export interface DateRangeInputProps {
-  cuestion: Field;
+  cuestion: {
+    name: string;
+    placeholder?: string;
+    label?: string;
+    require: boolean;
+  };
   control: any; // Replace with the actual type from react-hook-form
   setValue: (name: string, value: string) => void;
   setError: (name: string, error: object) => void;
@@ -69,10 +80,16 @@ export interface DateRangeInputProps {
 }
 
 export interface InputFormProps /* extends Field */ {
-  cuestion: Field & {
-    typeInput?: "password" | "number" | "email" | "phone" | "text";
+  cuestion: {
+    name: string;
+    placeholder?: string;
+    label?: string;
+    valueDefined?: string | any;
+    require: boolean;
+    type: "password" | "number" | "email" | "phone" | "text";
     icon?: React.ElementType<any>;
-    name?: string;
+    maxLength?: number;
+    href?: string;
   };
   watch: (name: string) => string;
   getValues: (name: string) => string;
@@ -84,8 +101,13 @@ export interface InputFormProps /* extends Field */ {
 }
 
 export interface InputMediaProps {
-  cuestion: Field & {
+  cuestion: {
     name: string;
+    placeholder?: string;
+    label?: string;
+    require?: boolean;
+    accept?: string; // Allowed file types
+    multiple?: boolean;
   };
   setValue: (name: string, value: File | File[] | null) => void;
   register: (name: string, options: { required?: string }) => object;
@@ -93,9 +115,16 @@ export interface InputMediaProps {
 }
 
 export interface SearchableSelectProps {
-  cuestion: Field & {
-    saveData?: boolean;
+  cuestion: {
     name: string;
+    placeholder?: string;
+    label?: string;
+    require?: boolean;
+    options: string[];
+    multi?: boolean;
+    valueDefined?: { name: string };
+    enableAutocomplete?: boolean;
+    saveData?: boolean;
   };
   setValue: (name: string, value: string) => void;
   setError: (name: string, error: object) => void;
