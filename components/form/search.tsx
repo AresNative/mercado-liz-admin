@@ -21,6 +21,13 @@ export function SearchComponent(props: SearchableSelectProps) {
         setShowSkillsDropdown(false);
     };
 
+    const handleRemoveSkill = (skill: string) => {
+        setFormData(prev => ({
+            ...prev,
+            skills: prev.skills.filter(s => s !== skill)
+        }));
+    };
+
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (skillsRef.current && !skillsRef.current.contains(e.target as Node)) {
@@ -107,7 +114,7 @@ export function SearchComponent(props: SearchableSelectProps) {
                         <Badge text={skill} color="purple" />
                         <button
                             type="button"
-                            /* onClick={() => handleRemoveSkill(skill)} */
+                            onClick={() => handleRemoveSkill(skill)}
                             className="ml-1 text-blue-600 hover:text-blue-800"
                         >
                             <X className="w-4 h-4" />
