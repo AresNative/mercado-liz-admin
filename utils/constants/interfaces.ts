@@ -24,8 +24,8 @@ export interface SelectOption {
 
 export interface Field {
   id?: number;
+  accept?: string;
   type: FieldType;
-  name?: string;
   label?: string;
   placeholder?: string;
   require: boolean;
@@ -49,13 +49,7 @@ export interface MainFormProps {
 }
 
 export interface ChecboxFormProps {
-  cuestion: {
-    name: string;
-    placeholder?: string;
-    label?: string;
-    require: boolean;
-    options: string[];
-  };
+  cuestion: Field;
   control: any;
   setValue: (name: string, value: boolean) => Promise<void>;
   register: (name: string, options: { required?: string }) => void;
@@ -66,12 +60,7 @@ export interface ChecboxFormProps {
 }
 
 export interface DateRangeInputProps {
-  cuestion: {
-    name: string;
-    placeholder?: string;
-    label?: string;
-    require: boolean;
-  };
+  cuestion: Field;
   control: any; // Replace with the actual type from react-hook-form
   setValue: (name: string, value: string) => void;
   setError: (name: string, error: object) => void;
@@ -80,16 +69,10 @@ export interface DateRangeInputProps {
 }
 
 export interface InputFormProps /* extends Field */ {
-  cuestion: {
-    name: string;
-    placeholder?: string;
-    label?: string;
-    valueDefined?: string | any;
-    require: boolean;
-    type: "password" | "number" | "email" | "phone" | "text";
+  cuestion: Field & {
+    typeInput?: "password" | "number" | "email" | "phone" | "text";
     icon?: React.ElementType<any>;
-    maxLength?: number;
-    href?: string;
+    name?: string;
   };
   watch: (name: string) => string;
   getValues: (name: string) => string;
@@ -101,13 +84,8 @@ export interface InputFormProps /* extends Field */ {
 }
 
 export interface InputMediaProps {
-  cuestion: {
+  cuestion: Field & {
     name: string;
-    placeholder?: string;
-    label?: string;
-    require?: boolean;
-    accept?: string; // Allowed file types
-    multiple?: boolean;
   };
   setValue: (name: string, value: File | File[] | null) => void;
   register: (name: string, options: { required?: string }) => object;
@@ -115,15 +93,9 @@ export interface InputMediaProps {
 }
 
 export interface SearchableSelectProps {
-  cuestion: {
+  cuestion: Field & {
+    saveData?: boolean;
     name: string;
-    placeholder?: string;
-    label?: string;
-    require?: boolean;
-    options: string[];
-    multi?: boolean;
-    valueDefined?: { name: string };
-    enableAutocomplete?: boolean;
   };
   setValue: (name: string, value: string) => void;
   setError: (name: string, error: object) => void;

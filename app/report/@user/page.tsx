@@ -109,11 +109,21 @@ export default function DynamicReport() {
         if (debouncedSearch) {
             For.forEach((col) => {
                 if (["Nombre", "Proveedor", "Codigo"].includes(col.key)) {
-                    arr.push({
+                    debouncedSearch.split(',')
+                        .map(s => s.trim())
+                        .filter(Boolean)
+                        .forEach(searchs => {
+                            arr.push({
+                                key: col.key,
+                                value: `%${searchs}%`,
+                                operator: "like",
+                            });
+                        });
+                    /* arr.push({
                         key: col.key,
                         value: `%${debouncedSearch}%`,
                         operator: "like",
-                    });
+                    }); */
                 }
             });
         }
@@ -179,10 +189,10 @@ export default function DynamicReport() {
         try {
             const [chartResult, totalResult, tableResult] = await Promise.allSettled([
                 loadDataGrafic(getAPI, {
-                    filters: { filtros, sumas: [{ key: "Categoria" }] },
+                    filters: { filtros, sumas: [{ key: debouncedSearch.split(',').length > 1 ? "Nombre" : "Categoria" }] },
                     page: 1,
                     sum: true
-                }, "Categoria", config.amountKey),
+                }, debouncedSearch.split(',').length > 1 ? "Nombre" : "Categoria", config.amountKey),
                 loadData(getAPI, {
                     filters: { filtros, sumas: [{ key: config.sumKey }] },
                     page: 1,
@@ -195,38 +205,11 @@ export default function DynamicReport() {
                     sum: true
                 })
             ]);
+            console.log(chartResult);
 
             // Procesar gráfico
             if (chartResult.status === "fulfilled") {
-                /* const reversedData: ChartData[] = [
-                    {
-                        name: "Categoria",
-                        data: [
-                            {
-                                x: "ABARROTES",
-                                y: 88453474.92
-                            },
-                            {
-                                x: "PERECEDEROS",
-                                y: 1369842.52
-                            },
-                            {
-                                x: "MERCANCIAS GENERALES",
-                                y: 6073004.39
-                            },
-                            {
-                                x: "VARIEDADES",
-                                y: 100506223.39
-                            },
-                            {
-                                x: "FARMACIA",
-                                y: 2295156.72
-                            }
-                        ]
-                    }
-                ]
-                setPreviewData(() => [...reversedData]); */
-                setPreviewData(/* (last) => [...last, ...( */chartResult.value ?? []/* )] */);
+                setPreviewData(chartResult.value ?? []);
             } else {
                 console.error("Error gráfico:", chartResult.reason);
             }
@@ -308,6 +291,7 @@ export default function DynamicReport() {
                 dataForm={FiltersField(config.type === "compras" ? glosarioCompras : glosarioVentas)}
                 valueAssign={["search", "columnas", "sucursal", "fecha_inicial", "fecha_final"]}
                 action={(values) => {
+                    console.log(values.search);
 
                     let columnas: any = []
                     values.columnas.split(',')
@@ -325,7 +309,6 @@ export default function DynamicReport() {
                     setFechaFinal(values.fecha_final || "");
                 }}
                 message_button="Buscar"
-            /* alert */
             />
 
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">

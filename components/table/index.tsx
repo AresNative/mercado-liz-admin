@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Check, ChevronDown, Download, Grid2x2X, MoreVertical, X } from "lucide-react";
 
 export type DataItem = Record<string, any>;
@@ -21,8 +21,6 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
     const [sortColumn, setSortColumn] = useState<string | null>(null);
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
     const [showColumnMenu, setShowColumnMenu] = useState<string | null>(null);
-
-
 
     const toggleRowSelection = (id: number) => {
         setSelectedRows((prev) => (prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]));
@@ -178,18 +176,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
                                                                 }`}
                                                         />
                                                     </button>
-                                                    <div className="relative">
-                                                        <button
-                                                            onClick={() =>
-                                                                setShowColumnMenu(
-                                                                    showColumnMenu === column ? null : column
-                                                                )
-                                                            }
-                                                            className="p-1 hover:bg-gray-100 rounded-full"
-                                                        >
-                                                            <MoreVertical className="h-4 w-4" />
-                                                        </button>
-                                                    </div>
+
                                                 </div>
                                             </th>
                                         )

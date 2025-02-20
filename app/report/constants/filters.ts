@@ -24,6 +24,7 @@ export function FiltersField(data: RowData[] = []): Field[] {
             label: "Busca algún dato de interés",
             placeholder: "Buscar productos...",
             require: false,
+            saveData: true,
           },
           {
             name: "columnas",
