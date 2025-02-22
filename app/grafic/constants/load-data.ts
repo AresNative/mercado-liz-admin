@@ -22,28 +22,45 @@ export interface formatLoadDate {
 }
 
 export async function loadDataGrafic(
-  functionLoad: any,
+  functionLoad: (filter: formatLoadDate) => Promise<any>,
   filter: formatLoadDate,
-  nameX: string,
+  nameX: string | string[],
   nameY: string
 ) {
   try {
-    const response: any = await functionLoad(filter);
+    const response = await functionLoad(filter);
+    const dataTable: any[] = response.data.data;
 
-    const dataTable = response.data.data;
-    const formattedData: ChartData[] = [
-      {
-        name: nameX,
-        data: dataTable.slice(0, 5).map((item: any) => ({
-          x: item[nameX],
-          y: financial(item[nameY]),
-        })),
-      },
-    ];
+    // Determinar campos para agrupación y eje X
+    const [groupBy, xField] = Array.isArray(nameX) ? nameX : [undefined, nameX];
 
-    return formattedData;
+    // Agrupar datos si se especificó groupBy
+    const groupedData: {
+      [key: string]: { name: string; data: { x: any; y: number }[] };
+    } = {};
+
+    dataTable.forEach((item: any) => {
+      const groupKey = groupBy ? item[groupBy] : "default";
+      const xValue = item[xField];
+      const yValue = parseFloat(financial(item[nameY])); // Asegurar que sea número
+
+      if (!groupedData[groupKey]) {
+        groupedData[groupKey] = {
+          name: groupKey,
+          data: [],
+        };
+      }
+
+      groupedData[groupKey].data.push({
+        x: xValue,
+        y: isNaN(yValue) ? 0 : yValue, // Manejo de valores no numéricos
+      });
+    });
+
+    return Object.values(groupedData);
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return [];
   }
 }
 

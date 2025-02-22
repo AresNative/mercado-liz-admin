@@ -189,10 +189,10 @@ export default function DynamicReport() {
         try {
             const [chartResult, totalResult, tableResult] = await Promise.allSettled([
                 loadDataGrafic(getAPI, {
-                    filters: { filtros, sumas: [{ key: debouncedSearch.split(',').length > 1 ? "Nombre" : "Categoria" }] },
+                    filters: { filtros, sumas: [{ key: "Categoria" }, { key: "Nombre" }] },
                     page: 1,
                     sum: true
-                }, debouncedSearch.split(',').length > 1 ? "Nombre" : "Categoria", config.amountKey),
+                }, debouncedSearch.split(',').length > 1 ? ["Categoria", "Nombre"] : "Categoria", config.amountKey),
                 loadData(getAPI, {
                     filters: { filtros, sumas: [{ key: config.sumKey }] },
                     page: 1,
@@ -291,8 +291,6 @@ export default function DynamicReport() {
                 dataForm={FiltersField(config.type === "compras" ? glosarioCompras : glosarioVentas)}
                 valueAssign={["search", "columnas", "sucursal", "fecha_inicial", "fecha_final"]}
                 action={(values) => {
-                    console.log(values.search);
-
                     let columnas: any = []
                     values.columnas.split(',')
                         .map((s: any) => s.trim())
