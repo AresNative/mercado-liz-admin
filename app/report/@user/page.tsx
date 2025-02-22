@@ -175,10 +175,10 @@ export default function DynamicReport() {
         try {
             const [chartResult, totalResult, tableResult] = await Promise.allSettled([
                 loadDataGrafic(getAPI, {
-                    filters: { filtros, sumas: [{ key: "Categoria" }, { key: "Nombre" }] },
+                    filters: { filtros, sumas: [{ key: "Categoria" }/* , { key: "Nombre" } */] },
                     page: 1,
                     sum: true
-                }, ["Categoria", "Nombre"], config.amountKey),
+                }, /* [ */"Categoria"/* , "Nombre"] */, config.amountKey),
                 loadData(getAPI, {
                     filters: { filtros, sumas: [{ key: config.sumKey }] },
                     page: 1,
@@ -205,7 +205,6 @@ export default function DynamicReport() {
             if (totalResult.status === "fulfilled") {
                 const resultData = totalResult.value?.data || [];
                 const totals = calcularTotalesYMayorProveedor(resultData);
-                console.log(totals);
 
                 setTotal(formatValue(totals.totalCosto, "currency"));
                 setCantidad(formatValue(totals.totalCantidad, "number"));
