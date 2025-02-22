@@ -119,11 +119,6 @@ export default function DynamicReport() {
                                 operator: "like",
                             });
                         });
-                    /* arr.push({
-                        key: col.key,
-                        value: `%${debouncedSearch}%`,
-                        operator: "like",
-                    }); */
                 }
             });
         }
@@ -192,7 +187,7 @@ export default function DynamicReport() {
                     filters: { filtros, sumas: [{ key: "Categoria" }, { key: "Nombre" }] },
                     page: 1,
                     sum: true
-                }, debouncedSearch.split(',').length > 1 ? ["Categoria", "Nombre"] : "Categoria", config.amountKey),
+                }, ["Categoria", "Nombre"], config.amountKey),
                 loadData(getAPI, {
                     filters: { filtros, sumas: [{ key: config.sumKey }] },
                     page: 1,
