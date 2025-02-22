@@ -205,7 +205,6 @@ export default function DynamicReport() {
                     sum: true
                 })
             ]);
-            console.log(chartResult);
 
             // Procesar gráfico
             if (chartResult.status === "fulfilled") {
