@@ -151,31 +151,22 @@ export default function DynamicReport() {
 
         return arr;
     }, [debouncedSearch, debouncedSucursal, debouncedFechaInicial, debouncedFechaFinal, config]);
+    function calcularTotalesYMayorProveedor(proveedores: any[]) {
+        const totalCantidad = proveedores.reduce((sum, p) => sum + p.Cantidad, 0);
+        const totalCosto = proveedores.reduce((sum, p) => sum + p[config.amountKey], 0);
 
-    const processTotals = (data: any[]) => {
-        if (data.length === 0) {
-            return {
-                [config.amountKey]: 0,
-                totalCantidad: 0,
-                maxItem: { [config.mainField]: "Sin datos", [config.amountKey]: 0 }
-            };
-        }
+        const mayorProveedor = proveedores.reduce((max, p) => (p.Cantidad > max.Cantidad ? p : max), proveedores[0]);
 
-        return data.reduce((acc, item) => {
-            acc[config.amountKey] += item[config.amountKey] || 0;
-            acc.totalCantidad += item.Cantidad || 0;
+        const porcentajeMayor = (mayorProveedor.Cantidad / totalCantidad) * 100;
 
-            if (item[config.amountKey] > (acc.maxItem?.[config.amountKey] || 0)) {
-                acc.maxItem = item;
-            }
-
-            return acc;
-        }, {
-            [config.amountKey]: 0,
-            totalCantidad: 0,
-            maxItem: data[0]
-        });
-    };
+        return {
+            totalCantidad,
+            totalCosto,
+            mayorProveedor: mayorProveedor[config.mainField],
+            cantidadMayor: mayorProveedor.Cantidad,
+            porcentajeMayor
+        };
+    }
 
     const loadDataFromAPI = useCallback(async () => {
         setError(null);
@@ -191,6 +182,7 @@ export default function DynamicReport() {
                 loadData(getAPI, {
                     filters: { filtros, sumas: [{ key: config.sumKey }] },
                     page: 1,
+                    pageSize: 3000,
                     sum: true
                 }),
                 loadData(getAPI, {
@@ -209,18 +201,18 @@ export default function DynamicReport() {
             }
             setLoading(prev => ({ ...prev, chart: false }));
 
-            // Procesar totales
+            // Procesar totales ! aqui
             if (totalResult.status === "fulfilled") {
                 const resultData = totalResult.value?.data || [];
-                const totals = processTotals(resultData);
+                const totals = calcularTotalesYMayorProveedor(resultData);
+                console.log(totals);
 
-                setTotal(formatValue(totals[config.amountKey], "currency"));
+                setTotal(formatValue(totals.totalCosto, "currency"));
                 setCantidad(formatValue(totals.totalCantidad, "number"));
-                setMotivo(totals.maxItem[config.mainField] || "Sin datos");
+                setMotivo(totals.mayorProveedor || "Sin datos");
                 setPorcentajeMotivo(
-                    totals[config.amountKey]
-                        ? ((totals.maxItem[config.amountKey] / totals[config.amountKey]) * 100).toFixed(2)
-                        : "0.00"
+                    totals.porcentajeMayor.toFixed(2)
+                    ?? "0.00"
                 );
             }
             setLoading(prev => ({ ...prev, summary: false }));

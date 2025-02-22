@@ -26,7 +26,10 @@ const DynamicChart: React.FC<DynamicChartProps> = ({
     const chartOptions: ApexOptions =
         type === "pie"
             ? {
-                chart: { type: "pie" },
+                chart: {
+                    type: "pie",
+                    stacked: true
+                },
                 labels: categories,
                 legend: { position: "bottom" },
                 fill: {

@@ -3,7 +3,7 @@
 import type React from "react";
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Check, ChevronDown, Download, Grid2x2X, MoreVertical, X } from "lucide-react";
+import { Check, ChevronDown, Download, Grid2x2X, X } from "lucide-react";
 
 export type DataItem = Record<string, any>;
 

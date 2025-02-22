@@ -35,7 +35,7 @@ export function ColumnsField(data: RowData[] = []): Field[] {
             name: "rows",
             type: "INPUT",
             label: "Ingrese NUMERO de columnas",
-            placeholder: "5 - 10 - 15 ... max 99",
+            placeholder: "5 - 10 - 15 ...",
             require: false,
           },
         ],
