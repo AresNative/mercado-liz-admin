@@ -20,7 +20,6 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
     const [selectedRows, setSelectedRows] = useState<number[]>([]);
     const [sortColumn, setSortColumn] = useState<string | null>(null);
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-    const [showColumnMenu, setShowColumnMenu] = useState<string | null>(null);
 
     const toggleRowSelection = (id: number) => {
         setSelectedRows((prev) => (prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]));
@@ -66,7 +65,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
         }
 
         // Formato de porcentajes
-        if (key.toLowerCase().includes('porcentaje') && typeof value === 'string') {
+        if ((key.toLowerCase().includes('porcentaje') || key.includes('IVA') || key.includes('IEPS'))) {
             return `${value}%`;
         }
 
@@ -187,8 +186,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
                                 {paginatedData.map((item, index) => (
                                     <motion.tr
                                         key={index}
-                                        className={`${selectedRows.includes(index) ? "bg-blue-50" : ""
-                                            } hover:bg-gray-50`}
+                                        className={`hover:bg-gray-50`}
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}

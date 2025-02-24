@@ -21,9 +21,8 @@ export const filterData = createSlice({
       state = { type: type, key: key, value: value };
       return state;
     },
-    searchData: (state, action: PayloadAction<{ param: string }>) => {
-      const { param } = action.payload;
-      state.value = param;
+    searchData: (state, action: PayloadAction<string>) => {
+      state.value = action.payload;
       return state;
     },
   },

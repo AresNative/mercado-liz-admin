@@ -1,8 +1,12 @@
 import { Field } from "@/utils/constants/interfaces";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { RowData } from "./columns";
+import { loadData } from "@/app/grafic/constants/load-data";
+import { useAppSelector } from "@/hooks/selector";
 
-export function FiltersField(data: RowData[] = []): Field[] {
+export function FiltersField(data: RowData[] = [], getAPI: any): Field[] {
+  // Estado para almacenar los resultados
+  const [optionsSearch, setOptionsSearch] = useState([]);
   const options = useMemo(
     () =>
       data.map((row) => ({
@@ -11,6 +15,39 @@ export function FiltersField(data: RowData[] = []): Field[] {
       })),
     [data]
   );
+
+  async function loadDataSearch(term: string) {
+    const response = await loadData(getAPI, {
+      filters: {
+        filtros: [
+          {
+            key: "Nombre",
+            value: term,
+            operator: "like",
+          },
+        ],
+        sumas: [{ key: "Nombre" }],
+      },
+      page: 1,
+      sum: true,
+    });
+
+    if (response?.data) {
+      const tableData = response.data.map(
+        (row: { Nombre: string }) => row.Nombre
+      );
+
+      setOptionsSearch(tableData);
+    }
+  }
+
+  const term = useAppSelector((store) => store.filterData.value);
+
+  // Cargar datos al montar el componente
+  useEffect(() => {
+    loadDataSearch(term);
+  }, [term]);
+
   return useMemo(
     () => [
       {
@@ -20,7 +57,7 @@ export function FiltersField(data: RowData[] = []): Field[] {
           {
             name: "search",
             type: "SEARCH",
-            /* options: ["Guadalupe", "TESTERAZO", "Palmas", "MAYOREO"], */
+            options: optionsSearch,
             label: "Busca algún dato de interés",
             placeholder: "Buscar productos...",
             require: false,
@@ -72,6 +109,6 @@ export function FiltersField(data: RowData[] = []): Field[] {
         ],
       },
     ],
-    [options]
+    [options, optionsSearch]
   );
 }

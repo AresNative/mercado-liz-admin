@@ -6,11 +6,13 @@ import { auth } from "@/hooks/reducers/auth";
 import { EnvConfig } from "@/utils/constants/env.config";
 
 import dropDownReducer from "@/hooks/reducers/drop-down";
+import filterData from "@/hooks/reducers/filter";
 
 const config = EnvConfig();
 export const store = configureStore({
   reducer: {
     dropDownReducer,
+    filterData,
     [api.reducerPath]: api.reducer,
     [auth.reducerPath]: auth.reducer,
   },

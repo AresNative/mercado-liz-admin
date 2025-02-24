@@ -2,10 +2,13 @@ import { SearchableSelectProps } from "@/utils/constants/interfaces";
 import { Search, Star, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Badge from "../badge";
+import { searchData } from "@/hooks/reducers/filter";
+import { useAppDispatch } from "@/hooks/selector";
 
 export function SearchComponent(props: SearchableSelectProps) {
     const { cuestion } = props;
 
+    const dispatch = useAppDispatch();
     const skillsRef = useRef<HTMLDivElement>(null);
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -58,6 +61,7 @@ export function SearchComponent(props: SearchableSelectProps) {
                     className="py-2 pl-10 w-full rounded-md focus:outline-none border focus:ring-purple-500 focus:border-purple-900 border-gray-300 shadow-md focus:border-indigo-500 focus:ring-indigo-500"
                     onClick={() => setShowSkillsDropdown(true)}
                     onChange={(e) => {
+                        if (cuestion.options) dispatch(searchData(e.target.value));
                         setSearchTerm(e.target.value);
                         setShowSkillsDropdown(true);
                     }}
@@ -94,7 +98,7 @@ export function SearchComponent(props: SearchableSelectProps) {
 
                                     return (
                                         <li
-                                            key={value}
+                                            key={skill}
                                             className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${searchTerm ? 'bg-blue-100' : ''
                                                 }`}
                                             onClick={() => handleSkillToggle(value)}

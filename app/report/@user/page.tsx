@@ -56,7 +56,7 @@ export default function DynamicReport() {
         sumKey: 'Proveedor'
     })
     const [rows, setrows] = useState<number>(5);
-    const [columns, setcolumns] = useState([{ key: "Nombre" }, { key: "Almacen" }]);
+    const [columns, setcolumns] = useState([]);
     const [For, setFor] = useState([{ key: "Nombre" }, { key: "Almacen" }])
     // Estados compartidos
     const [previewData, setPreviewData] = useState<ChartData[]>([]);
@@ -119,6 +119,12 @@ export default function DynamicReport() {
                                 operator: "like",
                             });
                         });
+                } else {
+                    arr.push({
+                        key: col.key,
+                        value: `%${debouncedSearch}%`,
+                        operator: "like",
+                    });
                 }
             });
         }
@@ -189,7 +195,7 @@ export default function DynamicReport() {
                     filters: { filtros, sumas: columns },
                     page: currentPage,
                     pageSize: rows,
-                    sum: true
+                    sum: false
                 })
             ]);
 
@@ -273,7 +279,7 @@ export default function DynamicReport() {
             )}
             <MainForm
                 actionType="Buscar"
-                dataForm={FiltersField(config.type === "compras" ? glosarioCompras : glosarioVentas)}
+                dataForm={FiltersField(config.type === "compras" ? glosarioCompras : glosarioVentas, getAPI)}
                 valueAssign={["search", "columnas", "sucursal", "fecha_inicial", "fecha_final"]}
                 action={(values) => {
                     let columnas: any = []
