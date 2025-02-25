@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import {
+    Aperture,
     BadgeDollarSign,
     ChartBarIncreasing,
     ChartNetwork,
@@ -56,7 +57,7 @@ export default function DynamicReport() {
         sumKey: 'Proveedor'
     })
     const [rows, setrows] = useState<number>(5);
-    const [columns, setcolumns] = useState([]);
+    const [columns, setcolumns] = useState<any>([]);
     const [For, setFor] = useState([{ key: "Nombre" }, { key: "Almacen" }])
     // Estados compartidos
     const [previewData, setPreviewData] = useState<ChartData[]>([]);
@@ -351,6 +352,36 @@ export default function DynamicReport() {
                 message_button="cargar"
             />
             <section className="my-2">
+                <button
+                    className="p-2 my-2 border rounded-lg bg-white flex gap-2 items-center"
+                    onClick={() => setcolumns([
+                        {
+                            key: "Nombre"
+                        }, {
+                            key: "Proveedor"
+                        }, {
+                            key: "Unidad"
+                        }, {
+                            key: "Factor"
+                        }, {
+                            key: "Equivalencia"
+                        }, {
+                            key: "Cantidad"
+                        }, {
+                            key: "CantidadInventario"
+                        }, {
+                            key: "CostoUnitario"
+                        }, {
+                            key: "CostoTotal"
+                        }, {
+                            key: "FecahEmision"
+                        },
+                    ])}
+                >
+                    <Aperture className="text-gray-400 size-5" />
+                    Expo
+                </button>
+
                 {loading.table ? (
                     <div className="h-64 animate-pulse bg-gray-100 rounded-lg" />
                 ) : (
