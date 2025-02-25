@@ -374,7 +374,7 @@ export default function DynamicReport() {
                         }, {
                             key: "CostoTotal"
                         }, {
-                            key: "FecahEmision"
+                            key: "FechaEmision"
                         },
                     ])}
                 >
