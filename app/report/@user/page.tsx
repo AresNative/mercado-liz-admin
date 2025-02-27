@@ -184,6 +184,7 @@ export default function DynamicReport() {
                 loadDataGrafic(getAPI, {
                     filters: { filtros, sumas: [{ key: "Categoria" }/* , { key: "Nombre" } */] },
                     page: 1,
+                    pageSize: 5,
                     sum: true
                 }, /* [ */"Categoria"/* , "Nombre"] */, config.amountKey),
                 loadData(getAPI, {
@@ -232,7 +233,14 @@ export default function DynamicReport() {
             setLoading(prev => ({ ...prev, table: false }));
 
         } catch (error) {
-            console.error("Error:", error);
+            //console.error("Error:", error);
+
+            setPreviewData([]);
+            setDataTable([]);
+            setTotal("$0.00");
+            setCantidad("0");
+            setMotivo("N/A");
+            setPorcentajeMotivo("N/A");
             setError("Error al cargar datos. Intente nuevamente.");
             setLoading({ chart: false, summary: false, table: false });
         }

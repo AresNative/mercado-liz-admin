@@ -29,6 +29,7 @@ export function FiltersField(data: RowData[] = [], getAPI: any): Field[] {
         sumas: [{ key: "Nombre" }],
       },
       page: 1,
+      pageSize: 5,
       sum: true,
     });
 
