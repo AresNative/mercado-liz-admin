@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useReducer, useMemo, useCallback, useState } from "react";
 import {
     Aperture,
     BadgeDollarSign,
@@ -24,8 +24,10 @@ import CardResumen from "@/app/mermas/components/card-resumen";
 import { FiltersField } from "../constants/filters";
 import { ColumnsField } from "../constants/columns";
 
+type ReportType = 'compras' | 'ventas';
+
 interface ReportConfig {
-    type: 'compras' | 'ventas';
+    type: ReportType;
     title: string;
     amountKey: 'Costo' | 'Importe';
     mainField: string;
@@ -40,140 +42,170 @@ interface DynamicTableItem {
     [key: string]: any;
 }
 
-const formatAPIDate = (dateString: string) => {
-    if (!dateString) return "";
-    return new Date(dateString).toISOString();
-};
+interface SummaryState {
+    total: string;
+    cantidad: string;
+    motivo: string;
+    porcentajeMotivo: string;
+}
 
-export default function DynamicReport() {
+interface LoadingState {
+    chart: boolean;
+    summary: boolean;
+    table: boolean;
+}
 
-    const { data: glosarioCompras } = useGetGlosariosComprasQuery("");
-    const { data: glosarioVentas } = useGetGlosariosVentasQuery("");
-    const [config, setconfig] = useState<ReportConfig>({
+const REPORT_CONFIGS: Record<ReportType, ReportConfig> = {
+    compras: {
         type: 'compras',
         title: 'Compras',
         amountKey: 'Costo',
         mainField: 'Proveedor',
         sumKey: 'Proveedor'
-    })
-    const [rows, setrows] = useState<number>(5);
-    const [columns, setcolumns] = useState<any>([]);
-    const [For, setFor] = useState([{ key: "Nombre" }, { key: "Almacen" }])
-    // Estados compartidos
-    const [previewData, setPreviewData] = useState<ChartData[]>([]);
-    const [dataTable, setDataTable] = useState<DynamicTableItem[]>([]);
-    const [total, setTotal] = useState("$0.00");
-    const [cantidad, setCantidad] = useState("0");
-    const [motivo, setMotivo] = useState("N/A");
-    const [porcentajeMotivo, setPorcentajeMotivo] = useState("N/A");
-    const [error, setError] = useState<string | null>(null);
+    },
+    ventas: {
+        type: 'ventas',
+        title: 'Ventas',
+        amountKey: 'Importe',
+        mainField: 'Cliente',
+        sumKey: 'Cliente'
+    }
+};
 
-    const [loading, setLoading] = useState({
-        chart: false,
-        summary: false,
-        table: false,
-    });
+const formatAPIDate = (dateString: string) => {
+    if (!dateString) return "";
+    return new Date(dateString).toISOString();
+};
 
-    // Configuración dinámica de API
+const calculateSummary = (proveedores: any[], config: ReportConfig) => {
+    if (proveedores.length === 0) {
+        return {
+            totalCantidad: 0,
+            totalCosto: 0,
+            mayorProveedor: "N/A",
+            cantidadMayor: 0,
+            porcentajeMayor: 0
+        };
+    }
+
+    let totalCantidad = 0;
+    let totalCosto = 0;
+    let maxCantidad = -Infinity;
+    let mayorProveedor = proveedores[0];
+
+    for (const p of proveedores) {
+        totalCantidad += p.Cantidad;
+        totalCosto += p[config.amountKey];
+
+        if (p.Cantidad > maxCantidad) {
+            maxCantidad = p.Cantidad;
+            mayorProveedor = p;
+        }
+    }
+
+    const porcentajeMayor = (mayorProveedor.Cantidad / totalCantidad) * 100 || 0;
+
+    return {
+        totalCantidad,
+        totalCosto,
+        mayorProveedor: mayorProveedor[config.mainField] || "N/A",
+        cantidadMayor: mayorProveedor.Cantidad,
+        porcentajeMayor
+    };
+};
+
+export default function DynamicReport() {
+    const { data: glosarioCompras } = useGetGlosariosComprasQuery("");
+    const { data: glosarioVentas } = useGetGlosariosVentasQuery("");
     const [getCompras] = useGetComprasMutation();
     const [getVentas] = useGetVentasMutation();
-    const getAPI = config.type === 'compras' ? getCompras : getVentas;
 
-    // Estados de filtros
-    const [searchParam, setSearchParam] = useState("");
-    const [sucursal, setSucursal] = useState("");
-    const [fechaInicial, setFechaInicial] = useState("");
-    const [fechaFinal, setFechaFinal] = useState("");
+    // Estado principal
+    const [config, setConfig] = useState<ReportType>('compras');
+    const [rows, setRows] = useState(5);
+    const [columns, setColumns] = useState<any[]>([]);
+    const [searchParams, setSearchParams] = useState({
+        search: "",
+        rowSearch: "",
+        sucursal: "",
+        fechaInicial: "",
+        fechaFinal: "",
+    });
     const [currentPage, setCurrentPage] = useState(1);
+
+    // Estados derivados
+    const [previewData, setPreviewData] = useState<ChartData[]>([]);
+    const [dataTable, setDataTable] = useState<DynamicTableItem[]>([]);
     const [totalPages, setTotalPages] = useState(1);
+    const [error, setError] = useState<string | null>(null);
 
-    // Estados debounced
-    const [debouncedSearch, setDebouncedSearch] = useState("");
-    const [debouncedSucursal, setDebouncedSucursal] = useState("");
-    const [debouncedFechaInicial, setDebouncedFechaInicial] = useState("");
-    const [debouncedFechaFinal, setDebouncedFechaFinal] = useState("");
+    // Estado combinado para loading
+    const [loading, setLoading] = useState<LoadingState>({
+        chart: false,
+        summary: false,
+        table: false
+    });
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebouncedSearch(searchParam);
-            setDebouncedSucursal(sucursal);
-            setDebouncedFechaInicial(fechaInicial);
-            setDebouncedFechaFinal(fechaFinal);
-            setCurrentPage(1);
-        }, 50);
-        return () => clearTimeout(timer);
-    }, [searchParam, sucursal, fechaInicial, fechaFinal]);
+    // Estado combinado para summary
+    const [summary, setSummary] = useState<SummaryState>({
+        total: "$0.00",
+        cantidad: "0",
+        motivo: "N/A",
+        porcentajeMotivo: "N/A"
+    });
+
+    const currentConfig = useMemo(() => REPORT_CONFIGS[config], [config]);
+    const getAPI = useMemo(() =>
+        config === 'compras' ? getCompras : getVentas,
+        [config, getCompras, getVentas]
+    );
 
     const filtros = useMemo(() => {
         const arr: formatFilter[] = [];
+        const { search, rowSearch, sucursal, fechaInicial, fechaFinal } = searchParams;
 
-        if (debouncedSearch) {
-            For.forEach((col) => {
-                if (["Nombre", "Proveedor", "Codigo"].includes(col.key)) {
-                    debouncedSearch.split(',')
-                        .map(s => s.trim())
-                        .filter(Boolean)
-                        .forEach(searchs => {
-                            arr.push({
-                                key: col.key,
-                                value: `%${searchs}%`,
-                                operator: "like",
-                            });
-                        });
-                } else {
+        if (search) {
+            console.log(rowSearch);
+
+            const searchTerms = search.split(',').map(s => s.trim()).filter(Boolean);
+            const searchRows = rowSearch.split(',').map(s => s.trim()).filter(Boolean);
+            searchRows.forEach((col) => {
+                searchTerms.forEach(term => {
                     arr.push({
-                        key: col.key,
-                        value: `%${debouncedSearch}%`,
+                        key: col,//7501020540666
+                        value: `%${term}%`,
                         operator: "like",
                     });
-                }
+                })
+            })
+        }
+
+        if (sucursal) {
+            sucursal.split(',').map(s => s.trim()).filter(Boolean).forEach(sucursal => {
+                arr.push({
+                    key: "Almacen",
+                    value: sucursal,
+                    operator: "="
+                });
             });
         }
 
-        if (debouncedSucursal) {
-            debouncedSucursal.split(',')
-                .map(s => s.trim())
-                .filter(Boolean)
-                .forEach(sucursal => {
-                    arr.push({
-                        key: "Almacen",
-                        value: sucursal,
-                        operator: "="
-                    });
-                });
-        }
-
-        const fi = formatAPIDate(debouncedFechaInicial);
-        const ff = formatAPIDate(debouncedFechaFinal);
+        const fi = formatAPIDate(fechaInicial);
+        const ff = formatAPIDate(fechaFinal);
 
         if (fi && ff) {
             arr.push(
                 { key: "FechaEmision", value: fi, operator: ">=" },
                 { key: "FechaEmision", value: ff, operator: "<=" }
             );
-        } else {
-            if (fi) arr.push({ key: "FechaEmision", value: fi, operator: "=" });
-            if (ff) arr.push({ key: "FechaEmision", value: ff, operator: "=" });
+        } else if (fi) {
+            arr.push({ key: "FechaEmision", value: fi, operator: "=" });
+        } else if (ff) {
+            arr.push({ key: "FechaEmision", value: ff, operator: "=" });
         }
 
         return arr;
-    }, [debouncedSearch, debouncedSucursal, debouncedFechaInicial, debouncedFechaFinal, config]);
-    function calcularTotalesYMayorProveedor(proveedores: any[]) {
-        const totalCantidad = proveedores.reduce((sum, p) => sum + p.Cantidad, 0);
-        const totalCosto = proveedores.reduce((sum, p) => sum + p[config.amountKey], 0);
-
-        const mayorProveedor = proveedores.reduce((max, p) => (p.Cantidad > max.Cantidad ? p : max), proveedores[0]);
-
-        const porcentajeMayor = (mayorProveedor.Cantidad / totalCantidad) * 100;
-
-        return {
-            totalCantidad,
-            totalCosto,
-            mayorProveedor: mayorProveedor[config.mainField],
-            cantidadMayor: mayorProveedor.Cantidad,
-            porcentajeMayor
-        };
-    }
+    }, [searchParams]);
 
     const loadDataFromAPI = useCallback(async () => {
         setError(null);
@@ -182,13 +214,13 @@ export default function DynamicReport() {
         try {
             const [chartResult, totalResult, tableResult] = await Promise.allSettled([
                 loadDataGrafic(getAPI, {
-                    filters: { filtros, sumas: [{ key: "Categoria" }/* , { key: "Nombre" } */] },
+                    filters: { filtros, sumas: [{ key: "Categoria" }] },
                     page: 1,
                     pageSize: 5,
                     sum: true
-                }, /* [ */"Categoria"/* , "Nombre"] */, config.amountKey),
+                }, "Categoria", currentConfig.amountKey),
                 loadData(getAPI, {
-                    filters: { filtros, sumas: [{ key: config.sumKey }] },
+                    filters: { filtros, sumas: [{ key: currentConfig.sumKey }] },
                     page: 1,
                     pageSize: rows > 5 ? rows : 3000,
                     sum: true
@@ -204,23 +236,20 @@ export default function DynamicReport() {
             // Procesar gráfico
             if (chartResult.status === "fulfilled") {
                 setPreviewData(chartResult.value ?? []);
-            } else {
-                console.error("Error gráfico:", chartResult.reason);
             }
             setLoading(prev => ({ ...prev, chart: false }));
 
-            // Procesar totales ! aqui
+            // Procesar totales
             if (totalResult.status === "fulfilled") {
                 const resultData = totalResult.value?.data || [];
-                const totals = calcularTotalesYMayorProveedor(resultData);
+                const totals = calculateSummary(resultData, currentConfig);
 
-                setTotal(formatValue(totals.totalCosto, "currency"));
-                setCantidad(formatValue(totals.totalCantidad, "number"));
-                setMotivo(totals.mayorProveedor || "Sin datos");
-                setPorcentajeMotivo(
-                    totals.porcentajeMayor.toFixed(2)
-                    ?? "0.00"
-                );
+                setSummary({
+                    total: formatValue(totals.totalCosto, "currency"),
+                    cantidad: formatValue(totals.totalCantidad, "number"),
+                    motivo: totals.mayorProveedor,
+                    porcentajeMotivo: totals.porcentajeMayor.toFixed(2)
+                });
             }
             setLoading(prev => ({ ...prev, summary: false }));
 
@@ -233,102 +262,130 @@ export default function DynamicReport() {
             setLoading(prev => ({ ...prev, table: false }));
 
         } catch (error) {
-            //console.error("Error:", error);
-
             setPreviewData([]);
             setDataTable([]);
-            setTotal("$0.00");
-            setCantidad("0");
-            setMotivo("N/A");
-            setPorcentajeMotivo("N/A");
+            setSummary({
+                total: "$0.00",
+                cantidad: "0",
+                motivo: "N/A",
+                porcentajeMotivo: "N/A"
+            });
             setError("Error al cargar datos. Intente nuevamente.");
             setLoading({ chart: false, summary: false, table: false });
         }
-    }, [getAPI, filtros, currentPage, config, columns]);
+    }, [getAPI, filtros, currentPage, rows, columns, currentConfig]);
 
     useEffect(() => {
         loadDataFromAPI();
-    }, [loadDataFromAPI, config, columns]);
+    }, [loadDataFromAPI]);
+
+    const handleConfigChange = useCallback((type: ReportType) => {
+        setConfig(type);
+        setSearchParams({
+            search: "",
+            sucursal: "",
+            rowSearch: "",
+            fechaInicial: "",
+            fechaFinal: "",
+        });
+    }, []);
+
+    const handleSearch = useCallback((values: any) => {
+        setSearchParams({
+            search: values.search,
+            rowSearch: values.columnas,
+            sucursal: values.sucursal,
+            fechaInicial: values.fecha_inicial,
+            fechaFinal: values.fecha_final,
+        });
+    }, []);
+
+    const handleColumnsChange = useCallback((values: any) => {
+        if (values.rows) setRows(values.rows);
+
+        const newColumns = values.columnas
+            .split(',')
+            .map((s: string) => s.trim())
+            .filter(Boolean)
+            .map((key: string) => ({ key }));
+
+        setColumns(newColumns);
+    }, []);
 
     return (
-        <div>
-            <section className="w-full py-2 flex gap-2">
-                <button
-                    className="p-2 border rounded-lg bg-white flex gap-2 items-center"
-                    onClick={() => setconfig({
-                        type: 'ventas',
-                        title: 'Ventas',
-                        amountKey: 'Importe',
-                        mainField: 'Cliente',
-                        sumKey: 'Cliente'
-                    })}
-                >
-                    <BadgeDollarSign className="text-gray-400 size-5" />
-                    Ventas
-                </button>
-                <button
-                    className="p-2 border rounded-lg bg-white flex gap-2"
-                    onClick={() => setconfig({
-                        type: 'compras',
-                        title: 'Compras',
-                        amountKey: 'Costo',
-                        mainField: 'Proveedor',
-                        sumKey: 'Proveedor'
-                    })}
-                >
-                    <ScanBarcode className="text-gray-400 size-5" />
-                    Compras
-                </button>
-
+        <div className="container mx-auto p-4">
+            {/* Sección de selección de reporte */}
+            <section className="w-full py-2 flex gap-2 mb-6">
+                {Object.entries(REPORT_CONFIGS).map(([type, cfg]) => (
+                    <button
+                        key={type}
+                        className={`p-2 border rounded-lg flex gap-2 items-center transition-colors ${config === type
+                            ? 'bg-indigo-500 text-white border-indigo-600'
+                            : 'bg-white hover:bg-gray-50 text-gray-700'
+                            }`}
+                        onClick={() => handleConfigChange(type as ReportType)}
+                    >
+                        {type === 'ventas' ? (
+                            <BadgeDollarSign className="size-5" />
+                        ) : (
+                            <ScanBarcode className="size-5" />
+                        )}
+                        {cfg.title}
+                    </button>
+                ))}
             </section>
+
+            {/* Mensaje de error */}
             {error && (
                 <div className="p-3 mb-4 text-red-700 bg-red-100 rounded-lg">
                     {error}
                 </div>
             )}
-            <MainForm
-                actionType="Buscar"
-                dataForm={FiltersField(config.type === "compras" ? glosarioCompras : glosarioVentas, getAPI)}
-                valueAssign={["search", "columnas", "sucursal", "fecha_inicial", "fecha_final"]}
-                action={(values) => {
-                    let columnas: any = []
-                    values.columnas.split(',')
-                        .map((s: any) => s.trim())
-                        .filter(Boolean)
-                        .forEach((row: any) => {
-                            columnas.push({
-                                key: row
-                            });
-                        });
-                    setFor(columnas)
-                    setSearchParam(values.search);
-                    setSucursal(values.sucursal);
-                    setFechaInicial(values.fecha_inicial || "");
-                    setFechaFinal(values.fecha_final || "");
-                }}
-                message_button="Buscar"
-            />
 
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+            {/* Formulario principal de búsqueda */}
+            <div className="mb-8 bg-white p-6 rounded-xl shadow-sm">
+                <MainForm
+                    actionType="Buscar"
+                    dataForm={FiltersField(
+                        currentConfig.type === "compras"
+                            ? glosarioCompras
+                            : glosarioVentas,
+                        getAPI
+                    )}
+                    valueAssign={["search", "columnas", "sucursal", "fecha_inicial", "fecha_final"]}
+                    action={handleSearch}
+                    message_button="Aplicar Filtros"
+                />
+            </div>
+
+            {/* Tarjetas de resumen */}
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8">
                 <CardResumen
                     icon={<CircleDollarSign className="text-white" />}
-                    title={`Total ${config.title}`}
-                    value={loading.summary ? "Cargando..." : total}
+                    title={`Total ${currentConfig.title}`}
+                    value={loading.summary ? "Cargando..." : summary.total}
+                /*  bgColor="bg-blue-500" */
                 />
                 <CardResumen
                     icon={<ChartBarIncreasing className="text-white" />}
                     title="Productos Movidos"
-                    value={loading.summary ? "Cargando..." : cantidad}
+                    value={loading.summary ? "Cargando..." : summary.cantidad}
+                /* bgColor="bg-green-500" */
                 />
                 <CardResumen
                     icon={<ChartNetwork className="text-white" />}
-                    title={config.type === 'compras' ? "Proveedor Principal" : "Cliente Principal"}
-                    value={loading.summary ? "Cargando..." : motivo}
-                    subText={loading.summary ? "" : `${porcentajeMotivo}%`}
+                    title={currentConfig.type === 'compras'
+                        ? "Proveedor Principal"
+                        : "Cliente Principal"}
+                    value={loading.summary ? "Cargando..." : summary.motivo}
+                    subText={loading.summary ? "" : `${summary.porcentajeMotivo}%`}
+                /* bgColor="bg-purple-500" */
                 />
             </div>
 
-            <section className="my-2 p-2 bg-white shadow-md rounded-lg">
+            {/* Gráfico */}
+            <section className="my-6 p-6 bg-white shadow-sm rounded-xl">
+                <h2 className="text-xl font-semibold mb-4">Tendencias</h2>
                 {loading.chart ? (
                     <div className="h-64 animate-pulse bg-gray-100 rounded-lg" />
                 ) : (
@@ -336,76 +393,68 @@ export default function DynamicReport() {
                         type="area"
                         barData={previewData}
                         treemapData={previewData}
+                    /* height={400} */
                     />
                 )}
             </section>
-            <MainForm
-                actionType="Buscar"
-                dataForm={ColumnsField(config.type === "compras" ? glosarioCompras : glosarioVentas)}
-                valueAssign={["columnas", "rows"]}
-                action={(values) => {
-                    if (values.rows) setrows(values.rows);
 
-                    let columnas: any = []
-                    values.columnas.split(',')
-                        .map((s: any) => s.trim())
-                        .filter(Boolean)
-                        .forEach((row: any) => {
-                            columnas.push({
-                                key: row
-                            });
-                        });
-                    setcolumns(columnas);
-                }}
-                message_button="cargar"
-            />
-            <section className="my-2">
-                <button
-                    className="p-2 my-2 border rounded-lg bg-white flex gap-2 items-center"
-                    onClick={() => setcolumns([
-                        {
-                            key: "Nombre"
-                        }, {
-                            key: "Proveedor"
-                        }, {
-                            key: "Unidad"
-                        }, {
-                            key: "Factor"
-                        }, {
-                            key: "Equivalencia"
-                        }, {
-                            key: "Cantidad"
-                        }, {
-                            key: "CantidadInventario"
-                        }, {
-                            key: "CostoUnitario"
-                        }, {
-                            key: "CostoTotal"
-                        }, {
-                            key: "FechaEmision"
-                        },
-                    ])}
-                >
-                    <Aperture className="text-gray-400 size-5" />
-                    Expo
-                </button>
+            {/* Selector de columnas y filas */}
+            <div className="my-6 bg-white p-6 rounded-xl shadow-sm">
+                <div className="flex flex-wrap gap-4 items-end">
+                    <div className="flex-1 min-w-[300px]">
+                        <MainForm
+                            actionType="Configurar"
+                            dataForm={ColumnsField(
+                                currentConfig.type === "compras"
+                                    ? glosarioCompras
+                                    : glosarioVentas
+                            )}
+                            valueAssign={["columnas", "rows"]}
+                            action={handleColumnsChange}
+                            message_button="Actualizar Tabla"
+                        />
+                    </div>
+                    <button
+                        className="p-2 h-fit border rounded-lg bg-white flex gap-2 items-center 
+                          hover:bg-gray-50 transition-colors text-gray-700"
+                        onClick={() => setColumns([
+                            { key: "Nombre" }, { key: "Proveedor" }, { key: "Unidad" },
+                            { key: "Factor" }, { key: "Equivalencia" }, { key: "Cantidad" },
+                            { key: "CantidadInventario" }, { key: "CostoUnitario" },
+                            { key: "CostoTotal" }, { key: "FechaEmision" },
+                        ])}
+                    >
+                        <Aperture className="text-gray-400 size-5" />
+                        Vista Completa
+                    </button>
+                </div>
+            </div>
+
+            {/* Tabla de datos */}
+            <section className="my-6 overflow-hidden">
+                <div className="p-6">
+                    <h2 className="text-xl font-semibold">Detalle de {currentConfig.title}</h2>
+                </div>
 
                 {loading.table ? (
-                    <div className="h-64 animate-pulse bg-gray-100 rounded-lg" />
+                    <div className="h-64 animate-pulse bg-gray-100" />
                 ) : (
-                    <DynamicTable
-                        data={dataTable}
+                    <>
+                        <DynamicTable
+                            data={dataTable}
+                        />
 
-                    />
+                        <div className="p-4 border-t">
+                            <Pagination
+                                currentPage={currentPage}
+                                loading={loading.table}
+                                setCurrentPage={setCurrentPage}
+                                totalPages={totalPages}
+                            />
+                        </div>
+                    </>
                 )}
             </section>
-
-            <Pagination
-                currentPage={currentPage}
-                loading={loading.table}
-                setCurrentPage={setCurrentPage}
-                totalPages={totalPages}
-            />
         </div>
     );
 }

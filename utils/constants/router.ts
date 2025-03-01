@@ -8,4 +8,6 @@ export const navigation: INavigation[] = [
   { name: "Scrum", href: "/scrum" },
   { name: "Reportes", href: "/report" },
   { name: "Graficas", href: "/grafic" },
+  { name: "Calendar", href: "/calendar" },
+  { name: "Model", href: "/model" },
 ];
