@@ -12,7 +12,7 @@ import {
   isSameDay,
   isToday,
 } from "date-fns"
-import type { Event } from "@/types/calendar"
+import type { Event } from "../../constants/calendar"
 
 interface MonthViewProps {
   currentDate: Date
@@ -53,21 +53,19 @@ export default function MonthView({ currentDate, events }: MonthViewProps) {
         {calendarDays.map((day, dayIdx) => (
           <div
             key={dayIdx}
-            className={`min-h-[85px] border border-gray-200 dark:border-gray-700 p-1 ${
-              !isSameMonth(day, currentDate)
+            className={`min-h-[85px] border border-gray-200 dark:border-gray-700 p-1 ${!isSameMonth(day, currentDate)
                 ? "bg-gray-50 dark:bg-gray-900 text-gray-400 dark:text-gray-600"
                 : "bg-white dark:bg-gray-800"
-            }`}
+              }`}
           >
             <div className="flex justify-between items-center">
               <span
-                className={`text-sm font-medium ${
-                  isToday(day)
+                className={`text-sm font-medium ${isToday(day)
                     ? "h-6 w-6 bg-blue-500 text-white rounded-full flex items-center justify-center"
                     : isSameMonth(day, currentDate)
                       ? "text-gray-900 dark:text-gray-100"
                       : "text-gray-400 dark:text-gray-600"
-                }`}
+                  }`}
               >
                 {format(day, "d")}
               </span>

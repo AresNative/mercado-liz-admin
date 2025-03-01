@@ -13,7 +13,7 @@ import {
   differenceInMinutes,
 } from "date-fns"
 import { es } from "date-fns/locale"
-import type { Event } from "@/types/calendar"
+import type { Event } from "../../constants/calendar"
 
 interface WeekViewProps {
   currentDate: Date
@@ -63,11 +63,10 @@ export default function WeekView({ currentDate, events }: WeekViewProps) {
                 {format(day, "EEE", { locale: es })}
               </div>
               <div
-                className={`text-sm font-semibold ${
-                  isToday(day)
-                    ? "h-6 w-6 bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto"
-                    : "text-gray-900 dark:text-gray-100"
-                }`}
+                className={`text-sm font-semibold ${isToday(day)
+                  ? "h-6 w-6 bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto"
+                  : "text-gray-900 dark:text-gray-100"
+                  }`}
               >
                 {format(day, "d")}
               </div>

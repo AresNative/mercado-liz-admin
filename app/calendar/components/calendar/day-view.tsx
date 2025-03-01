@@ -1,5 +1,5 @@
 import { format, isSameDay, setHours, setMinutes, differenceInMinutes } from "date-fns"
-import type { Event } from "@/types/calendar"
+import type { Event } from "../../constants/calendar"
 
 interface DayViewProps {
   currentDate: Date
