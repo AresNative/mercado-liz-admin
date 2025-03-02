@@ -53,24 +53,24 @@ export const dropDow = createSlice({
         duration: duration ?? 3000,
       });
     },
-    openModal: (
+    openModalReducer: (
       state,
       action: PayloadAction<{ modalName: string; isOpen: boolean }>
     ) => {
       const { modalName, isOpen } = action.payload;
       state.modals[modalName] = isOpen;
     },
-    closeModal: (state, action: PayloadAction<{ modalName: string }>) => {
+    closeModalReducer: (
+      state,
+      action: PayloadAction<{ modalName: string }>
+    ) => {
       const { modalName } = action.payload;
       state.modals[modalName] = false;
-    },
-    setCuestionActivate: (state, action: PayloadAction<any>) => {
-      state.cuestionActivate = action.payload;
     },
   },
 });
 
-export const { openAlertReducer, openModal, closeModal, setCuestionActivate } =
+export const { openAlertReducer, openModalReducer, closeModalReducer } =
   dropDow.actions;
 
 export default dropDow.reducer;

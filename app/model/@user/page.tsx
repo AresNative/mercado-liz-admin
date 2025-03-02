@@ -1,5 +1,10 @@
 "use client";
 
+import { Modal } from "@/components/modal";
+import { openModalReducer } from "@/hooks/reducers/drop-down";
+import { useAppDispatch } from "@/hooks/selector";
+import { option } from "framer-motion/client";
+import { Grip, MoveDown, MoveUp, Plus, Trash } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { createSwapy } from "swapy";
 
@@ -43,9 +48,25 @@ export default function Postulaciones() {
             };
         }
     }, []);
-
+    const dispatch = useAppDispatch();
+    function openModal() {
+        dispatch(
+            openModalReducer({ modalName: "bidView", isOpen: true })
+        );
+    }
     return (
         <>
+            <button onClick={openModal}>Test</button>
+            <Modal
+                modalName="bidView"
+                title="You Are Bidding On"
+            >
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                </div>
+            </Modal>
+
+
             <section className="container flex gap-4" ref={containerRef}>
 
                 <ul className="h-2/4 flex flex-col p-2 border rounded-lg gap-2">
