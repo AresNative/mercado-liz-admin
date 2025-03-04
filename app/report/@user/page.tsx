@@ -313,7 +313,7 @@ export default function DynamicReport() {
     }, []);
 
     return (
-        <div className="container mx-auto p-4">
+        <div className="">
             {/* Sección de selección de reporte */}
             <section className="w-full py-2 flex gap-2 mb-6">
                 {Object.entries(REPORT_CONFIGS).map(([type, cfg]) => (
@@ -364,13 +364,11 @@ export default function DynamicReport() {
                     icon={<CircleDollarSign className="text-white" />}
                     title={`Total ${currentConfig.title}`}
                     value={loading.summary ? "Cargando..." : summary.total}
-                /*  bgColor="bg-blue-500" */
                 />
                 <CardResumen
                     icon={<ChartBarIncreasing className="text-white" />}
                     title="Productos Movidos"
                     value={loading.summary ? "Cargando..." : summary.cantidad}
-                /* bgColor="bg-green-500" */
                 />
                 <CardResumen
                     icon={<ChartNetwork className="text-white" />}
@@ -379,7 +377,6 @@ export default function DynamicReport() {
                         : "Cliente Principal"}
                     value={loading.summary ? "Cargando..." : summary.motivo}
                     subText={loading.summary ? "" : `${summary.porcentajeMotivo}%`}
-                /* bgColor="bg-purple-500" */
                 />
             </div>
 
@@ -418,10 +415,11 @@ export default function DynamicReport() {
                         className="p-2 h-fit border rounded-lg bg-white flex gap-2 items-center 
                           hover:bg-gray-50 transition-colors text-gray-700"
                         onClick={() => setColumns([
-                            { key: "Nombre" }, { key: "Proveedor" }, { key: "Unidad" },
-                            { key: "Factor" }, { key: "Equivalencia" }, { key: "Cantidad" },
-                            { key: "CantidadInventario" }, { key: "CostoUnitario" },
-                            { key: "CostoTotal" }, { key: "FechaEmision" },
+                            { key: "Codigo" }, { key: "Articulo" }, { key: "Nombre" },
+                            { key: "Fabricante" }, { key: "Cantidad" }, { key: "Unidad" },
+                            { key: "Equivalencia" }, { key: "Factor" },
+                            { key: "CantidadInventario" }, { key: "CostoUnitario" }, { key: "IVA" },
+                            { key: "IEPS" }, { key: "PorcentajeDescuento" }, { key: "CostoTotal" }, { key: "FechaEmision" },
                         ])}
                     >
                         <Aperture className="text-gray-400 size-5" />

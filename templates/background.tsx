@@ -12,7 +12,7 @@ export default function Background({
             <div className="absolute inset-y-0 right-1/2 -z-10 w-[200%] origin-bottom-left skew-x-[-30deg] bg-white shadow-xl shadow-indigo-600/10 ring-1 ring-indigo-50 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center" />
 
             {/* Contenido */}
-            <div className="mx-auto max-w-7xl">
+            <div className="mx-auto">
                 {children}
             </div>
         </main>

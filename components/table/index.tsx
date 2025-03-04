@@ -53,10 +53,10 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
                     year: 'numeric',
                     month: '2-digit',
                     day: '2-digit',
-                    hour: '2-digit',
+                    /* hour: '2-digit',
                     minute: '2-digit',
                     second: '2-digit',
-                    hour12: false // Formato 24 horas
+                    hour12: false // Formato 24 horas */
                 });
             } catch (error) {
                 console.warn(`Error formateando fecha para el campo ${key}:`, error);
@@ -133,7 +133,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
 
     return (
         <>
-            <div className="w-full mx-auto space-y-8">
+            <div className="w-full space-y-8">
                 <div className="bg-white border shadow-xl rounded-lg overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full">

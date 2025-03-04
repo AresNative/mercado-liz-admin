@@ -29,7 +29,7 @@ export function FiltersField(data: RowData[] = [], getAPI: any): Field[] {
         sumas: [{ key: "Nombre" }],
       },
       page: 1,
-      pageSize: 5,
+      pageSize: 20,
       sum: true,
     });
 
@@ -87,23 +87,10 @@ export function FiltersField(data: RowData[] = [], getAPI: any): Field[] {
             placeholder: "Mínimo 3 días mayor a la fecha de inicio",
             require: false,
           },
-        ],
-      },
-      {
-        type: "Flex",
-        require: false,
-        elements: [
           {
             name: "fecha_inicial",
-            type: "DATE",
-            label: "Fecha inicial",
-            placeholder: "Buscar por fecha...",
-            require: false,
-          },
-          {
-            name: "fecha_final",
-            type: "DATE",
-            label: "Fecha final",
+            type: "DATE_RANGE",
+            label: "Fecha(s)",
             placeholder: "Buscar por fecha...",
             require: false,
           },

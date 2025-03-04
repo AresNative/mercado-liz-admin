@@ -11,7 +11,7 @@ export default function Layout({
     return (
         <Background>
             <Nav />
-            <main className="container mx-auto mb-2">
+            <main className=" mx-auto mb-2">
                 {children}
             </main>
             <Footer />
