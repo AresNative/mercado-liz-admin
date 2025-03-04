@@ -93,6 +93,7 @@ export function FiltersField(data: RowData[] = [], getAPI: any): Field[] {
             label: "Fecha(s)",
             placeholder: "Buscar por fecha...",
             require: false,
+            multiple: true,
           },
         ],
       },

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useReducer, useMemo, useCallback, useState } from "react";
+import { useEffect, useMemo, useCallback, useState } from "react";
 import {
     Aperture,
     BadgeDollarSign,
@@ -289,14 +289,21 @@ export default function DynamicReport() {
             fechaFinal: "",
         });
     }, []);
-
+    function separarFechas(fechaRango: string) {
+        const fechas = fechaRango.split(" - ");
+        return {
+            fechaInicial: fechas[0] || "",
+            fechaFinal: fechas[1] || ""
+        };
+    }
     const handleSearch = useCallback((values: any) => {
+        const { fechaInicial, fechaFinal } = separarFechas(values.fecha_inicial);
         setSearchParams({
             search: values.search,
             rowSearch: values.columnas,
             sucursal: values.sucursal,
-            fechaInicial: values.fecha_inicial,
-            fechaFinal: values.fecha_final,
+            fechaInicial: fechaInicial,
+            fechaFinal: fechaFinal,
         });
     }, []);
 

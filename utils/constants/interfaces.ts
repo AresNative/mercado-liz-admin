@@ -33,6 +33,7 @@ export interface Field {
   options?: string[] | SelectOption[]; // For CHECKBOX_GROUP and SELECT
   enableAutocomplete?: string; // Changed to string to match "true"
   multi?: boolean; // For SELECT
+  multiple?: boolean; // For SELECT
   maxLength?: number; // For TEXT_AREA and INPUT
   valueDefined?: any;
   href?: string;
@@ -90,6 +91,7 @@ export interface InputFormProps /* extends Field */ {
     icon?: React.ElementType<any>;
     maxLength?: number;
     href?: string;
+    multiple?: boolean;
   };
   watch: (name: string) => string;
   getValues: (name: string) => string;
