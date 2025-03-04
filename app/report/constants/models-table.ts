@@ -1,0 +1,30 @@
+export const Totales = [
+  { key: "Codigo" },
+  { key: "Articulo" },
+  { key: "Nombre" },
+  { key: "Fabricante" },
+  { key: "Unidad" },
+  { key: "CantidadInventario" },
+  { key: "CostoUnitario" },
+  { key: "IVA" },
+  { key: "IEPS" },
+  { key: "CostoTotal" },
+];
+
+export const Expo = [
+  { key: "Codigo" },
+  { key: "Articulo" },
+  { key: "Nombre" },
+  { key: "Fabricante" },
+  { key: "Cantidad" },
+  { key: "Unidad" },
+  { key: "Equivalencia" },
+  { key: "Factor" },
+  { key: "CantidadInventario" },
+  { key: "CostoUnitario" },
+  { key: "IVA" },
+  { key: "IEPS" },
+  { key: "PorcentajeDescuento" },
+  { key: "CostoTotal" },
+  { key: "FechaEmision" },
+];

@@ -6,6 +6,8 @@ import {
     ChartBarIncreasing,
     ChartNetwork,
     CircleDollarSign,
+    Eye,
+    EyeClosed,
     ScanBarcode,
 } from "lucide-react";
 import { ChartData } from "@/app/grafic/@user/page";
@@ -23,6 +25,7 @@ import MainForm from "@/components/form/main-form";
 import CardResumen from "@/app/mermas/components/card-resumen";
 import { FiltersField } from "../constants/filters";
 import { ColumnsField } from "../constants/columns";
+import { Expo, Totales } from "../constants/models-table";
 
 type ReportType = 'compras' | 'ventas';
 
@@ -130,6 +133,13 @@ export default function DynamicReport() {
         sucursal: "",
         fechaInicial: "",
         fechaFinal: "",
+    });
+    const [viewSecctions, setViewSecctions] = useState({
+        filter: true,
+        totals: false,
+        grafic: false,
+        loadModelTable: false,
+        table: true,
     });
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -319,28 +329,63 @@ export default function DynamicReport() {
         setColumns(newColumns);
     }, []);
 
+
+    const dataFormModelTable = ColumnsField(
+        currentConfig.type === "compras" ? glosarioCompras : glosarioVentas
+    );
+
+    const dataFormFilter = FiltersField(
+        currentConfig.type === "compras"
+            ? glosarioCompras
+            : glosarioVentas,
+        getAPI
+    )
     return (
-        <div className="">
+        <div>
+
             {/* Sección de selección de reporte */}
-            <section className="w-full py-2 flex gap-2 mb-6">
-                {Object.entries(REPORT_CONFIGS).map(([type, cfg]) => (
-                    <button
-                        key={type}
-                        className={`p-2 border rounded-lg flex gap-2 items-center transition-colors ${config === type
-                            ? 'bg-indigo-500 text-white border-indigo-600'
-                            : 'bg-white hover:bg-gray-50 text-gray-700'
-                            }`}
-                        onClick={() => handleConfigChange(type as ReportType)}
-                    >
-                        {type === 'ventas' ? (
-                            <BadgeDollarSign className="size-5" />
-                        ) : (
-                            <ScanBarcode className="size-5" />
-                        )}
-                        {cfg.title}
-                    </button>
-                ))}
-            </section>
+            <ul className="w-full py-2 flex gap-2 mb-6">
+                <li className="w-full py-2 flex gap-2 mb-6">
+                    {Object.entries(REPORT_CONFIGS).map(([type, cfg]) => (
+                        <button
+                            key={type}
+                            className={`p-2 border rounded-lg flex gap-2 items-center transition-colors ${config === type
+                                ? 'bg-indigo-500 text-white border-indigo-600'
+                                : 'bg-white hover:bg-gray-50 text-gray-700'
+                                }`}
+                            onClick={() => handleConfigChange(type as ReportType)}
+                        >
+                            {type === 'ventas' ? (
+                                <BadgeDollarSign className="size-5" />
+                            ) : (
+                                <ScanBarcode className="size-5" />
+                            )}
+                            {cfg.title}
+                        </button>
+                    ))}
+                </li>
+                <li className="w-full py-2 flex gap-2 mb-6">
+                    {Object.entries(viewSecctions).map(([key, section]) => (
+                        <button
+                            key={key}
+                            className={`p-2 border rounded-lg flex gap-2 items-center transition-colors ${section
+                                ? 'bg-indigo-500 text-white border-indigo-600'
+                                : 'bg-white hover:bg-gray-50 text-gray-700'
+                                }`}
+                            onClick={() =>
+                                setViewSecctions((prev) => ({ ...prev, [key]: !section }))
+                            }
+                        >
+                            {section ? (
+                                <BadgeDollarSign className="size-5" />
+                            ) : (
+                                <ScanBarcode className="size-5" />
+                            )}
+                            Ver {key}
+                        </button>
+                    ))}
+                </li>
+            </ul>
 
             {/* Mensaje de error */}
             {error && (
@@ -350,23 +395,19 @@ export default function DynamicReport() {
             )}
 
             {/* Formulario principal de búsqueda */}
-            <div className="mb-8 bg-white p-6 rounded-xl shadow-sm">
+            {viewSecctions.filter && (<div className="mb-8 bg-white border p-6 rounded-xl shadow-sm">
                 <MainForm
                     actionType="Buscar"
-                    dataForm={FiltersField(
-                        currentConfig.type === "compras"
-                            ? glosarioCompras
-                            : glosarioVentas,
-                        getAPI
-                    )}
+                    dataForm={dataFormFilter}
                     valueAssign={["search", "columnas", "sucursal", "fecha_inicial", "fecha_final"]}
                     action={handleSearch}
                     message_button="Aplicar Filtros"
                 />
-            </div>
+            </div>)}
+
 
             {/* Tarjetas de resumen */}
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8">
+            {viewSecctions.totals && (<div className="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8">
                 <CardResumen
                     icon={<CircleDollarSign className="text-white" />}
                     title={`Total ${currentConfig.title}`}
@@ -385,10 +426,11 @@ export default function DynamicReport() {
                     value={loading.summary ? "Cargando..." : summary.motivo}
                     subText={loading.summary ? "" : `${summary.porcentajeMotivo}%`}
                 />
-            </div>
+            </div>)}
+
 
             {/* Gráfico */}
-            <section className="my-6 p-6 bg-white shadow-sm rounded-xl">
+            {viewSecctions.grafic && (<section className="my-6 p-6 bg-white shadow-sm rounded-xl">
                 <h2 className="text-xl font-semibold mb-4">Tendencias</h2>
                 {loading.chart ? (
                     <div className="h-64 animate-pulse bg-gray-100 rounded-lg" />
@@ -397,46 +439,44 @@ export default function DynamicReport() {
                         type="area"
                         barData={previewData}
                         treemapData={previewData}
-                    /* height={400} */
                     />
                 )}
-            </section>
+            </section>)}
+
 
             {/* Selector de columnas y filas */}
-            <div className="my-6 bg-white p-6 rounded-xl shadow-sm">
-                <div className="flex flex-wrap gap-4 items-end">
-                    <div className="flex-1 min-w-[300px]">
-                        <MainForm
-                            actionType="Configurar"
-                            dataForm={ColumnsField(
-                                currentConfig.type === "compras"
-                                    ? glosarioCompras
-                                    : glosarioVentas
-                            )}
-                            valueAssign={["columnas", "rows"]}
-                            action={handleColumnsChange}
-                            message_button="Actualizar Tabla"
-                        />
+            {viewSecctions.loadModelTable && (
+                <div className="my-6 bg-white border p-6 rounded-xl shadow-sm">
+                    <div className="flex flex-wrap gap-4 items-end">
+                        <div className="flex-1 min-w-[300px]">
+                            <MainForm
+                                actionType="Configurar"
+                                dataForm={dataFormModelTable}
+                                valueAssign={["columnas", "rows"]}
+                                action={handleColumnsChange}
+                                message_button="Actualizar Tabla"
+                            />
+                        </div>
+                        <button
+                            className="p-2 h-fit border rounded-lg bg-white flex gap-2 items-center hover:bg-gray-50 transition-colors text-gray-700"
+                            onClick={() => setColumns(Totales)}
+                        >
+                            <Aperture className="text-gray-400 size-5" />
+                            Vista Totales
+                        </button>
+                        <button
+                            className="p-2 h-fit border rounded-lg bg-white flex gap-2 items-center hover:bg-gray-50 transition-colors text-gray-700"
+                            onClick={() => setColumns(Expo)}
+                        >
+                            <Aperture className="text-gray-400 size-5" />
+                            Vista Expo
+                        </button>
                     </div>
-                    <button
-                        className="p-2 h-fit border rounded-lg bg-white flex gap-2 items-center 
-                          hover:bg-gray-50 transition-colors text-gray-700"
-                        onClick={() => setColumns([
-                            { key: "Codigo" }, { key: "Articulo" }, { key: "Nombre" },
-                            { key: "Fabricante" }, { key: "Cantidad" }, { key: "Unidad" },
-                            { key: "Equivalencia" }, { key: "Factor" },
-                            { key: "CantidadInventario" }, { key: "CostoUnitario" }, { key: "IVA" },
-                            { key: "IEPS" }, { key: "PorcentajeDescuento" }, { key: "CostoTotal" }, { key: "FechaEmision" },
-                        ])}
-                    >
-                        <Aperture className="text-gray-400 size-5" />
-                        Vista Completa
-                    </button>
                 </div>
-            </div>
+            )}
 
             {/* Tabla de datos */}
-            <section className="my-6 overflow-hidden">
+            {viewSecctions.table && (<section className="my-6 overflow-hidden">
                 <div className="p-6">
                     <h2 className="text-xl font-semibold">Detalle de {currentConfig.title}</h2>
                 </div>
@@ -459,7 +499,7 @@ export default function DynamicReport() {
                         </div>
                     </>
                 )}
-            </section>
-        </div>
+            </section>)}
+        </div >
     );
 }

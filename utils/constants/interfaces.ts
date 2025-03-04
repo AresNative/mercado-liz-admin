@@ -80,19 +80,10 @@ export interface DateRangeInputProps {
   errors: Record<string, { message?: string } | undefined>;
 }
 
-export interface InputFormProps /* extends Field */ {
+export interface InputFormProps {
   cuestion: {
     name: string;
-    placeholder?: string;
-    label?: string;
-    valueDefined?: string | any;
-    require: boolean;
-    type: "password" | "number" | "email" | "phone" | "text";
-    icon?: React.ElementType<any>;
-    maxLength?: number;
-    href?: string;
-    multiple?: boolean;
-  };
+  } & Field;
   watch: (name: string) => string;
   getValues: (name: string) => string;
   setValue: (name: string, value: string) => void;
