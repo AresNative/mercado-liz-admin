@@ -4,8 +4,6 @@ import { Menu } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
-
-
 export default function Nav() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 

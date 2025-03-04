@@ -135,11 +135,11 @@ export default function DynamicReport() {
         fechaFinal: "",
     });
     const [viewSecctions, setViewSecctions] = useState({
-        filter: true,
-        totals: false,
-        grafic: false,
-        loadModelTable: false,
-        table: true,
+        Filtros: true,
+        Resumen: false,
+        Grafica: false,
+        Cuestionario: false,
+        Tabla: true,
     });
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -377,9 +377,9 @@ export default function DynamicReport() {
                             }
                         >
                             {section ? (
-                                <BadgeDollarSign className="size-5" />
+                                <Eye className="size-5" />
                             ) : (
-                                <ScanBarcode className="size-5" />
+                                <EyeClosed className="size-5" />
                             )}
                             Ver {key}
                         </button>
@@ -395,7 +395,7 @@ export default function DynamicReport() {
             )}
 
             {/* Formulario principal de búsqueda */}
-            {viewSecctions.filter && (<div className="mb-8 bg-white border p-6 rounded-xl shadow-sm">
+            {viewSecctions.Filtros && (<div className="mb-8 bg-white border p-6 rounded-xl shadow-sm">
                 <MainForm
                     actionType="Buscar"
                     dataForm={dataFormFilter}
@@ -407,7 +407,7 @@ export default function DynamicReport() {
 
 
             {/* Tarjetas de resumen */}
-            {viewSecctions.totals && (<div className="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8">
+            {viewSecctions.Resumen && (<div className="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8">
                 <CardResumen
                     icon={<CircleDollarSign className="text-white" />}
                     title={`Total ${currentConfig.title}`}
@@ -430,7 +430,7 @@ export default function DynamicReport() {
 
 
             {/* Gráfico */}
-            {viewSecctions.grafic && (<section className="my-6 p-6 bg-white shadow-sm rounded-xl">
+            {viewSecctions.Grafica && (<section className="my-6 p-6 bg-white shadow-sm rounded-xl">
                 <h2 className="text-xl font-semibold mb-4">Tendencias</h2>
                 {loading.chart ? (
                     <div className="h-64 animate-pulse bg-gray-100 rounded-lg" />
@@ -445,7 +445,7 @@ export default function DynamicReport() {
 
 
             {/* Selector de columnas y filas */}
-            {viewSecctions.loadModelTable && (
+            {viewSecctions.Cuestionario && (
                 <div className="my-6 bg-white border p-6 rounded-xl shadow-sm">
                     <div className="flex flex-wrap gap-4 items-end">
                         <div className="flex-1 min-w-[300px]">
@@ -476,7 +476,7 @@ export default function DynamicReport() {
             )}
 
             {/* Tabla de datos */}
-            {viewSecctions.table && (<section className="my-6 overflow-hidden">
+            {viewSecctions.Tabla && (<section className="my-6 overflow-hidden">
                 <div className="p-6">
                     <h2 className="text-xl font-semibold">Detalle de {currentConfig.title}</h2>
                 </div>
