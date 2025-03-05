@@ -132,7 +132,13 @@ export const api = createApi({
         getGlosariosCompras: builder.query({
             query: () => "glosarios/glosario-compras"
         }),
-
+        getAll: builder.mutation({
+            query: (data) => ({
+                url: `reporteria/all?sum=${data.sum}&page=${data.page}&pageSize=${data.pageSize}`,
+                method: "POST",
+                body: data.filters,
+            }),
+        }),
         /*
         ? Formato de consulta - glosarios y tablas dinamicas
         */
@@ -151,6 +157,7 @@ export const {
     useGetGlosariosVentasQuery,
     useGetComprasMutation,
     useGetGlosariosComprasQuery,
+    useGetAllMutation,
 
     useGetProjectsQuery,
     useGetSprintsQuery,

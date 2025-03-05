@@ -17,7 +17,7 @@ import {
     loadDataGrafic,
     formatFilter,
 } from "@/app/grafic/constants/load-data";
-import { useGetComprasMutation, useGetGlosariosComprasQuery, useGetGlosariosVentasQuery, useGetVentasMutation } from "@/hooks/reducers/api";
+import { useGetComprasMutation, useGetGlosariosComprasQuery, useGetGlosariosVentasQuery, useGetVentasMutation, useGetAllMutation } from "@/hooks/reducers/api";
 import { formatJSON, formatValue } from "@/utils/constants/format-values";
 import DynamicTable from "@/components/table";
 import Pagination from "@/components/pagination";
@@ -26,54 +26,7 @@ import CardResumen from "@/app/mermas/components/card-resumen";
 import { FiltersField } from "../constants/filters";
 import { ColumnsField } from "../constants/columns";
 import { Expo, Totales } from "../constants/models-table";
-
-type ReportType = 'compras' | 'ventas';
-
-interface ReportConfig {
-    type: ReportType;
-    title: string;
-    amountKey: 'Costo' | 'Importe';
-    mainField: string;
-    sumKey: string;
-}
-
-interface DynamicTableItem {
-    id: string;
-    Nombre: string;
-    Almacen: string;
-    FechaEmision: string;
-    [key: string]: any;
-}
-
-interface SummaryState {
-    total: string;
-    cantidad: string;
-    motivo: string;
-    porcentajeMotivo: string;
-}
-
-interface LoadingState {
-    chart: boolean;
-    summary: boolean;
-    table: boolean;
-}
-
-const REPORT_CONFIGS: Record<ReportType, ReportConfig> = {
-    compras: {
-        type: 'compras',
-        title: 'Compras',
-        amountKey: 'Costo',
-        mainField: 'Proveedor',
-        sumKey: 'Proveedor'
-    },
-    ventas: {
-        type: 'ventas',
-        title: 'Ventas',
-        amountKey: 'Importe',
-        mainField: 'Cliente',
-        sumKey: 'Cliente'
-    }
-};
+import { ReportConfig, ReportType, DynamicTableItem, LoadingState, SummaryState, REPORT_CONFIGS } from "../constants/interfaces";
 
 const formatAPIDate = (dateString: string) => {
     if (!dateString) return "";
@@ -122,6 +75,7 @@ export default function DynamicReport() {
     const { data: glosarioVentas } = useGetGlosariosVentasQuery("");
     const [getCompras] = useGetComprasMutation();
     const [getVentas] = useGetVentasMutation();
+    const [getAll] = useGetAllMutation();
 
     // Estado principal
     const [config, setConfig] = useState<ReportType>('compras');
@@ -165,18 +119,13 @@ export default function DynamicReport() {
     });
 
     const currentConfig = useMemo(() => REPORT_CONFIGS[config], [config]);
-    const getAPI = useMemo(() =>
-        config === 'compras' ? getCompras : getVentas,
-        [config, getCompras, getVentas]
-    );
+    const getAPI = useMemo(() => getAll, [getAll]);
 
     const filtros = useMemo(() => {
         const arr: formatFilter[] = [];
         const { search, rowSearch, sucursal, fechaInicial, fechaFinal } = searchParams;
 
         if (search) {
-            console.log(rowSearch);
-
             const searchTerms = search.split(',').map(s => s.trim()).filter(Boolean);
             const searchRows = rowSearch.split(',').map(s => s.trim()).filter(Boolean);
             searchRows.forEach((col) => {
@@ -222,7 +171,7 @@ export default function DynamicReport() {
         setLoading({ chart: true, summary: true, table: true });
 
         try {
-            const [chartResult, totalResult, tableResult] = await Promise.allSettled([
+            const [chartResult, totalResult, tableResult, totalUnidad] = await Promise.allSettled([
                 loadDataGrafic(getAPI, {
                     filters: { filtros, sumas: [{ key: "Categoria" }] },
                     page: 1,
@@ -241,7 +190,25 @@ export default function DynamicReport() {
                     pageSize: rows,
                     sum: false
                 })
+                ,
+                loadData(getAPI, {
+                    filters: {
+                        filtros: [{
+                            key: "Unidad",
+                            value: "Pieza",
+                            operator: ""
+                        }, {
+                            key: "Unidad",
+                            value: "Caja",
+                            operator: ""
+                        }], sumas: columns
+                    },
+                    page: currentPage,
+                    pageSize: rows,
+                    sum: true
+                })
             ]);
+            console.log(totalUnidad);
 
             // Procesar gráfico
             if (chartResult.status === "fulfilled") {
@@ -299,6 +266,7 @@ export default function DynamicReport() {
             fechaFinal: "",
         });
     }, []);
+
     function separarFechas(fechaRango: string) {
         const fechas = fechaRango.split(" - ");
         return {
