@@ -1,9 +1,11 @@
+"use client"
 import { SearchableSelectProps } from "@/utils/constants/interfaces";
 import { Search, Star, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Badge from "../badge";
 import { searchData } from "@/hooks/reducers/filter";
 import { useAppDispatch } from "@/hooks/selector";
+import { triggerFormSubmit } from "@/utils/functions/form-active";
 
 export function SearchComponent(props: SearchableSelectProps) {
     const { cuestion } = props;
@@ -19,16 +21,42 @@ export function SearchComponent(props: SearchableSelectProps) {
         skills: []
     });
 
+    // Ajuste en la función para simular "Enter" al seleccionar un elemento
     const handleSkillToggle = (skill: string) => {
-        setSearchTerm(skill);
+        if (cuestion.saveData) {
+            if (skill.trim() !== "") {
+                setFormData(prev => ({
+                    ...prev,
+                    skills: [...prev.skills, skill.trim()]
+                }));
+                setSearchTerm('');
+            }
+        } else {
+            setSearchTerm(skill);
+        }
+        triggerFormSubmit()
         setShowSkillsDropdown(false);
     };
-
     const handleRemoveSkill = (skill: string) => {
         setFormData(prev => ({
             ...prev,
             skills: prev.skills.filter(s => s !== skill)
         }));
+    };
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            if (cuestion.saveData && searchTerm.trim() !== "") {
+                setFormData(prev => ({
+                    ...prev,
+                    skills: [...prev.skills, searchTerm.trim()]
+                }));
+                setSearchTerm("");
+            }
+            setShowSkillsDropdown(false);
+            triggerFormSubmit();
+        }
     };
 
     useEffect(() => {
@@ -42,9 +70,12 @@ export function SearchComponent(props: SearchableSelectProps) {
     }, []);
 
     useEffect(() => {
-        if (cuestion.saveData) { props.setValue(cuestion.name, formData.skills.join(', ')); return; }
+        if (cuestion.saveData && formData.skills.length) {
+            props.setValue(cuestion.name, formData.skills.join(', '));
+            return;
+        }
         props.setValue(cuestion.name, searchTerm);
-    }, [cuestion.multi, cuestion.name, props, searchTerm, cuestion.saveData]);
+    }, [cuestion.multi, cuestion.name, props, searchTerm, cuestion.saveData, formData.skills]);
 
     return (
         <div className="flex flex-col relative" ref={skillsRef}>
@@ -65,19 +96,7 @@ export function SearchComponent(props: SearchableSelectProps) {
                         setSearchTerm(e.target.value);
                         setShowSkillsDropdown(true);
                     }}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' && cuestion.saveData) {
-                            e.preventDefault();
-                            if (searchTerm.trim() !== "") {
-                                setFormData(prev => ({
-                                    ...prev,
-                                    skills: [...prev.skills, searchTerm.trim()]
-                                }));
-                                setSearchTerm("");
-                            }
-                            setShowSkillsDropdown(false);
-                        }
-                    }}
+                    onKeyDown={handleKeyDown}
                 />
             </div>
             {cuestion.options && showSkillsDropdown && (
@@ -98,9 +117,8 @@ export function SearchComponent(props: SearchableSelectProps) {
 
                                     return (
                                         <li
-                                            key={skill}
-                                            className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${searchTerm ? 'bg-blue-100' : ''
-                                                }`}
+                                            key={value}
+                                            className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${searchTerm ? 'bg-blue-100' : ''}`}
                                             onClick={() => handleSkillToggle(value)}
                                         >
                                             {label}

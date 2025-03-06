@@ -1,4 +1,5 @@
 export const Totales = [
+  { key: "ID" },
   { key: "Codigo" },
   { key: "Articulo" },
   { key: "Nombre" },
@@ -12,6 +13,7 @@ export const Totales = [
 ];
 
 export const Expo = [
+  { key: "ID" },
   { key: "Codigo" },
   { key: "Articulo" },
   { key: "Nombre" },

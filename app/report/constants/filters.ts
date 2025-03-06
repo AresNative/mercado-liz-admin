@@ -4,7 +4,11 @@ import { RowData } from "./columns";
 import { loadData } from "@/app/grafic/constants/load-data";
 import { useAppSelector } from "@/hooks/selector";
 
-export function FiltersField(data: RowData[] = [], getAPI: any): Field[] {
+export function FiltersField(
+  data: RowData[] = [],
+  getAPI: any,
+  type: string
+): Field[] {
   // Estado para almacenar los resultados
   const [optionsSearch, setOptionsSearch] = useState([]);
   const options = useMemo(
@@ -22,7 +26,12 @@ export function FiltersField(data: RowData[] = [], getAPI: any): Field[] {
         filtros: [
           {
             key: "Nombre",
-            value: term,
+            value: `%${term}%`,
+            operator: "like",
+          },
+          {
+            key: "Tipo", //7501020540666
+            value: `%${type}%`,
             operator: "like",
           },
         ],
@@ -42,9 +51,10 @@ export function FiltersField(data: RowData[] = [], getAPI: any): Field[] {
     }
   }
 
-  const term = useAppSelector((store) => store.filterData.value);
+  // Obtener el valor específico del filtro de búsqueda usando la clave 'search'
+  const term = useAppSelector((store) => store.filterData.search?.value || "");
 
-  // Cargar datos al montar el componente
+  // Cargar datos al montar el componente y cuando cambie el término
   useEffect(() => {
     loadDataSearch(term);
   }, [term]);

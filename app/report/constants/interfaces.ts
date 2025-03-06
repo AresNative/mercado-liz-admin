@@ -1,4 +1,4 @@
-export type ReportType = "compras" | "ventas";
+export type ReportType = "COMPRA" | "VENTA";
 
 export interface ReportConfig {
   type: ReportType;
@@ -30,15 +30,15 @@ export interface LoadingState {
 }
 
 export const REPORT_CONFIGS: Record<ReportType, ReportConfig> = {
-  compras: {
-    type: "compras",
+  COMPRA: {
+    type: "COMPRA",
     title: "Compras",
     amountKey: "Costo",
     mainField: "Proveedor",
     sumKey: "Proveedor",
   },
-  ventas: {
-    type: "ventas",
+  VENTA: {
+    type: "VENTA",
     title: "Ventas",
     amountKey: "Importe",
     mainField: "Cliente",

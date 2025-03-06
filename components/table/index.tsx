@@ -2,8 +2,8 @@
 
 import type React from "react";
 import { useState, useMemo } from "react";
-import { motion } from "framer-motion";
-import { Check, ChevronDown, Download, Grid2x2X, X } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Check, ChevronDown, Download, Grid2x2X, MoreVertical, X } from "lucide-react";
 
 export type DataItem = Record<string, any>;
 
@@ -20,7 +20,15 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
     const [selectedRows, setSelectedRows] = useState<number[]>([]);
     const [sortColumn, setSortColumn] = useState<string | null>(null);
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+    const [showColumnMenu, setShowColumnMenu] = useState<string | null>(null)
 
+    const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>(
+        columns.reduce((acc, column) => ({ ...acc, [column]: true }), {}),
+    )
+
+    const toggleColumn = (column: string) => {
+        setVisibleColumns((prev) => ({ ...prev, [column]: !prev[column] }))
+    }
     const toggleRowSelection = (id: number) => {
         setSelectedRows((prev) => (prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]));
     };
@@ -160,23 +168,52 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
                                                 key={column}
                                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                             >
-                                                <div className="flex items-center space-x-1">
-                                                    <button
-                                                        className="flex items-center space-x-1 hover:text-gray-700"
-                                                        onClick={() => toggleSort(column)}
-                                                    >
-                                                        <span>{column}</span>
-                                                        <ChevronDown
-                                                            className={`h-4 w-4 ${sortColumn === column
-                                                                ? sortDirection === "asc"
-                                                                    ? "transform rotate-180"
+                                                <ul className="flex">
+                                                    <li className="flex items-center space-x-1">
+                                                        <button
+                                                            className="flex items-center space-x-1 hover:text-gray-700"
+                                                            onClick={() => toggleSort(column)}
+                                                        >
+                                                            <span>{column}</span>
+                                                            <ChevronDown
+                                                                className={`h-4 w-4 ${sortColumn === column
+                                                                    ? sortDirection === "asc"
+                                                                        ? "transform rotate-180"
+                                                                        : ""
                                                                     : ""
-                                                                : ""
-                                                                }`}
-                                                        />
-                                                    </button>
+                                                                    }`}
+                                                            />
+                                                        </button>
 
-                                                </div>
+                                                    </li>
+                                                    <li className="relative flex items-center space-x-1">{/* nombre - fabricante - proveedor - fecha - codigo - articulo */}
+                                                        <button
+                                                            onClick={() => setShowColumnMenu(showColumnMenu === column ? null : column)}
+                                                            className="p-1 hover:bg-gray-100 rounded-full"
+                                                        >
+                                                            <MoreVertical className="h-4 w-4" />
+                                                        </button>
+                                                        <AnimatePresence>
+                                                            {showColumnMenu === column && (
+                                                                <motion.div
+                                                                    initial={{ opacity: 0, y: -10 }}
+                                                                    animate={{ opacity: 1, y: 0 }}
+                                                                    exit={{ opacity: 0, y: -10 }}
+                                                                    className="absolute -right-10  -bottom-12 mt-2 w-48 bg-white rounded-md shadow-lg z-10 ring-1 ring-black ring-opacity-5"
+                                                                >
+                                                                    <div className="py-1">
+                                                                        <button
+                                                                            onClick={() => toggleColumn(column)}
+                                                                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                        >
+                                                                            {visibleColumns[column] ? "Hide column" : "Show column"}
+                                                                        </button>
+                                                                    </div>
+                                                                </motion.div>
+                                                            )}
+                                                        </AnimatePresence>
+                                                    </li>
+                                                </ul>
                                             </th>
                                         )
                                     )}

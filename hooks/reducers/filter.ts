@@ -5,12 +5,13 @@ interface FilterProps {
   key: string;
   type: "form" | "grafic" | "multi";
 }
-
-const initialState: FilterProps = {
-  type: "form",
-  key: "",
-  value: "",
-};
+interface FilterState {
+  [key: string]: {
+    type: "form" | "grafic" | "multi";
+    value: string;
+  };
+}
+const initialState: FilterState = {};
 
 export const filterData = createSlice({
   name: "filterData",
@@ -18,11 +19,12 @@ export const filterData = createSlice({
   reducers: {
     dataFilter: (state, action: PayloadAction<FilterProps>) => {
       const { key, value, type } = action.payload;
-      state = { type: type, key: key, value: value };
+      state[key] = { type, value };
       return state;
     },
     searchData: (state, action: PayloadAction<string>) => {
-      state.value = action.payload;
+      const searchKey = "search";
+      state[searchKey] = { type: "form", value: action.payload };
       return state;
     },
   },

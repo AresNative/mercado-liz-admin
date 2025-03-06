@@ -8,6 +8,7 @@ import {
     CircleDollarSign,
     Eye,
     EyeClosed,
+    Package,
     ScanBarcode,
 } from "lucide-react";
 import { ChartData } from "@/app/grafic/@user/page";
@@ -17,7 +18,13 @@ import {
     loadDataGrafic,
     formatFilter,
 } from "@/app/grafic/constants/load-data";
-import { useGetComprasMutation, useGetGlosariosComprasQuery, useGetGlosariosVentasQuery, useGetVentasMutation, useGetAllMutation } from "@/hooks/reducers/api";
+import {
+    useGetComprasMutation,
+    useGetGlosariosComprasQuery,
+    useGetGlosariosVentasQuery,
+    useGetVentasMutation,
+    useGetAllMutation
+} from "@/hooks/reducers/api";
 import { formatJSON, formatValue } from "@/utils/constants/format-values";
 import DynamicTable from "@/components/table";
 import Pagination from "@/components/pagination";
@@ -26,7 +33,14 @@ import CardResumen from "@/app/mermas/components/card-resumen";
 import { FiltersField } from "../constants/filters";
 import { ColumnsField } from "../constants/columns";
 import { Expo, Totales } from "../constants/models-table";
-import { ReportConfig, ReportType, DynamicTableItem, LoadingState, SummaryState, REPORT_CONFIGS } from "../constants/interfaces";
+import {
+    ReportConfig,
+    ReportType,
+    DynamicTableItem,
+    LoadingState,
+    SummaryState,
+    REPORT_CONFIGS
+} from "../constants/interfaces";
 
 const formatAPIDate = (dateString: string) => {
     if (!dateString) return "";
@@ -78,7 +92,7 @@ export default function DynamicReport() {
     const [getAll] = useGetAllMutation();
 
     // Estado principal
-    const [config, setConfig] = useState<ReportType>('compras');
+    const [config, setConfig] = useState<ReportType>('COMPRA');
     const [rows, setRows] = useState(5);
     const [columns, setColumns] = useState<any[]>([]);
     const [searchParams, setSearchParams] = useState({
@@ -125,6 +139,12 @@ export default function DynamicReport() {
         const arr: formatFilter[] = [];
         const { search, rowSearch, sucursal, fechaInicial, fechaFinal } = searchParams;
 
+        arr.push({
+            key: "Tipo",//7501020540666
+            value: `%${config}%`,
+            operator: "like",
+        });
+
         if (search) {
             const searchTerms = search.split(',').map(s => s.trim()).filter(Boolean);
             const searchRows = rowSearch.split(',').map(s => s.trim()).filter(Boolean);
@@ -167,10 +187,12 @@ export default function DynamicReport() {
     }, [searchParams]);
 
     const loadDataFromAPI = useCallback(async () => {
+        // Se resetean los errores y se indica que se está cargando todo
         setError(null);
         setLoading({ chart: true, summary: true, table: true });
 
         try {
+            // Disparamos todas las peticiones en paralelo
             const [chartResult, totalResult, tableResult, totalUnidad] = await Promise.allSettled([
                 loadDataGrafic(getAPI, {
                     filters: { filtros, sumas: [{ key: "Categoria" }] },
@@ -189,56 +211,81 @@ export default function DynamicReport() {
                     page: currentPage,
                     pageSize: rows,
                     sum: false
-                })
-                ,
+                }),
                 loadData(getAPI, {
                     filters: {
-                        filtros: [{
-                            key: "Unidad",
-                            value: "Pieza",
-                            operator: ""
-                        }, {
-                            key: "Unidad",
-                            value: "Caja",
-                            operator: ""
-                        }], sumas: columns
+                        filtros: [
+                            { key: "Unidad", value: "Pieza", operator: "" },
+                            { key: "Unidad", value: "Caja", operator: "" },
+                            { key: "Tipo", value: `%${config}%`, operator: "like" }
+                        ],
+                        sumas: [{ key: "Unidad" }]
                     },
                     page: currentPage,
-                    pageSize: rows,
+                    pageSize: 1500,
                     sum: true
                 })
             ]);
+
+            // Opcional: puedes revisar o loggear totalUnidad si lo necesitas
             console.log(totalUnidad);
+
+            // Creamos un objeto temporal para agrupar las actualizaciones
+            const newStates: {
+                previewData: ChartData[];
+                summary: {
+                    total: string;
+                    cantidad: string;
+                    motivo: string;
+                    porcentajeMotivo: string;
+                };
+                totalPages: number;
+                dataTable: DynamicTableItem[];
+            } = {
+                previewData: [{ name: "", data: [{ x: "", y: 0 }] }],
+                summary: {
+                    total: "$0.00",
+                    cantidad: "0",
+                    motivo: "N/A",
+                    porcentajeMotivo: "N/A"
+                },
+                totalPages: 0,
+                dataTable: []
+            };
 
             // Procesar gráfico
             if (chartResult.status === "fulfilled") {
-                setPreviewData(chartResult.value ?? []);
+                newStates.previewData = chartResult.value ?? [];
             }
-            setLoading(prev => ({ ...prev, chart: false }));
 
             // Procesar totales
             if (totalResult.status === "fulfilled") {
                 const resultData = totalResult.value?.data || [];
                 const totals = calculateSummary(resultData, currentConfig);
-
-                setSummary({
+                newStates.summary = {
                     total: formatValue(totals.totalCosto, "currency"),
                     cantidad: formatValue(totals.totalCantidad, "number"),
                     motivo: totals.mayorProveedor,
                     porcentajeMotivo: totals.porcentajeMayor.toFixed(2)
-                });
+                };
             }
-            setLoading(prev => ({ ...prev, summary: false }));
 
             // Procesar tabla
             if (tableResult.status === "fulfilled") {
                 const tableData = tableResult.value ?? { data: [], totalPages: 0 };
-                setTotalPages(tableData.totalPages);
-                setDataTable(formatJSON(tableData.data) as DynamicTableItem[]);
+                newStates.totalPages = tableData.totalPages;
+                newStates.dataTable = formatJSON(tableData.data) as [];
             }
-            setLoading(prev => ({ ...prev, table: false }));
+
+            // Actualizamos los estados en bloque para minimizar re-renderizados
+            setPreviewData(newStates.previewData);
+            setSummary(newStates.summary);
+            setTotalPages(newStates.totalPages);
+            setDataTable(newStates.dataTable);
+            setLoading({ chart: false, summary: false, table: false });
 
         } catch (error) {
+            // En caso de error se limpian los datos y se notifica el error
             setPreviewData([]);
             setDataTable([]);
             setSummary({
@@ -251,6 +298,7 @@ export default function DynamicReport() {
             setLoading({ chart: false, summary: false, table: false });
         }
     }, [getAPI, filtros, currentPage, rows, columns, currentConfig]);
+
 
     useEffect(() => {
         loadDataFromAPI();
@@ -299,44 +347,45 @@ export default function DynamicReport() {
 
 
     const dataFormModelTable = ColumnsField(
-        currentConfig.type === "compras" ? glosarioCompras : glosarioVentas
+        currentConfig.type === "COMPRA" ? glosarioCompras : glosarioVentas
     );
 
     const dataFormFilter = FiltersField(
-        currentConfig.type === "compras"
+        currentConfig.type === "COMPRA"
             ? glosarioCompras
             : glosarioVentas,
-        getAPI
+        getAPI,
+        config
     )
     return (
         <div>
 
             {/* Sección de selección de reporte */}
-            <ul className="w-full py-2 flex gap-2 mb-6">
-                <li className="w-full py-2 flex gap-2 mb-6">
+            <ul className="w-full py-2 flex flex-col md:flex-row flex-wrap gap-2 md:gap-4 mb-6">
+                <li className="py-2 flex flex-wrap gap-1 md:gap-2 mb-6">
                     {Object.entries(REPORT_CONFIGS).map(([type, cfg]) => (
                         <button
                             key={type}
-                            className={`p-2 border rounded-lg flex gap-2 items-center transition-colors ${config === type
+                            className={`px-2 py-1 md:px-3 md:py-2 border rounded-lg flex gap-1 md:gap-2 items-center transition-colors ${config === type
                                 ? 'bg-indigo-500 text-white border-indigo-600'
                                 : 'bg-white hover:bg-gray-50 text-gray-700'
                                 }`}
                             onClick={() => handleConfigChange(type as ReportType)}
                         >
                             {type === 'ventas' ? (
-                                <BadgeDollarSign className="size-5" />
+                                <BadgeDollarSign className="w-4 h-4 md:w-5 md:h-5" />
                             ) : (
-                                <ScanBarcode className="size-5" />
+                                <ScanBarcode className="w-4 h-4 md:w-5 md:h-5" />
                             )}
-                            {cfg.title}
+                            <span className="text-xs md:text-sm">{cfg.title}</span>
                         </button>
                     ))}
                 </li>
-                <li className="w-full py-2 flex gap-2 mb-6">
+                <li className="py-2 flex flex-wrap gap-1 md:gap-2 mb-6">
                     {Object.entries(viewSecctions).map(([key, section]) => (
                         <button
                             key={key}
-                            className={`p-2 border rounded-lg flex gap-2 items-center transition-colors ${section
+                            className={`px-2 py-1 md:px-3 md:py-2 border rounded-lg flex gap-1 md:gap-2 items-center transition-colors ${section
                                 ? 'bg-indigo-500 text-white border-indigo-600'
                                 : 'bg-white hover:bg-gray-50 text-gray-700'
                                 }`}
@@ -345,11 +394,11 @@ export default function DynamicReport() {
                             }
                         >
                             {section ? (
-                                <Eye className="size-5" />
+                                <Eye className="w-4 h-4 md:w-5 md:h-5" />
                             ) : (
-                                <EyeClosed className="size-5" />
+                                <EyeClosed className="w-4 h-4 md:w-5 md:h-5" />
                             )}
-                            Ver {key}
+                            <span className="text-xs md:text-sm">Ver {key}</span>
                         </button>
                     ))}
                 </li>
@@ -373,9 +422,8 @@ export default function DynamicReport() {
                 />
             </div>)}
 
-
             {/* Tarjetas de resumen */}
-            {viewSecctions.Resumen && (<div className="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8">
+            {viewSecctions.Resumen && (<div className="flex flex-row gap-2 mb-8 sm:justify-between">
                 <CardResumen
                     icon={<CircleDollarSign className="text-white" />}
                     title={`Total ${currentConfig.title}`}
@@ -388,14 +436,19 @@ export default function DynamicReport() {
                 />
                 <CardResumen
                     icon={<ChartNetwork className="text-white" />}
-                    title={currentConfig.type === 'compras'
+                    title={currentConfig.type === 'COMPRA'
                         ? "Proveedor Principal"
                         : "Cliente Principal"}
                     value={loading.summary ? "Cargando..." : summary.motivo}
                     subText={loading.summary ? "" : `${summary.porcentajeMotivo}%`}
                 />
+                <CardResumen
+                    icon={<Package className="text-white" />}
+                    title={"Inventario"}
+                    value={loading.summary ? "Cargando..." : summary.motivo}
+                    subText={loading.summary ? "" : `${summary.porcentajeMotivo}%`}
+                />
             </div>)}
-
 
             {/* Gráfico */}
             {viewSecctions.Grafica && (<section className="my-6 p-6 bg-white shadow-sm rounded-xl">
@@ -410,7 +463,6 @@ export default function DynamicReport() {
                     />
                 )}
             </section>)}
-
 
             {/* Selector de columnas y filas */}
             {viewSecctions.Cuestionario && (
@@ -434,7 +486,7 @@ export default function DynamicReport() {
                         </button>
                         <button
                             className="p-2 h-fit border rounded-lg bg-white flex gap-2 items-center hover:bg-gray-50 transition-colors text-gray-700"
-                            onClick={() => setColumns(Expo)}
+                            onClick={() => { setColumns(Expo); setRows(30) }}
                         >
                             <Aperture className="text-gray-400 size-5" />
                             Vista Expo

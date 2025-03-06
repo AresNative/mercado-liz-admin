@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { SearchableSelectProps } from "@/utils/constants/interfaces";
 import { ChevronDown, Star, X } from 'lucide-react';
 import Badge from "../badge";
+import { triggerFormSubmit } from "@/utils/functions/form-active";
 
 export function SelectComponent(props: SearchableSelectProps) {
     const { cuestion } = props;
@@ -27,6 +28,8 @@ export function SelectComponent(props: SearchableSelectProps) {
                     : [...prev.skills, skill]
             }));
         }
+
+        triggerFormSubmit();
     };
 
     const handleRemoveSkill = (skill: string) => {

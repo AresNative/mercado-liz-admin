@@ -58,6 +58,7 @@ export interface ChecboxFormProps {
     options: string[];
   };
   control: any;
+  handleSubmit: () => void;
   setValue: (name: string, value: boolean) => Promise<void>;
   register: (name: string, options: { required?: string }) => object;
   setError: (name: string, error: object) => void;
@@ -74,6 +75,7 @@ export interface DateRangeInputProps {
     require: boolean;
   };
   control: any; // Replace with the actual type from react-hook-form
+  handleSubmit: () => void;
   setValue: (name: string, value: string) => void;
   setError: (name: string, error: object) => void;
   clearErrors: (name: string) => void;
@@ -84,6 +86,7 @@ export interface InputFormProps {
   cuestion: {
     name: string;
   } & Field;
+  handleSubmit: () => void;
   watch: (name: string) => string;
   getValues: (name: string) => string;
   setValue: (name: string, value: string) => void;
@@ -102,6 +105,7 @@ export interface InputMediaProps {
     accept?: string; // Allowed file types
     multiple?: boolean;
   };
+  handleSubmit: () => void;
   setValue: (name: string, value: File | File[] | null) => void;
   register: (name: string, options: { required?: string }) => object;
   errors: Record<string, { message?: string } | undefined>;
@@ -119,6 +123,7 @@ export interface SearchableSelectProps {
     enableAutocomplete?: boolean;
     saveData?: boolean;
   };
+  handleSubmit: () => any;
   setValue: (name: string, value: string) => void;
   setError: (name: string, error: object) => void;
   clearErrors: (name: string) => void;
