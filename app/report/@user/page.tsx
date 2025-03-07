@@ -19,10 +19,8 @@ import {
     formatFilter,
 } from "@/app/grafic/constants/load-data";
 import {
-    useGetComprasMutation,
     useGetGlosariosComprasQuery,
     useGetGlosariosVentasQuery,
-    useGetVentasMutation,
     useGetAllMutation
 } from "@/hooks/reducers/api";
 import { formatJSON, formatValue } from "@/utils/constants/format-values";
@@ -87,8 +85,6 @@ const calculateSummary = (proveedores: any[], config: ReportConfig) => {
 export default function DynamicReport() {
     const { data: glosarioCompras } = useGetGlosariosComprasQuery("");
     const { data: glosarioVentas } = useGetGlosariosVentasQuery("");
-    const [getCompras] = useGetComprasMutation();
-    const [getVentas] = useGetVentasMutation();
     const [getAll] = useGetAllMutation();
 
     // Estado principal
@@ -131,6 +127,13 @@ export default function DynamicReport() {
         motivo: "N/A",
         porcentajeMotivo: "N/A"
     });
+    const [totalsParams, setTotalsParams] = useState([{
+        Unidad: "",
+        Cantidad: 0,
+        Costo: 0,
+        Importe: 0,
+        TotalInventario: 0
+    }]);
 
     const currentConfig = useMemo(() => REPORT_CONFIGS[config], [config]);
     const getAPI = useMemo(() => getAll, [getAll]);
@@ -138,12 +141,13 @@ export default function DynamicReport() {
     const filtros = useMemo(() => {
         const arr: formatFilter[] = [];
         const { search, rowSearch, sucursal, fechaInicial, fechaFinal } = searchParams;
-
-        arr.push({
-            key: "Tipo",//7501020540666
-            value: `%${config}%`,
-            operator: "like",
-        });
+        if (arr.length <= 0) {
+            arr.push({
+                key: "Tipo",
+                value: `%${config}%`,
+                operator: "like",
+            });
+        }
 
         if (search) {
             const searchTerms = search.split(',').map(s => s.trim()).filter(Boolean);
@@ -151,7 +155,7 @@ export default function DynamicReport() {
             searchRows.forEach((col) => {
                 searchTerms.forEach(term => {
                     arr.push({
-                        key: col,//7501020540666
+                        key: col,
                         value: `%${term}%`,
                         operator: "like",
                     });
@@ -192,8 +196,19 @@ export default function DynamicReport() {
         setLoading({ chart: true, summary: true, table: true });
 
         try {
+            const filtrosUnidades: formatFilter[] = [
+                { key: "Unidad", value: " ", operator: "<>" },
+                { key: "Unidad", value: "NULL", operator: "<>" },
+                { key: "Tipo", value: `%${config}%`, operator: "like" },
+                ...filtros
+            ];
+            const filtrosInventario: formatFilter[] = [
+                { key: "CantidadInventario", value: " ", operator: "<>" },
+                { key: "Tipo", value: `%${config}%`, operator: "like" },
+                ...filtros
+            ];
             // Disparamos todas las peticiones en paralelo
-            const [chartResult, totalResult, tableResult, totalUnidad] = await Promise.allSettled([
+            const [chartResult, totalResult, tableResult, totalUnidad, totalInventario] = await Promise.allSettled([
                 loadDataGrafic(getAPI, {
                     filters: { filtros, sumas: [{ key: "Categoria" }] },
                     page: 1,
@@ -214,21 +229,23 @@ export default function DynamicReport() {
                 }),
                 loadData(getAPI, {
                     filters: {
-                        filtros: [
-                            { key: "Unidad", value: "Pieza", operator: "" },
-                            { key: "Unidad", value: "Caja", operator: "" },
-                            { key: "Tipo", value: `%${config}%`, operator: "like" }
-                        ],
+                        filtros: filtrosUnidades,
                         sumas: [{ key: "Unidad" }]
+                    },
+                    page: currentPage,
+                    pageSize: 1500,
+                    sum: true
+                }),
+                loadData(getAPI, {
+                    filters: {
+                        filtros: filtrosInventario,
+                        sumas: [{ key: "CantidadInventario" }]
                     },
                     page: currentPage,
                     pageSize: 1500,
                     sum: true
                 })
             ]);
-
-            // Opcional: puedes revisar o loggear totalUnidad si lo necesitas
-            console.log(totalUnidad);
 
             // Creamos un objeto temporal para agrupar las actualizaciones
             const newStates: {
@@ -277,6 +294,41 @@ export default function DynamicReport() {
                 newStates.dataTable = formatJSON(tableData.data) as [];
             }
 
+            if (totalUnidad.status === "fulfilled") {
+                const totalPerUnidad = totalUnidad.value?.data || [];
+                setTotalsParams(
+                    totalPerUnidad.map((item: any) => ({
+                        Unidad: item.Unidad,
+                        Cantidad: item.Cantidad,
+                        Costo: item.Costo,
+                        Importe: item.Importe ?? 0
+                    }))
+                );
+                //console.log("Datos de totalPerUnidad:", totalPerUnidad, "Datos de map:", totalsParams);
+            }
+            //totalInventario
+            if (totalInventario.status === "fulfilled") {
+                const totalInventarioSum = Array.isArray(totalInventario.value?.data) ? totalInventario.value.data : [];
+
+                const totalCantidadInventario = totalInventarioSum.reduce(
+                    (acc: number, item: { CantidadInventario?: number }) => acc + (item.CantidadInventario ?? 0),
+                    0
+                );
+
+                setTotalsParams((prev) => [
+                    ...prev,
+                    {
+                        Unidad: "Total",
+                        Cantidad: totalCantidadInventario,
+                        Costo: 0,
+                        Importe: 0,
+                        TotalInventario: totalCantidadInventario
+                    }
+                ]);
+
+
+
+            }
             // Actualizamos los estados en bloque para minimizar re-renderizados
             setPreviewData(newStates.previewData);
             setSummary(newStates.summary);
@@ -357,6 +409,19 @@ export default function DynamicReport() {
         getAPI,
         config
     )
+    const resumenPorUnidad = totalsParams.reduce((acc: any, item) => {
+        const unidad = item.Unidad;
+
+        if (!acc[unidad]) {
+            acc[unidad] = { Cantidad: 0, Costo: 0 };
+        }
+
+        acc[unidad].Cantidad += item.Cantidad;
+        acc[unidad].Costo += item.Costo;
+
+        return acc;
+    }, {});
+
     return (
         <div>
 
@@ -423,7 +488,7 @@ export default function DynamicReport() {
             </div>)}
 
             {/* Tarjetas de resumen */}
-            {viewSecctions.Resumen && (<div className="flex flex-row gap-2 mb-8 sm:justify-between">
+            {viewSecctions.Resumen && (<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
                 <CardResumen
                     icon={<CircleDollarSign className="text-white" />}
                     title={`Total ${currentConfig.title}`}
@@ -442,12 +507,7 @@ export default function DynamicReport() {
                     value={loading.summary ? "Cargando..." : summary.motivo}
                     subText={loading.summary ? "" : `${summary.porcentajeMotivo}%`}
                 />
-                <CardResumen
-                    icon={<Package className="text-white" />}
-                    title={"Inventario"}
-                    value={loading.summary ? "Cargando..." : summary.motivo}
-                    subText={loading.summary ? "" : `${summary.porcentajeMotivo}%`}
-                />
+
             </div>)}
 
             {/* Gráfico */}
@@ -505,6 +565,18 @@ export default function DynamicReport() {
                     <div className="h-64 animate-pulse bg-gray-100" />
                 ) : (
                     <>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+                            {Object.entries(resumenPorUnidad).map(([unidad, data]: any) => (
+                                <CardResumen
+                                    key={unidad}
+                                    icon={<Package className="text-white" />}
+                                    title={`Inventario - ${unidad}`}
+                                    value={loading.summary ? "Cargando..." : data.Cantidad.toLocaleString()}
+                                    subText={data.Costo <= 0 ? "" : `Costo Total: $${data.Costo.toLocaleString()}`}
+                                />
+                            ))}</div>
+
                         <DynamicTable
                             data={dataTable}
                         />
