@@ -112,24 +112,36 @@ export const api = createApi({
                 body: data.filters,
             }),
         }),
-
         getVentas: builder.mutation({
-            query: (data) => ({
-                url: `reporteria/ventas?sum=${data.sum}&page=${data.page}&pageSize=${data.pageSize}`,
+            query: ({ sum, page, pageSize, filters, signal, distinct }) => ({
+                url: `reporteria/ventas`,
                 method: "POST",
-                body: data.filters,
+                params: { sum, page, pageSize, distinct }, // Mejor práctica para parámetros
+                body: filters,
+                signal
             }),
+            transformErrorResponse: (response: any) => ({
+                status: response.status,
+                message: response.data?.message || 'Error fetching data',
+            }),
+            extraOptions: { maxRetries: 2 }
         }),
         getGlosariosVentas: builder.query({
             query: () => "glosarios/glosario-ventas"
         }),
-
         getCompras: builder.mutation({
-            query: (data) => ({
-                url: `reporteria/compras?sum=${data.sum}&page=${data.page}&pageSize=${data.pageSize}`,
+            query: ({ sum, page, pageSize, filters, signal, distinct }) => ({
+                url: `reporteria/compras`,
                 method: "POST",
-                body: data.filters,
+                params: { sum, page, pageSize, distinct }, // Mejor práctica para parámetros
+                body: filters,
+                signal
             }),
+            transformErrorResponse: (response: any) => ({
+                status: response.status,
+                message: response.data?.message || 'Error fetching data',
+            }),
+            extraOptions: { maxRetries: 2 }
         }),
         getGlosariosCompras: builder.query({
             query: () => "glosarios/glosario-compras"

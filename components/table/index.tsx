@@ -206,7 +206,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
                                                                             onClick={() => toggleColumn(column)}
                                                                             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                                                         >
-                                                                            {visibleColumns[column] ? "Hide column" : "Show column"}
+                                                                            {visibleColumns[column] ? "Ocultar columna" : "Ver columna"}
                                                                         </button>
                                                                     </div>
                                                                 </motion.div>

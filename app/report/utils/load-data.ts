@@ -22,7 +22,6 @@ export const loadDataFromAPI = async (
   try {
     const filtrosInventario: formatFilter[] = [
       { key: "CantidadInventario", value: " ", operator: "<>" },
-      { key: "Tipo", value: `%${currentConfig.type}%`, operator: "like" },
       ...filtros,
     ];
 
@@ -57,8 +56,8 @@ export const loadDataFromAPI = async (
             sumas: [{ key: "CantidadInventario" }],
           },
           page: currentPage,
-          pageSize: rows <= 5 ? 300000 : rows,
-          sum: true,
+          pageSize: 300000,
+          sum: false,
         }),
       ]);
 

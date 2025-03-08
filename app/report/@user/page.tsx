@@ -16,7 +16,9 @@ import { RenderChart } from "@/app/grafic/components/render-grafic";
 import {
     useGetGlosariosComprasQuery,
     useGetGlosariosVentasQuery,
-    useGetAllMutation
+    useGetAllMutation,
+    useGetComprasMutation,
+    useGetVentasMutation
 } from "@/hooks/reducers/api";
 import DynamicTable from "@/components/table";
 import Pagination from "@/components/pagination";
@@ -26,7 +28,6 @@ import { Expo, Totales } from "../constants/models-table";
 import {
     ReportType,
     DynamicTableItem,
-    LoadingState,
     SummaryState,
     REPORT_CONFIGS
 } from "../constants/interfaces";
@@ -40,12 +41,16 @@ export default function DynamicReport() {
     // Llamar a todos los hooks en el nivel superior
     const { data: glosarioCompras } = useGetGlosariosComprasQuery("");
     const { data: glosarioVentas } = useGetGlosariosVentasQuery("");
-    const [getAll, { isLoading }] = useGetAllMutation();
-
+    const [apiVentas, { isLoading: isLoadingVentas }] = useGetVentasMutation()
+    const [apiCompras, { isLoading: isLoadingCompras }] = useGetComprasMutation();
     // Estado principal
     const [config, setConfig] = useState<ReportType>("COMPRA");
+
+    const getAPI = config === "COMPRA" ? apiCompras : apiVentas;
+    const loading = config === "COMPRA" ? isLoadingCompras : isLoadingVentas;
+
     const [rows, setRows] = useState(5);
-    const [columns, setColumns] = useState<any[]>(Expo);
+    const [columns, setColumns] = useState<any[]>([]);
     const [searchParams, setSearchParams] = useState({
         search: "",
         rowSearch: "",
@@ -68,13 +73,6 @@ export default function DynamicReport() {
     const [totalPages, setTotalPages] = useState(1);
     const [error, setError] = useState<string | null>(null);
 
-    // Estado combinado para loading
-    const [loading, setLoading] = useState<LoadingState>({
-        chart: false,
-        summary: false,
-        table: false,
-    });
-
     // Estado combinado para summary
     const [summary, setSummary] = useState<SummaryState>({
         total: "$0.00",
@@ -88,7 +86,6 @@ export default function DynamicReport() {
     }]);
 
     const currentConfig = useMemo(() => REPORT_CONFIGS[config], [config]);
-    const getAPI = getAll;
 
     const dataFormModelTable = ColumnsField(
         currentConfig.type === "COMPRA" ? glosarioCompras : glosarioVentas
@@ -102,12 +99,11 @@ export default function DynamicReport() {
     )
 
     const filtros = useMemo(() => {
-        return buildFilters(searchParams, config);
+        return buildFilters(searchParams);
     }, [searchParams, config]);
 
     const handleLoadData = useCallback(async () => {
         setError(null);
-        setLoading({ chart: true, summary: true, table: true });
 
         try {
             const { newStates, inventario } = await loadDataFromAPI(getAPI, filtros, currentPage, rows, columns, currentConfig);
@@ -121,8 +117,6 @@ export default function DynamicReport() {
             }])
         } catch (error) {
             console.error(error);
-        } finally {
-            setLoading({ chart: false, summary: false, table: false });
         }
     }, [getAPI, filtros, currentPage, rows, columns, currentConfig]);
 
@@ -177,8 +171,7 @@ export default function DynamicReport() {
     }, {});
 
     return (
-        <div>
-
+        <>
             {/* Sección de selección de reporte */}
             <ul className="w-full py-2 flex flex-col md:flex-row flex-wrap gap-2 md:gap-4 mb-6">
                 <li className="py-2 flex flex-wrap gap-1 md:gap-2 mb-6">
@@ -246,20 +239,20 @@ export default function DynamicReport() {
                 <CardResumen
                     icon={<CircleDollarSign className="text-white" />}
                     title={`Total ${currentConfig.title}`}
-                    value={loading.summary ? "Cargando..." : summary.total}
+                    value={loading ? "Cargando..." : summary.total}
                 />
                 <CardResumen
                     icon={<ChartBarIncreasing className="text-white" />}
                     title="Productos Movidos"
-                    value={loading.summary ? "Cargando..." : summary.cantidad}
+                    value={loading ? "Cargando..." : summary.cantidad}
                 />
                 <CardResumen
                     icon={<ChartNetwork className="text-white" />}
                     title={currentConfig.type === 'COMPRA'
                         ? "Proveedor Principal"
                         : "Cliente Principal"}
-                    value={loading.summary ? "Cargando..." : summary.motivo}
-                    subText={loading.summary ? "" : `${summary.porcentajeMotivo}%`}
+                    value={loading ? "Cargando..." : summary.motivo}
+                    subText={loading ? "" : `${summary.porcentajeMotivo}%`}
                 />
 
             </div>)}
@@ -267,7 +260,7 @@ export default function DynamicReport() {
             {/* Gráfico */}
             {viewSecctions.Grafica && (<section className="my-6 p-6 bg-white shadow-sm rounded-xl">
                 <h2 className="text-xl font-semibold mb-4">Tendencias</h2>
-                {loading.chart ? (
+                {loading ? (
                     <div className="h-64 animate-pulse bg-gray-100 rounded-lg" />
                 ) : (
                     <RenderChart
@@ -315,7 +308,7 @@ export default function DynamicReport() {
                     <h2 className="text-xl font-semibold">Detalle de {currentConfig.title}</h2>
                 </div>
 
-                {loading.table ? (
+                {loading ? (
                     <div className="h-64 animate-pulse bg-gray-100" />
                 ) : (
                     <>
@@ -326,7 +319,7 @@ export default function DynamicReport() {
                                     key={unidad}
                                     icon={<Package className="text-white" />}
                                     title={`Inventario - ${unidad}`}
-                                    value={loading.summary ? "Cargando..." : data.Cantidad.toLocaleString()}
+                                    value={loading ? "Cargando..." : data.Cantidad.toLocaleString()}
                                     subText={data.Costo <= 0 ? "" : `Costo Total: $${data.Costo.toLocaleString()}`}
                                 />
                             ))}</div>
@@ -338,7 +331,7 @@ export default function DynamicReport() {
                         <div className="p-4 border-t">
                             <Pagination
                                 currentPage={currentPage}
-                                loading={loading.table}
+                                loading={loading}
                                 setCurrentPage={setCurrentPage}
                                 totalPages={totalPages}
                             />
@@ -346,6 +339,6 @@ export default function DynamicReport() {
                     </>
                 )}
             </section>)}
-        </div >
+        </ >
     );
 }

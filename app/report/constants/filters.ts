@@ -5,6 +5,12 @@ import { loadData } from "@/app/grafic/constants/load-data";
 import { useAppSelector } from "@/hooks/selector";
 
 export function FiltersField(data: RowData[] = [], getAPI: any): Field[] {
+  // Seleccionamos el término del store
+  const term = useAppSelector((store) => store.filterData.search?.value || "");
+
+  const filters = useAppSelector(
+    (state) => state.filterData.key?.value || "Nombre"
+  );
   // Estado para almacenar los resultados
   const [optionsSearch, setOptionsSearch] = useState<string[]>([]);
   const options = useMemo(
@@ -14,13 +20,6 @@ export function FiltersField(data: RowData[] = [], getAPI: any): Field[] {
         value: row.Nombre,
       })),
     [data]
-  );
-
-  // Seleccionamos el término del store
-  const term = useAppSelector((store) => store.filterData.search?.value || "");
-
-  const filters = useAppSelector(
-    (state) => state.filterData.key?.value || "Nombre"
   );
 
   // useRef para almacenar el último término procesado y el controlador de abortos
@@ -46,7 +45,7 @@ export function FiltersField(data: RowData[] = [], getAPI: any): Field[] {
               operator: "like",
             },
           ],
-          sumas: [{ key: "Nombre" }],
+          sumas: [{ key: filters }],
         },
         page: 1,
         pageSize: 20,
@@ -56,7 +55,7 @@ export function FiltersField(data: RowData[] = [], getAPI: any): Field[] {
       });
 
       if (latestTermRef.current === currentTerm && response?.data) {
-        setOptionsSearch(response.data.map((row: any) => row.Nombre));
+        setOptionsSearch(response.data.map((row: any) => row[filters]));
       }
     } catch (error) {
       if (error) {
@@ -75,7 +74,7 @@ export function FiltersField(data: RowData[] = [], getAPI: any): Field[] {
         abortControllerRef.current.abort();
       }
     };
-  }, [term, getAPI]);
+  }, [term, getAPI, filters]);
 
   return useMemo(
     () => [

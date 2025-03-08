@@ -1,20 +1,10 @@
 import { formatFilter } from "@/app/grafic/constants/load-data";
 import { formatAPIDate } from "@/utils/constants/format-values";
 
-export const buildFilters = (
-  searchParams: any,
-  config: string
-): formatFilter[] => {
+export const buildFilters = (searchParams: any): formatFilter[] => {
   const arr: formatFilter[] = [];
   const { search, rowSearch, sucursal, fechaInicial, fechaFinal } =
     searchParams;
-
-  // Agregar el filtro de tipo si no hay elementos en el array
-  arr.push({
-    key: "Tipo",
-    value: `%${config}%`,
-    operator: "like",
-  });
 
   // Procesar search y rowSearch
   if (search && rowSearch) {
