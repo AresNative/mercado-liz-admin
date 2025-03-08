@@ -92,9 +92,10 @@ export function SearchComponent(props: SearchableSelectProps) {
                     className="py-2 pl-10 w-full rounded-md focus:outline-none border focus:ring-purple-500 focus:border-purple-900 border-gray-300 shadow-md focus:border-indigo-500 focus:ring-indigo-500"
                     onClick={() => setShowSkillsDropdown(true)}
                     onChange={(e) => {
-                        if (cuestion.options) dispatch(searchData(e.target.value));
+
                         setSearchTerm(e.target.value);
                         setShowSkillsDropdown(true);
+                        if (cuestion.options) dispatch(searchData(e.target.value));
                     }}
                     onKeyDown={handleKeyDown}
                 />

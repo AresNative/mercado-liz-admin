@@ -14,83 +14,38 @@ import {
 import { ChartData } from "@/app/grafic/@user/page";
 import { RenderChart } from "@/app/grafic/components/render-grafic";
 import {
-    loadData,
-    loadDataGrafic,
-    formatFilter,
-} from "@/app/grafic/constants/load-data";
-import {
     useGetGlosariosComprasQuery,
     useGetGlosariosVentasQuery,
     useGetAllMutation
 } from "@/hooks/reducers/api";
-import { formatJSON, formatValue } from "@/utils/constants/format-values";
 import DynamicTable from "@/components/table";
 import Pagination from "@/components/pagination";
 import MainForm from "@/components/form/main-form";
 import CardResumen from "@/app/mermas/components/card-resumen";
-import { FiltersField } from "../constants/filters";
-import { ColumnsField } from "../constants/columns";
 import { Expo, Totales } from "../constants/models-table";
 import {
-    ReportConfig,
     ReportType,
     DynamicTableItem,
     LoadingState,
     SummaryState,
     REPORT_CONFIGS
 } from "../constants/interfaces";
-
-const formatAPIDate = (dateString: string) => {
-    if (!dateString) return "";
-    return new Date(dateString).toISOString();
-};
-
-const calculateSummary = (proveedores: any[], config: ReportConfig) => {
-    if (proveedores.length === 0) {
-        return {
-            totalCantidad: 0,
-            totalCosto: 0,
-            mayorProveedor: "N/A",
-            cantidadMayor: 0,
-            porcentajeMayor: 0
-        };
-    }
-
-    let totalCantidad = 0;
-    let totalCosto = 0;
-    let maxCantidad = -Infinity;
-    let mayorProveedor = proveedores[0];
-
-    for (const p of proveedores) {
-        totalCantidad += p.Cantidad;
-        totalCosto += p[config.amountKey];
-
-        if (p.Cantidad > maxCantidad) {
-            maxCantidad = p.Cantidad;
-            mayorProveedor = p;
-        }
-    }
-
-    const porcentajeMayor = (mayorProveedor.Cantidad / totalCantidad) * 100 || 0;
-
-    return {
-        totalCantidad,
-        totalCosto,
-        mayorProveedor: mayorProveedor[config.mainField] || "N/A",
-        cantidadMayor: mayorProveedor.Cantidad,
-        porcentajeMayor
-    };
-};
+import { loadDataFromAPI } from "../utils/load-data";
+import { separarFechas } from "@/utils/constants/format-values";
+import { buildFilters } from "../utils/filters";
+import { ColumnsField } from "../constants/columns";
+import { FiltersField } from "../constants/filters";
 
 export default function DynamicReport() {
+    // Llamar a todos los hooks en el nivel superior
     const { data: glosarioCompras } = useGetGlosariosComprasQuery("");
     const { data: glosarioVentas } = useGetGlosariosVentasQuery("");
-    const [getAll] = useGetAllMutation();
+    const [getAll, { isLoading }] = useGetAllMutation();
 
     // Estado principal
-    const [config, setConfig] = useState<ReportType>('COMPRA');
+    const [config, setConfig] = useState<ReportType>("COMPRA");
     const [rows, setRows] = useState(5);
-    const [columns, setColumns] = useState<any[]>([]);
+    const [columns, setColumns] = useState<any[]>(Expo);
     const [searchParams, setSearchParams] = useState({
         search: "",
         rowSearch: "",
@@ -117,7 +72,7 @@ export default function DynamicReport() {
     const [loading, setLoading] = useState<LoadingState>({
         chart: false,
         summary: false,
-        table: false
+        table: false,
     });
 
     // Estado combinado para summary
@@ -125,236 +80,55 @@ export default function DynamicReport() {
         total: "$0.00",
         cantidad: "0",
         motivo: "N/A",
-        porcentajeMotivo: "N/A"
+        porcentajeMotivo: "N/A",
     });
-    const [totalsParams, setTotalsParams] = useState([{
+    const [totalsParams, setTotalParams] = useState([{
         Unidad: "",
         Cantidad: 0,
-        Costo: 0,
-        Importe: 0,
-        TotalInventario: 0
     }]);
 
     const currentConfig = useMemo(() => REPORT_CONFIGS[config], [config]);
-    const getAPI = useMemo(() => getAll, [getAll]);
+    const getAPI = getAll;
+
+    const dataFormModelTable = ColumnsField(
+        currentConfig.type === "COMPRA" ? glosarioCompras : glosarioVentas
+    );
+
+    const dataFormFilter = FiltersField(
+        currentConfig.type === "COMPRA"
+            ? glosarioCompras
+            : glosarioVentas,
+        getAPI
+    )
 
     const filtros = useMemo(() => {
-        const arr: formatFilter[] = [];
-        const { search, rowSearch, sucursal, fechaInicial, fechaFinal } = searchParams;
-        if (arr.length <= 0) {
-            arr.push({
-                key: "Tipo",
-                value: `%${config}%`,
-                operator: "like",
-            });
-        }
+        return buildFilters(searchParams, config);
+    }, [searchParams, config]);
 
-        if (search) {
-            const searchTerms = search.split(',').map(s => s.trim()).filter(Boolean);
-            const searchRows = rowSearch.split(',').map(s => s.trim()).filter(Boolean);
-            searchRows.forEach((col) => {
-                searchTerms.forEach(term => {
-                    arr.push({
-                        key: col,
-                        value: `%${term}%`,
-                        operator: "like",
-                    });
-                })
-            })
-        }
-
-        if (sucursal) {
-            sucursal.split(',').map(s => s.trim()).filter(Boolean).forEach(sucursal => {
-                arr.push({
-                    key: "Almacen",
-                    value: sucursal,
-                    operator: "="
-                });
-            });
-        }
-
-        const fi = formatAPIDate(fechaInicial);
-        const ff = formatAPIDate(fechaFinal);
-
-        if (fi && ff) {
-            arr.push(
-                { key: "FechaEmision", value: fi, operator: ">=" },
-                { key: "FechaEmision", value: ff, operator: "<=" }
-            );
-        } else if (fi) {
-            arr.push({ key: "FechaEmision", value: fi, operator: "=" });
-        } else if (ff) {
-            arr.push({ key: "FechaEmision", value: ff, operator: "=" });
-        }
-
-        return arr;
-    }, [searchParams]);
-
-    const loadDataFromAPI = useCallback(async () => {
-        // Se resetean los errores y se indica que se está cargando todo
+    const handleLoadData = useCallback(async () => {
         setError(null);
         setLoading({ chart: true, summary: true, table: true });
 
         try {
-            const filtrosUnidades: formatFilter[] = [
-                { key: "Unidad", value: " ", operator: "<>" },
-                { key: "Unidad", value: "NULL", operator: "<>" },
-                { key: "Tipo", value: `%${config}%`, operator: "like" },
-                ...filtros
-            ];
-            const filtrosInventario: formatFilter[] = [
-                { key: "CantidadInventario", value: " ", operator: "<>" },
-                { key: "Tipo", value: `%${config}%`, operator: "like" },
-                ...filtros
-            ];
-            // Disparamos todas las peticiones en paralelo
-            const [chartResult, totalResult, tableResult, totalUnidad, totalInventario] = await Promise.allSettled([
-                loadDataGrafic(getAPI, {
-                    filters: { filtros, sumas: [{ key: "Categoria" }] },
-                    page: 1,
-                    pageSize: 5,
-                    sum: true
-                }, "Categoria", currentConfig.amountKey),
-                loadData(getAPI, {
-                    filters: { filtros, sumas: [{ key: currentConfig.sumKey }] },
-                    page: 1,
-                    pageSize: rows > 5 ? rows : 3000,
-                    sum: true
-                }),
-                loadData(getAPI, {
-                    filters: { filtros, sumas: columns },
-                    page: currentPage,
-                    pageSize: rows,
-                    sum: false
-                }),
-                loadData(getAPI, {
-                    filters: {
-                        filtros: filtrosUnidades,
-                        sumas: [{ key: "Unidad" }]
-                    },
-                    page: currentPage,
-                    pageSize: 1500,
-                    sum: true
-                }),
-                loadData(getAPI, {
-                    filters: {
-                        filtros: filtrosInventario,
-                        sumas: [{ key: "CantidadInventario" }]
-                    },
-                    page: currentPage,
-                    pageSize: 1500,
-                    sum: true
-                })
-            ]);
-
-            // Creamos un objeto temporal para agrupar las actualizaciones
-            const newStates: {
-                previewData: ChartData[];
-                summary: {
-                    total: string;
-                    cantidad: string;
-                    motivo: string;
-                    porcentajeMotivo: string;
-                };
-                totalPages: number;
-                dataTable: DynamicTableItem[];
-            } = {
-                previewData: [{ name: "", data: [{ x: "", y: 0 }] }],
-                summary: {
-                    total: "$0.00",
-                    cantidad: "0",
-                    motivo: "N/A",
-                    porcentajeMotivo: "N/A"
-                },
-                totalPages: 0,
-                dataTable: []
-            };
-
-            // Procesar gráfico
-            if (chartResult.status === "fulfilled") {
-                newStates.previewData = chartResult.value ?? [];
-            }
-
-            // Procesar totales
-            if (totalResult.status === "fulfilled") {
-                const resultData = totalResult.value?.data || [];
-                const totals = calculateSummary(resultData, currentConfig);
-                newStates.summary = {
-                    total: formatValue(totals.totalCosto, "currency"),
-                    cantidad: formatValue(totals.totalCantidad, "number"),
-                    motivo: totals.mayorProveedor,
-                    porcentajeMotivo: totals.porcentajeMayor.toFixed(2)
-                };
-            }
-
-            // Procesar tabla
-            if (tableResult.status === "fulfilled") {
-                const tableData = tableResult.value ?? { data: [], totalPages: 0 };
-                newStates.totalPages = tableData.totalPages;
-                newStates.dataTable = formatJSON(tableData.data) as [];
-            }
-
-            if (totalUnidad.status === "fulfilled") {
-                const totalPerUnidad = totalUnidad.value?.data || [];
-                setTotalsParams(
-                    totalPerUnidad.map((item: any) => ({
-                        Unidad: item.Unidad,
-                        Cantidad: item.Cantidad,
-                        Costo: item.Costo,
-                        Importe: item.Importe ?? 0
-                    }))
-                );
-                //console.log("Datos de totalPerUnidad:", totalPerUnidad, "Datos de map:", totalsParams);
-            }
-            //totalInventario
-            if (totalInventario.status === "fulfilled") {
-                const totalInventarioSum = Array.isArray(totalInventario.value?.data) ? totalInventario.value.data : [];
-
-                const totalCantidadInventario = totalInventarioSum.reduce(
-                    (acc: number, item: { CantidadInventario?: number }) => acc + (item.CantidadInventario ?? 0),
-                    0
-                );
-
-                setTotalsParams((prev) => [
-                    ...prev,
-                    {
-                        Unidad: "Total",
-                        Cantidad: totalCantidadInventario,
-                        Costo: 0,
-                        Importe: 0,
-                        TotalInventario: totalCantidadInventario
-                    }
-                ]);
-
-
-
-            }
-            // Actualizamos los estados en bloque para minimizar re-renderizados
+            const { newStates, inventario } = await loadDataFromAPI(getAPI, filtros, currentPage, rows, columns, currentConfig);
             setPreviewData(newStates.previewData);
             setSummary(newStates.summary);
-            setTotalPages(newStates.totalPages);
             setDataTable(newStates.dataTable);
-            setLoading({ chart: false, summary: false, table: false });
-
+            setTotalPages(newStates.totalPages);
+            setTotalParams([{
+                Unidad: "Total",
+                Cantidad: inventario,
+            }])
         } catch (error) {
-            // En caso de error se limpian los datos y se notifica el error
-            setPreviewData([]);
-            setDataTable([]);
-            setSummary({
-                total: "$0.00",
-                cantidad: "0",
-                motivo: "N/A",
-                porcentajeMotivo: "N/A"
-            });
-            setError("Error al cargar datos. Intente nuevamente.");
+            console.error(error);
+        } finally {
             setLoading({ chart: false, summary: false, table: false });
         }
     }, [getAPI, filtros, currentPage, rows, columns, currentConfig]);
 
-
     useEffect(() => {
-        loadDataFromAPI();
-    }, [loadDataFromAPI]);
+        handleLoadData();
+    }, [handleLoadData]);
 
     const handleConfigChange = useCallback((type: ReportType) => {
         setConfig(type);
@@ -367,13 +141,6 @@ export default function DynamicReport() {
         });
     }, []);
 
-    function separarFechas(fechaRango: string) {
-        const fechas = fechaRango.split(" - ");
-        return {
-            fechaInicial: fechas[0] || "",
-            fechaFinal: fechas[1] || ""
-        };
-    }
     const handleSearch = useCallback((values: any) => {
         const { fechaInicial, fechaFinal } = separarFechas(values.fecha_inicial);
         setSearchParams({
@@ -397,18 +164,6 @@ export default function DynamicReport() {
         setColumns(newColumns);
     }, []);
 
-
-    const dataFormModelTable = ColumnsField(
-        currentConfig.type === "COMPRA" ? glosarioCompras : glosarioVentas
-    );
-
-    const dataFormFilter = FiltersField(
-        currentConfig.type === "COMPRA"
-            ? glosarioCompras
-            : glosarioVentas,
-        getAPI,
-        config
-    )
     const resumenPorUnidad = totalsParams.reduce((acc: any, item) => {
         const unidad = item.Unidad;
 
@@ -417,7 +172,6 @@ export default function DynamicReport() {
         }
 
         acc[unidad].Cantidad += item.Cantidad;
-        acc[unidad].Costo += item.Costo;
 
         return acc;
     }, {});
@@ -567,7 +321,7 @@ export default function DynamicReport() {
                     <>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                            {Object.entries(resumenPorUnidad).map(([unidad, data]: any) => (
+                            {Object.entries(resumenPorUnidad).map(([unidad, data]: any) => unidad && (
                                 <CardResumen
                                     key={unidad}
                                     icon={<Package className="text-white" />}

@@ -7,8 +7,10 @@ export const getUserData = () => getLocalStorageItem("user_data");
 const { api: apiUrl } = EnvConfig();
 
 export const api = createApi({
-    reducerPath: "api", // ?Nombre del reducer
+    reducerPath: "api",
     refetchOnFocus: true,
+    keepUnusedDataFor: 10, // Reducir tiempo de caché para datos no usados
+    refetchOnMountOrArgChange: true, // Mejor control de refetch
     baseQuery: fetchBaseQuery({
         baseUrl: apiUrl,
         prepareHeaders: (headers, { }) => {
@@ -133,12 +135,20 @@ export const api = createApi({
             query: () => "glosarios/glosario-compras"
         }),
         getAll: builder.mutation({
-            query: (data) => ({
-                url: `reporteria/all?sum=${data.sum}&page=${data.page}&pageSize=${data.pageSize}`,
+            query: ({ sum, page, pageSize, filters, signal, distinct }) => ({
+                url: `reporteria/all`,
                 method: "POST",
-                body: data.filters,
+                params: { sum, page, pageSize, distinct }, // Mejor práctica para parámetros
+                body: filters,
+                signal
             }),
+            transformErrorResponse: (response: any) => ({
+                status: response.status,
+                message: response.data?.message || 'Error fetching data',
+            }),
+            extraOptions: { maxRetries: 2 }
         }),
+
         /*
         ? Formato de consulta - glosarios y tablas dinamicas
         */

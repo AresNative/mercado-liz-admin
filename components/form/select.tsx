@@ -3,9 +3,12 @@ import { SearchableSelectProps } from "@/utils/constants/interfaces";
 import { ChevronDown, Star, X } from 'lucide-react';
 import Badge from "../badge";
 import { triggerFormSubmit } from "@/utils/functions/form-active";
+import { useAppDispatch } from "@/hooks/selector";
+import { dataFilter } from "@/hooks/reducers/filter";
 
 export function SelectComponent(props: SearchableSelectProps) {
     const { cuestion } = props;
+    const dispatch = useAppDispatch();
     const skillsRef = useRef<HTMLDivElement>(null);
 
     const [showSkillsDropdown, setShowSkillsDropdown] = useState(false);
@@ -28,8 +31,8 @@ export function SelectComponent(props: SearchableSelectProps) {
                     : [...prev.skills, skill]
             }));
         }
-
-        triggerFormSubmit();
+        if (cuestion.name === "columnas") dispatch(dataFilter({ key: "key", value: skill, type: "form" }));
+        if (formData.skills.length === 0) triggerFormSubmit();
     };
 
     const handleRemoveSkill = (skill: string) => {

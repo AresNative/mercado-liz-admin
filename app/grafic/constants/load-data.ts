@@ -1,5 +1,4 @@
 import { financial } from "@/utils/functions/format-financial";
-import { ChartData } from "../@user/page";
 
 export interface formatFilter {
   key: string;
@@ -19,6 +18,8 @@ export interface formatLoadDate {
   page: number;
   pageSize?: number;
   sum: boolean;
+  distinct?: boolean;
+  signal?: any;
 }
 
 export async function loadDataGrafic(
@@ -69,13 +70,18 @@ export async function loadData(
   filter: formatLoadDate
 ): Promise<{ data: any; totalPages: number } | undefined> {
   try {
+    // Ejecutar la función con la configuración recibida
     const response: any = await functionLoad(filter);
 
-    const dataTable: any = response.data.data;
-    const dataTotalPages: any = response.data.totalPages;
+    // Extraer los datos y total de páginas
+    const dataTable: any = response.data?.data;
+    const dataTotalPages: any = response.data?.totalPages;
 
     return { data: dataTable, totalPages: dataTotalPages };
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    // Si el error es porque la solicitud fue cancelada, no lo mostramos
+    if (error.name === "AbortError") return;
+
+    console.error("Error en loadData:", error);
   }
 }
