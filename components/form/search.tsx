@@ -22,7 +22,7 @@ export function SearchComponent(props: SearchableSelectProps) {
     });
 
     // Ajuste en la función para simular "Enter" al seleccionar un elemento
-    const handleSkillToggle = (skill: string) => {
+    const handleSkillToggle = async (skill: string) => {
         if (cuestion.saveData) {
             if (skill.trim() !== "") {
                 setFormData(prev => ({
@@ -35,8 +35,7 @@ export function SearchComponent(props: SearchableSelectProps) {
             setSearchTerm(skill);
         };
         setShowSkillsDropdown(false);
-        if (cuestion.options) dispatch(searchData(formData.skills.join(', ')));
-        triggerFormSubmit();
+        await triggerFormSubmit();
     };
     const handleRemoveSkill = (skill: string) => {
         setFormData(prev => ({

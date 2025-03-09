@@ -31,8 +31,10 @@ export function SelectComponent(props: SearchableSelectProps) {
                     : [...prev.skills, skill]
             }));
         }
-        if (cuestion.name === "columnas") dispatch(dataFilter({ key: "key", value: skill, type: "form" }));
-        /* if (cuestion.name === "columnas" && formData.skills.length === 0) triggerFormSubmit(); */
+        if (cuestion.name === "columnas") {
+            dispatch(dataFilter({ key: "key", value: skill, type: "form" }));
+            triggerFormSubmit();
+        }
     };
 
     const handleRemoveSkill = (skill: string) => {

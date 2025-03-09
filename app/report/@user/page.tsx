@@ -99,8 +99,6 @@ export default function DynamicReport() {
     )
 
     const filtros = useMemo(() => {
-        console.log(searchParams);
-
         return buildFilters(searchParams);
     }, [searchParams, config]);
 
@@ -146,7 +144,7 @@ export default function DynamicReport() {
             fechaInicial: fechaInicial,
             fechaFinal: fechaFinal,
         });
-    }, [getAPI]);
+    }, []);
 
     const handleColumnsChange = useCallback((values: any) => {
         if (values.rows) setRows(values.rows);
