@@ -95,10 +95,12 @@ export default function DynamicReport() {
         currentConfig.type === "COMPRA"
             ? glosarioCompras
             : glosarioVentas,
-        getAPI
+        apiCompras
     )
 
     const filtros = useMemo(() => {
+        console.log(searchParams);
+
         return buildFilters(searchParams);
     }, [searchParams, config]);
 
@@ -144,7 +146,7 @@ export default function DynamicReport() {
             fechaInicial: fechaInicial,
             fechaFinal: fechaFinal,
         });
-    }, []);
+    }, [getAPI]);
 
     const handleColumnsChange = useCallback((values: any) => {
         if (values.rows) setRows(values.rows);
@@ -156,7 +158,7 @@ export default function DynamicReport() {
             .map((key: string) => ({ key }));
 
         setColumns(newColumns);
-    }, []);
+    }, [getAPI]);
 
     const resumenPorUnidad = totalsParams.reduce((acc: any, item) => {
         const unidad = item.Unidad;

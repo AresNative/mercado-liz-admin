@@ -95,10 +95,10 @@ export function FiltersField(data: RowData[] = [], getAPI: any): Field[] {
             name: "columnas",
             type: "SELECT",
             options: options,
-            multi: true,
+            multi: false,
             label: "Seleccione columna(s)...",
             placeholder: "Mínimo 3 días mayor a la fecha de inicio",
-            require: true,
+            require: false,
           },
           {
             name: "sucursal",

@@ -33,9 +33,10 @@ export function SearchComponent(props: SearchableSelectProps) {
             }
         } else {
             setSearchTerm(skill);
-        }
-        triggerFormSubmit()
+        };
         setShowSkillsDropdown(false);
+        if (cuestion.options) dispatch(searchData(formData.skills.join(', ')));
+        triggerFormSubmit();
     };
     const handleRemoveSkill = (skill: string) => {
         setFormData(prev => ({
@@ -75,7 +76,7 @@ export function SearchComponent(props: SearchableSelectProps) {
             return;
         }
         props.setValue(cuestion.name, searchTerm);
-    }, [cuestion.multi, cuestion.name, props, searchTerm, cuestion.saveData, formData.skills]);
+    }, [cuestion.multi, cuestion.name, props, searchTerm, cuestion.saveData, formData, formData.skills]);
 
     return (
         <div className="flex flex-col relative" ref={skillsRef}>
@@ -92,10 +93,9 @@ export function SearchComponent(props: SearchableSelectProps) {
                     className="py-2 pl-10 w-full rounded-md focus:outline-none border focus:ring-purple-500 focus:border-purple-900 border-gray-300 shadow-md focus:border-indigo-500 focus:ring-indigo-500"
                     onClick={() => setShowSkillsDropdown(true)}
                     onChange={(e) => {
-
+                        if (cuestion.options) dispatch(searchData(e.target.value));
                         setSearchTerm(e.target.value);
                         setShowSkillsDropdown(true);
-                        if (cuestion.options) dispatch(searchData(e.target.value));
                     }}
                     onKeyDown={handleKeyDown}
                 />
