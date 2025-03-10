@@ -35,7 +35,8 @@ export function SearchComponent(props: SearchableSelectProps) {
             setSearchTerm(skill);
         };
         setShowSkillsDropdown(false);
-        await triggerFormSubmit();
+        await saveData();
+        triggerFormSubmit();
     };
     const handleRemoveSkill = (skill: string) => {
         setFormData(prev => ({
@@ -58,7 +59,13 @@ export function SearchComponent(props: SearchableSelectProps) {
             triggerFormSubmit();
         }
     };
-
+    function saveData() {
+        if (cuestion.saveData && formData.skills.length) {
+            props.setValue(cuestion.name, formData.skills.join(', '));
+            return;
+        }
+        props.setValue(cuestion.name, searchTerm);
+    }
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (skillsRef.current && !skillsRef.current.contains(e.target as Node)) {
@@ -70,11 +77,7 @@ export function SearchComponent(props: SearchableSelectProps) {
     }, []);
 
     useEffect(() => {
-        if (cuestion.saveData && formData.skills.length) {
-            props.setValue(cuestion.name, formData.skills.join(', '));
-            return;
-        }
-        props.setValue(cuestion.name, searchTerm);
+        saveData();
     }, [cuestion.multi, cuestion.name, props, searchTerm, cuestion.saveData, formData, formData.skills]);
 
     return (

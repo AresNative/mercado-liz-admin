@@ -193,7 +193,9 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
 
                                                 </th>
                                             ) : (
-                                                <ViewTR {...{ setShowColumnMenu, column, toggleColumn, showColumnMenu, visibleColumns }} />
+                                                <th key={column}>
+                                                    <ViewTR {...{ setShowColumnMenu, column, toggleColumn, showColumnMenu, visibleColumns }} />
+                                                </th>
                                             )
                                     )}
                                 </tr>
@@ -225,7 +227,8 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
                                                         {formatValue(column, item[column])}
                                                     </div>
                                                 </td>
-                                            ) : (<td></td>)
+                                            ) : (<td
+                                                key={column}></td>)
                                         )}
                                     </motion.tr>
                                 ))}

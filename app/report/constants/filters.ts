@@ -92,13 +92,14 @@ export function FiltersField(data: RowData[] = [], getAPI: any): Field[] {
             saveData: true,
           },
           {
-            name: "columnas",
+            name: "columnas-search",
             type: "SELECT",
             options: options,
             multi: false,
             label: "Seleccione columna(s)...",
             placeholder: "Mínimo 3 días mayor a la fecha de inicio",
             require: false,
+            valueDefined: filters,
           },
           {
             name: "sucursal",

@@ -139,7 +139,7 @@ export default function DynamicReport() {
         const { fechaInicial, fechaFinal } = separarFechas(values.fecha_inicial);
         setSearchParams({
             search: values.search,
-            rowSearch: values.columnas,
+            rowSearch: values["columnas-search"],
             sucursal: values.sucursal,
             fechaInicial: fechaInicial,
             fechaFinal: fechaFinal,
@@ -228,7 +228,7 @@ export default function DynamicReport() {
                 <MainForm
                     actionType="Buscar"
                     dataForm={dataFormFilter}
-                    valueAssign={["search", "columnas", "sucursal", "fecha_inicial", "fecha_final"]}
+                    valueAssign={["search", "columnas-search", "sucursal", "fecha_inicial", "fecha_final"]}
                     action={handleSearch}
                     message_button="Aplicar Filtros"
                 />

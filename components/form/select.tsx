@@ -31,7 +31,7 @@ export function SelectComponent(props: SearchableSelectProps) {
                     : [...prev.skills, skill]
             }));
         }
-        if (cuestion.name === "columnas") {
+        if (cuestion.name === "columnas-search") {
             dispatch(dataFilter({ key: "key", value: skill, type: "form" }));
             triggerFormSubmit();
         }
@@ -57,7 +57,11 @@ export function SelectComponent(props: SearchableSelectProps) {
     useEffect(() => {
         props.setValue(cuestion.name, cuestion.multi ? formData.skills.join(', ') : formData.skills[0] || '');
     }, [formData.skills, cuestion.multi, cuestion.name, props]);
-
+    useEffect(() => {
+        if (cuestion.valueDefined) {
+            props.setValue(cuestion.name, cuestion.valueDefined);
+        }
+    }, [cuestion.valueDefined, cuestion.name, props]);
     useEffect(() => {
         // Prepara el valor a setear: si es multi, lo junta en un string, de lo contrario toma el primer elemento
         const value = cuestion.multi

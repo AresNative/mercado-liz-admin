@@ -119,7 +119,7 @@ export interface SearchableSelectProps {
     require?: boolean;
     options: string[];
     multi?: boolean;
-    valueDefined?: { name: string };
+    valueDefined?: string;
     enableAutocomplete?: boolean;
     saveData?: boolean;
   };
