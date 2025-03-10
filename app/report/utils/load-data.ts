@@ -26,7 +26,7 @@ export const loadDataFromAPI = async (
     ];
 
     const [chartResult, totalResult, tableResult, totalInventario] =
-      await Promise.allSettled([
+      await Promise.all([
         loadDataGrafic(
           getAPI,
           {
@@ -53,7 +53,14 @@ export const loadDataFromAPI = async (
         loadData(getAPI, {
           filters: {
             filtros: filtrosInventario,
-            sumas: [{ key: "CantidadInventario" }],
+            sumas: [
+              {
+                key:
+                  currentConfig.type === "COMPRA"
+                    ? "CantidadInventario"
+                    : "Cantidad",
+              },
+            ],
           },
           page: currentPage,
           pageSize: 300000,
@@ -61,18 +68,8 @@ export const loadDataFromAPI = async (
         }),
       ]);
 
-    const newStates: {
-      previewData: ChartData[];
-      summary: {
-        total: string;
-        cantidad: string;
-        motivo: string;
-        porcentajeMotivo: string;
-      };
-      totalPages: number;
-      dataTable: DynamicTableItem[];
-    } = {
-      previewData: [{ name: "", data: [{ x: "", y: 0 }] }],
+    const newStates = {
+      previewData: [] as ChartData[],
       summary: {
         total: "$0.00",
         cantidad: "0",
@@ -80,15 +77,17 @@ export const loadDataFromAPI = async (
         porcentajeMotivo: "N/A",
       },
       totalPages: 0,
-      dataTable: [],
+      dataTable: [] as DynamicTableItem[],
     };
+
     let inventario = 0;
-    if (chartResult.status === "fulfilled") {
-      newStates.previewData = chartResult.value ?? [];
+
+    if (chartResult) {
+      newStates.previewData = chartResult;
     }
 
-    if (totalResult.status === "fulfilled") {
-      const resultData = totalResult.value?.data || [];
+    if (totalResult) {
+      const resultData = totalResult.data || [];
       const totals = calculateSummary(resultData, currentConfig);
       newStates.summary = {
         total: formatValue(totals.totalCosto, "currency"),
@@ -98,25 +97,19 @@ export const loadDataFromAPI = async (
       };
     }
 
-    if (tableResult.status === "fulfilled") {
-      const tableData = tableResult.value ?? { data: [], totalPages: 0 };
-      newStates.totalPages = tableData.totalPages;
-      newStates.dataTable = formatJSON(tableData.data) as [];
+    if (tableResult) {
+      newStates.totalPages = tableResult.totalPages;
+      newStates.dataTable = formatJSON(tableResult.data) as DynamicTableItem[];
     }
-    //totalInventario
-    if (totalInventario.status === "fulfilled") {
-      const totalInventarioSum = Array.isArray(totalInventario.value?.data)
-        ? totalInventario.value.data
-        : [];
 
-      const totalCantidadInventario = totalInventarioSum.reduce(
-        (acc: number, item: { CantidadInventario?: number }) =>
-          acc + (item.CantidadInventario ?? 0),
-        0
-      );
-
-      inventario = totalCantidadInventario;
+    if (totalInventario) {
+      const totalInventarioSum = totalInventario.data || [];
+      inventario = totalInventarioSum.reduce((acc: number, item: any) => {
+        const cantidad = item.CantidadInventario ?? item.Cantidad ?? 0;
+        return acc + cantidad;
+      }, 0);
     }
+
     return { newStates, inventario };
   } catch (error) {
     throw new Error("Error al cargar datos. Intente nuevamente.");

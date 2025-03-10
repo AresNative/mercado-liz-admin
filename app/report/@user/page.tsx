@@ -16,7 +16,6 @@ import { RenderChart } from "@/app/grafic/components/render-grafic";
 import {
     useGetGlosariosComprasQuery,
     useGetGlosariosVentasQuery,
-    useGetAllMutation,
     useGetComprasMutation,
     useGetVentasMutation
 } from "@/hooks/reducers/api";
