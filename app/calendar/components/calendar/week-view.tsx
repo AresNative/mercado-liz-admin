@@ -53,19 +53,19 @@ export default function WeekView({ currentDate, events }: WeekViewProps) {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 overflow-auto">
+    <div className="bg-white dark:bg-zinc-800 overflow-auto">
       <div className="flex">
         <div className="w-16 flex-shrink-0"></div>
         <div className="flex-1 grid grid-cols-7">
           {weekDays.map((day, dayIdx) => (
             <div key={dayIdx} className="text-center py-2 border-b border-gray-200 dark:border-gray-700">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-200 dark:text-gray-400">
                 {format(day, "EEE", { locale: es })}
               </div>
               <div
                 className={`text-sm font-semibold ${isToday(day)
                   ? "h-6 w-6 bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto"
-                  : "text-gray-900 dark:text-gray-100"
+                  : "text-gray-900 dark:text-white dark:text-gray-100"
                   }`}
               >
                 {format(day, "d")}
@@ -79,7 +79,7 @@ export default function WeekView({ currentDate, events }: WeekViewProps) {
           {hours.map((hour) => (
             <div
               key={hour}
-              className="h-[50px] text-xs text-right pr-2 text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800"
+              className="h-[50px] text-xs text-right pr-2 text-gray-500 dark:text-gray-200 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800"
             >
               {hour}:00
             </div>

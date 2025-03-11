@@ -54,7 +54,7 @@ export function ImgComponent(props: InputMediaProps) {
                 onDragOver={preventDefault}
                 onDrop={(e) => handleFileDrop(e)}
             >
-                <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-gray-300 border-dashed">
+                <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-gray-300  dark:border-zinc-700 border-dashed">
                     {profileImage ? (
                         <Image src={profileImage} alt="Profile" layout="fill" objectFit="cover" />
                     ) : (
@@ -86,7 +86,7 @@ export function ImgComponent(props: InputMediaProps) {
                 </>
                 <label
                     htmlFor="file-upload-profile"
-                    className=" bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer"
+                    className=" bg-white dark:bg-zinc-800 py-2 px-3 border border-gray-300  dark:border-zinc-700 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer"
                 >
                     {profileImage ? 'Cambiar foto' : 'Subir foto'}
                 </label>

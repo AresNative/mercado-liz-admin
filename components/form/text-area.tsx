@@ -12,7 +12,7 @@ export function TextAreaComponent(props: InputFormProps) {
     };
     return (
         <div className="flex flex-col">
-            <label className="leading-loose flex items-center gap-2">
+            <label className="leading-loose flex items-center gap-2 dark:text-white">
                 <Briefcase className="w-4 h-4" />
                 {cuestion.label}
             </label>
@@ -20,7 +20,7 @@ export function TextAreaComponent(props: InputFormProps) {
                 <textarea
                     name="experience"
                     onChange={handleInputChange}
-                    className="px-4 py-2 border focus:ring-purple-500 focus:border-purple-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
+                    className="bg-white dark:bg-zinc-800 px-4 py-2 border focus:ring-purple-500 focus:border-purple-900 w-full sm:text-sm border-gray-300  dark:border-zinc-700 rounded-md focus:outline-none text-gray-600 dark:text-white"
                     placeholder={cuestion.placeholder}
                     rows={3}
                     maxLength={cuestion.maxLength}

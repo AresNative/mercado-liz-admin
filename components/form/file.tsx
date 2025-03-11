@@ -40,7 +40,7 @@ export function FileComponent(props: InputMediaProps) {
                 {cuestion.label}
             </label>
             <div
-                className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md"
+                className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300  dark:border-zinc-700 border-dashed rounded-md"
                 onDragOver={preventDefault}
                 onDrop={handleFileDrop}
             >
@@ -48,7 +48,7 @@ export function FileComponent(props: InputMediaProps) {
                     {documents.length === 0 ? (
                         <FileStack className="mx-auto h-12 w-12 text-gray-400" />
                     ) : (
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-600 dark:text-white">
                             {documents.map((file, index) => (
                                 <div key={index} className="flex justify-between items-center">
                                     <p className="truncate">{file.name}</p>
@@ -63,10 +63,10 @@ export function FileComponent(props: InputMediaProps) {
                             ))}
                         </div>
                     )}
-                    <div className="flex text-sm text-gray-600">
+                    <div className="flex text-sm text-gray-600 dark:text-white">
                         <label
                             htmlFor="file-upload-docs"
-                            className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                            className="relative cursor-pointer bg-white dark:bg-zinc-800 rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
                         >
                             <span>
                                 {documents.length === 0 ? "Subir archivos" : "Cambiar archivos"}
@@ -83,7 +83,7 @@ export function FileComponent(props: InputMediaProps) {
                         </label>
                         <p className="pl-1">o arrastrar y soltar</p>
                     </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, PDF hasta 10MB</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-200">PNG, JPG, PDF hasta 10MB</p>
                 </div>
             </div>
             {documents.length > 0 && (

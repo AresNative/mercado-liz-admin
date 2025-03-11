@@ -29,13 +29,13 @@ export function CheckboxGroupComponent(props: ChecboxFormProps) {
                 {Object.entries(jobRequirements).map(([key, value]) => (
                     <div key={key} className="flex items-center">
                         <div
-                            className={`h-5 w-5 border rounded flex items-center justify-center ${value ? 'bg-blue-500 border-blue-500' : 'border-gray-300'
+                            className={`h-5 w-5 border dark:border-zinc-700 rounded flex items-center justify-center ${value ? 'bg-blue-500 border-blue-500' : 'border-gray-300'
                                 }`}
                             onClick={() => handleJobRequirementChange(key as keyof typeof jobRequirements)}
                         >
                             {value && <Check className="h-4 w-4 text-white" />}
                         </div>
-                        <label htmlFor={`requirement-${key}`} className="ml-2 block text-sm text-gray-900">
+                        <label htmlFor={`requirement-${key}`} className="ml-2 block text-sm text-gray-900 dark:text-white">
                             {key.charAt(0).toUpperCase() + key.slice(1)}
                         </label>
                     </div>

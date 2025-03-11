@@ -21,7 +21,12 @@ export const loadDataFromAPI = async (
 ) => {
   try {
     const filtrosInventario: formatFilter[] = [
-      { key: "CantidadInventario", value: " ", operator: "<>" },
+      {
+        key:
+          currentConfig.type === "COMPRA" ? "CantidadInventario" : "Cantidad",
+        value: " ",
+        operator: "<>",
+      },
       ...filtros,
     ];
 

@@ -131,40 +131,40 @@ export default function Calendar() {
     }
 
     return (
-        <div className="bg-background dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+        <div className="bg-background dark:bg-zinc-800 rounded-xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
             <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div className="flex items-center">
                     <button
                         onClick={navigatePrevious}
-                        className="p-2 rounded-lg hover:bg-muted/60 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors"
+                        className="p-2 rounded-lg hover:bg-muted/60 dark:hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors"
                         aria-label="Anterior"
                     >
-                        <ChevronLeft className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                        <ChevronLeft className="h-5 w-5 text-gray-600 dark:text-white dark:text-gray-300" />
                     </button>
                     <h2 className="text-xl font-semibold mx-4 text-gray-800 dark:text-gray-100 capitalize">
                         {renderViewTitle()}
                     </h2>
                     <button
                         onClick={navigateNext}
-                        className="p-2 rounded-lg hover:bg-muted/60 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors"
+                        className="p-2 rounded-lg hover:bg-muted/60 dark:hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors"
                         aria-label="Siguiente"
                     >
-                        <ChevronRight className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                        <ChevronRight className="h-5 w-5 text-gray-600 dark:text-white dark:text-gray-300" />
                     </button>
                     <button
                         onClick={navigateToToday}
-                        className="ml-4 px-4 py-2 text-sm font-medium bg-background dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm hover:bg-muted/50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors text-gray-700 dark:text-gray-200"
+                        className="ml-4 px-4 py-2 text-sm font-medium bg-background dark:bg-zinc-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm hover:bg-muted/50 dark:hover:bg-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors text-gray-700 dark:text-gray-200"
                     >
                         Hoy
                     </button>
                 </div>
                 <div className="flex items-center">
-                    <div className="flex space-x-1 bg-muted dark:bg-gray-700 p-1 rounded-lg shadow-inner">
+                    <div className="flex space-x-1 bg-muted dark:bg-zinc-700 p-1 rounded-lg shadow-inner">
                         <button
                             onClick={() => setView("month")}
                             className={`p-2 rounded-md focus:outline-none transition-colors ${view === "month"
-                                ? "bg-background dark:bg-gray-600 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                                : "text-gray-600 dark:text-gray-300 hover:bg-muted/70 dark:hover:bg-gray-600"
+                                ? "bg-background dark:bg-zinc-600 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                                : "text-gray-600 dark:text-white dark:text-gray-300 hover:bg-muted/70 dark:hover:bg-zinc-600"
                                 }`}
                             aria-label="Vista mensual"
                         >
@@ -173,8 +173,8 @@ export default function Calendar() {
                         <button
                             onClick={() => setView("week")}
                             className={`p-2 rounded-md focus:outline-none transition-colors ${view === "week"
-                                ? "bg-background dark:bg-gray-600 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                                : "text-gray-600 dark:text-gray-300 hover:bg-muted/70 dark:hover:bg-gray-600"
+                                ? "bg-background dark:bg-zinc-600 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                                : "text-gray-600 dark:text-white dark:text-gray-300 hover:bg-muted/70 dark:hover:bg-zinc-600"
                                 }`}
                             aria-label="Vista semanal"
                         >
@@ -183,8 +183,8 @@ export default function Calendar() {
                         <button
                             onClick={() => setView("day")}
                             className={`p-2 rounded-md focus:outline-none transition-colors ${view === "day"
-                                ? "bg-background dark:bg-gray-600 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                                : "text-gray-600 dark:text-gray-300 hover:bg-muted/70 dark:hover:bg-gray-600"
+                                ? "bg-background dark:bg-zinc-600 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                                : "text-gray-600 dark:text-white dark:text-gray-300 hover:bg-muted/70 dark:hover:bg-zinc-600"
                                 }`}
                             aria-label="Vista diaria"
                         >
@@ -193,8 +193,8 @@ export default function Calendar() {
                         <button
                             onClick={() => setView("agenda")}
                             className={`p-2 rounded-md focus:outline-none transition-colors ${view === "agenda"
-                                ? "bg-background dark:bg-gray-600 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                                : "text-gray-600 dark:text-gray-300 hover:bg-muted/70 dark:hover:bg-gray-600"
+                                ? "bg-background dark:bg-zinc-600 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                                : "text-gray-600 dark:text-white dark:text-gray-300 hover:bg-muted/70 dark:hover:bg-zinc-600"
                                 }`}
                             aria-label="Vista agenda"
                         >

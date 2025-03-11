@@ -200,19 +200,19 @@ export default function Mermas() {
                 <button
                     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}
-                    className="px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-2 rounded-md bg-white border border-gray-300  dark:border-zinc-700 text-gray-700 hover:bg-zinc-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <ChevronLeft className="h-5 w-5" />
                 </button>
                 <span
-                    className="px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-700"
+                    className="px-3 py-2 rounded-md bg-white border border-gray-300  dark:border-zinc-700 text-gray-700"
                 >{currentPage} de {totalPages}</span>
                 <button
                     onClick={() =>
                         setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                     }
                     disabled={currentPage === totalPages}
-                    className="px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-2 rounded-md bg-white border border-gray-300  dark:border-zinc-700 text-gray-700 hover:bg-zinc-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <ChevronRight className="h-5 w-5" />
                 </button>

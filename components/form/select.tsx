@@ -83,14 +83,14 @@ export function SelectComponent(props: SearchableSelectProps) {
         formData.skills,
     ]);
     return (
-        <div className="flex flex-col" ref={skillsRef}>
-            <label className="leading-loose flex items-center gap-2">
+        <div className="flex flex-col dark:text-white" ref={skillsRef}>
+            <label className="leading-loose flex items-center gap-2 dark:text-white">
                 <Star className="w-4 h-4" />
                 {cuestion.label}
             </label>
-            <div className="relative bg-white">
+            <div className="relative bg-white dark:bg-zinc-800">
                 <div
-                    className="px-4 py-2 border focus:ring-purple-500 focus:border-purple-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600 cursor-pointer flex items-center justify-between"
+                    className="px-4 py-2 border focus:ring-purple-500 focus:border-purple-900 w-full sm:text-sm border-gray-300  dark:border-zinc-700 rounded-md focus:outline-none text-gray-600 dark:text-white cursor-pointer flex items-center justify-between"
                     onClick={() => setShowSkillsDropdown(!showSkillsDropdown)}
                 >
                     <span>
@@ -103,11 +103,11 @@ export function SelectComponent(props: SearchableSelectProps) {
                     <ChevronDown className="w-4 h-4" />
                 </div>
                 {showSkillsDropdown && (
-                    <div className="absolute z-30 w-full bg-white border border-gray-300 mt-1 rounded-md shadow-lg">
+                    <div className="absolute z-30 w-full bg-white dark:bg-zinc-800 border border-gray-300  dark:border-zinc-700 mt-1 rounded-md shadow-lg">
                         <div className="p-2">
                             <input
                                 type="text"
-                                className="w-full px-3 py-2 border rounded-md"
+                                className="w-full px-3 py-2 border rounded-md bg-white dark:bg-zinc-800 border-gray-300  dark:border-zinc-700"
                                 placeholder={`Buscar ${cuestion.name}...`}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -129,7 +129,7 @@ export function SelectComponent(props: SearchableSelectProps) {
                                     return (
                                         <li
                                             key={value}
-                                            className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.skills.includes(value) ? 'bg-blue-100' : ''
+                                            className={`px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-900 cursor-pointer ${formData.skills.includes(value) ? 'dark:bg-zinc-800' : ''
                                                 }`}
                                             onClick={() => handleSkillToggle(value)}
                                         >

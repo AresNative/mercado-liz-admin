@@ -41,10 +41,10 @@ export default function MonthView({ currentDate, events }: MonthViewProps) {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800">
+    <div className="bg-white dark:bg-zinc-800">
       <div className="grid grid-cols-7 border-b border-gray-200 dark:border-gray-700">
         {["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"].map((day, index) => (
-          <div key={index} className="py-2 text-center text-sm font-medium text-gray-500 dark:text-gray-400">
+          <div key={index} className="py-2 text-center text-sm font-medium text-gray-500 dark:text-gray-200 dark:text-gray-400">
             {day}
           </div>
         ))}
@@ -54,17 +54,17 @@ export default function MonthView({ currentDate, events }: MonthViewProps) {
           <div
             key={dayIdx}
             className={`min-h-[85px] border border-gray-200 dark:border-gray-700 p-1 ${!isSameMonth(day, currentDate)
-                ? "bg-gray-50 dark:bg-gray-900 text-gray-400 dark:text-gray-600"
-                : "bg-white dark:bg-gray-800"
+              ? "bg-zinc-50 dark:bg-zinc-900 text-gray-400 dark:text-gray-600 dark:text-white"
+              : "bg-white dark:bg-zinc-800"
               }`}
           >
             <div className="flex justify-between items-center">
               <span
                 className={`text-sm font-medium ${isToday(day)
-                    ? "h-6 w-6 bg-blue-500 text-white rounded-full flex items-center justify-center"
-                    : isSameMonth(day, currentDate)
-                      ? "text-gray-900 dark:text-gray-100"
-                      : "text-gray-400 dark:text-gray-600"
+                  ? "h-6 w-6 bg-blue-500 text-white rounded-full flex items-center justify-center"
+                  : isSameMonth(day, currentDate)
+                    ? "text-gray-900 dark:text-white dark:text-gray-100"
+                    : "text-gray-400 dark:text-gray-600 dark:text-white"
                   }`}
               >
                 {format(day, "d")}

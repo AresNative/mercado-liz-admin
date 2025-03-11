@@ -35,8 +35,8 @@ export const colorClasses = {
     ring: "ring-pink-500/10",
   },
   gray: {
-    bg: "bg-gray-50",
-    text: "text-gray-600",
+    bg: "bg-zinc-50",
+    text: "text-gray-600 dark:text-white",
     ring: "ring-gray-500/10",
   },
   black: {
@@ -45,8 +45,8 @@ export const colorClasses = {
     ring: "ring-black/10",
   },
   white: {
-    bg: "bg-white",
-    text: "text-gray-900",
+    bg: "bg-white dark:bg-zinc-800",
+    text: "text-gray-900 dark:text-white",
     ring: "ring-gray-300/10",
   },
 };

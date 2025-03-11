@@ -4,10 +4,9 @@ interface INavigation {
 }
 
 export const navigation: INavigation[] = [
-  { name: "Mermas", href: "/mermas" },
-  { name: "Scrum", href: "/scrum" },
+  { name: "Tareas", href: "/scrum" },
   { name: "Reportes", href: "/report" },
-  { name: "Graficas", href: "/grafic" },
-  { name: "Calendar", href: "/calendar" },
-  { name: "Model", href: "/model" },
+  { name: "Resumen", href: "/grafic" },
+  { name: "Calendario", href: "/calendar" },
+  { name: "Test", href: "/model" },
 ];

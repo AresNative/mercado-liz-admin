@@ -5,15 +5,15 @@ export default function TableDiasHoras() {
     return (
         <>
             <div className="w-full mx-auto space-y-8">
-                <div className="bg-white border shadow-xl rounded-lg overflow-hidden">
+                <div className="bg-white border dark:border-zinc-700 shadow-xl rounded-lg overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full">
-                            <thead className="bg-gray-50">
+                            <thead className="bg-zinc-50">
                                 <tr>
 
 
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                     >
                                         <div className="flex items-center space-x-1">
                                             <button
@@ -31,7 +31,7 @@ export default function TableDiasHoras() {
 
 
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                         colSpan={2}
                                     >
                                         <div className="flex items-center space-x-1">
@@ -47,7 +47,7 @@ export default function TableDiasHoras() {
                                         </div>
                                     </th>
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                         colSpan={2}
                                     >
                                         <div className="flex items-center space-x-1">
@@ -63,7 +63,7 @@ export default function TableDiasHoras() {
                                         </div>
                                     </th>
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                         colSpan={2}
                                     >
                                         <div className="flex items-center space-x-1">
@@ -79,7 +79,7 @@ export default function TableDiasHoras() {
                                         </div>
                                     </th>
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                         colSpan={2}
                                     >
                                         <div className="flex items-center space-x-1">
@@ -95,7 +95,7 @@ export default function TableDiasHoras() {
                                         </div>
                                     </th>
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                         colSpan={2}
                                     >
                                         <div className="flex items-center space-x-1">
@@ -112,7 +112,7 @@ export default function TableDiasHoras() {
                                     </th>
 
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                         colSpan={2}
                                     >
                                         <div className="flex items-center space-x-1">
@@ -128,7 +128,7 @@ export default function TableDiasHoras() {
                                         </div>
                                     </th>
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                         colSpan={2}
                                     >
                                         <div className="flex items-center space-x-1">
@@ -149,7 +149,7 @@ export default function TableDiasHoras() {
 
 
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                     >
                                         <div className="flex items-center space-x-1">
                                             <button
@@ -167,7 +167,7 @@ export default function TableDiasHoras() {
 
 
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                     >
                                         <div className="flex items-center space-x-1">
                                             <button
@@ -182,7 +182,7 @@ export default function TableDiasHoras() {
                                         </div>
                                     </th>
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                     >
                                         <div className="flex items-center space-x-1">
                                             <button
@@ -197,7 +197,7 @@ export default function TableDiasHoras() {
                                         </div>
                                     </th>
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                     >
                                         <div className="flex items-center space-x-1">
                                             <button
@@ -212,7 +212,7 @@ export default function TableDiasHoras() {
                                         </div>
                                     </th>
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                     >
                                         <div className="flex items-center space-x-1">
                                             <button
@@ -227,7 +227,7 @@ export default function TableDiasHoras() {
                                         </div>
                                     </th>
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                     >
                                         <div className="flex items-center space-x-1">
                                             <button
@@ -242,7 +242,7 @@ export default function TableDiasHoras() {
                                         </div>
                                     </th>
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                     >
                                         <div className="flex items-center space-x-1">
                                             <button
@@ -257,7 +257,7 @@ export default function TableDiasHoras() {
                                         </div>
                                     </th>
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                     >
                                         <div className="flex items-center space-x-1">
                                             <button
@@ -272,7 +272,7 @@ export default function TableDiasHoras() {
                                         </div>
                                     </th>
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                     >
                                         <div className="flex items-center space-x-1">
                                             <button
@@ -287,7 +287,7 @@ export default function TableDiasHoras() {
                                         </div>
                                     </th>
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                     >
                                         <div className="flex items-center space-x-1">
                                             <button
@@ -302,7 +302,7 @@ export default function TableDiasHoras() {
                                         </div>
                                     </th>
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                     >
                                         <div className="flex items-center space-x-1">
                                             <button
@@ -317,7 +317,7 @@ export default function TableDiasHoras() {
                                         </div>
                                     </th>
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                     >
                                         <div className="flex items-center space-x-1">
                                             <button
@@ -332,7 +332,7 @@ export default function TableDiasHoras() {
                                         </div>
                                     </th>
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                     >
                                         <div className="flex items-center space-x-1">
                                             <button
@@ -347,7 +347,7 @@ export default function TableDiasHoras() {
                                         </div>
                                     </th>
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                     >
                                         <div className="flex items-center space-x-1">
                                             <button
@@ -362,7 +362,7 @@ export default function TableDiasHoras() {
                                         </div>
                                     </th>
                                     <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                     >
                                         <div className="flex items-center space-x-1">
                                             <button
@@ -381,7 +381,7 @@ export default function TableDiasHoras() {
                             <tbody className="bg-white divide-y divide-gray-200">
 
                                 <motion.tr
-                                    className={`hover:bg-gray-50`}
+                                    className={`hover:bg-zinc-50`}
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
@@ -390,105 +390,105 @@ export default function TableDiasHoras() {
                                     <td
                                         className="px-6 py-4 whitespace-nowrap"
                                     >
-                                        <div className="text-sm text-gray-900">
+                                        <div className="text-sm text-gray-900 dark:text-white">
                                             ""
                                         </div>
                                     </td>
                                     <td
                                         className="px-6 py-4 whitespace-nowrap"
                                     >
-                                        <div className="text-sm text-gray-900">
+                                        <div className="text-sm text-gray-900 dark:text-white">
                                             ""
                                         </div>
                                     </td>
                                     <td
                                         className="px-6 py-4 whitespace-nowrap"
                                     >
-                                        <div className="text-sm text-gray-900">
+                                        <div className="text-sm text-gray-900 dark:text-white">
                                             ""
                                         </div>
                                     </td>
                                     <td
                                         className="px-6 py-4 whitespace-nowrap"
                                     >
-                                        <div className="text-sm text-gray-900">
+                                        <div className="text-sm text-gray-900 dark:text-white">
                                             ""
                                         </div>
                                     </td>
                                     <td
                                         className="px-6 py-4 whitespace-nowrap"
                                     >
-                                        <div className="text-sm text-gray-900">
+                                        <div className="text-sm text-gray-900 dark:text-white">
                                             ""
                                         </div>
                                     </td>
                                     <td
                                         className="px-6 py-4 whitespace-nowrap"
                                     >
-                                        <div className="text-sm text-gray-900">
+                                        <div className="text-sm text-gray-900 dark:text-white">
                                             ""
                                         </div>
                                     </td>
                                     <td
                                         className="px-6 py-4 whitespace-nowrap"
                                     >
-                                        <div className="text-sm text-gray-900">
+                                        <div className="text-sm text-gray-900 dark:text-white">
                                             ""
                                         </div>
                                     </td>
                                     <td
                                         className="px-6 py-4 whitespace-nowrap"
                                     >
-                                        <div className="text-sm text-gray-900">
+                                        <div className="text-sm text-gray-900 dark:text-white">
                                             ""
                                         </div>
                                     </td>
                                     <td
                                         className="px-6 py-4 whitespace-nowrap"
                                     >
-                                        <div className="text-sm text-gray-900">
+                                        <div className="text-sm text-gray-900 dark:text-white">
                                             ""
                                         </div>
                                     </td>
                                     <td
                                         className="px-6 py-4 whitespace-nowrap"
                                     >
-                                        <div className="text-sm text-gray-900">
+                                        <div className="text-sm text-gray-900 dark:text-white">
                                             ""
                                         </div>
                                     </td>
                                     <td
                                         className="px-6 py-4 whitespace-nowrap"
                                     >
-                                        <div className="text-sm text-gray-900">
+                                        <div className="text-sm text-gray-900 dark:text-white">
                                             ""
                                         </div>
                                     </td>
                                     <td
                                         className="px-6 py-4 whitespace-nowrap"
                                     >
-                                        <div className="text-sm text-gray-900">
+                                        <div className="text-sm text-gray-900 dark:text-white">
                                             ""
                                         </div>
                                     </td>
                                     <td
                                         className="px-6 py-4 whitespace-nowrap"
                                     >
-                                        <div className="text-sm text-gray-900">
+                                        <div className="text-sm text-gray-900 dark:text-white">
                                             ""
                                         </div>
                                     </td>
                                     <td
                                         className="px-6 py-4 whitespace-nowrap"
                                     >
-                                        <div className="text-sm text-gray-900">
+                                        <div className="text-sm text-gray-900 dark:text-white">
                                             ""
                                         </div>
                                     </td>
                                     <td
                                         className="px-6 py-4 whitespace-nowrap"
                                     >
-                                        <div className="text-sm text-gray-900">
+                                        <div className="text-sm text-gray-900 dark:text-white">
                                             ""
                                         </div>
                                     </td>

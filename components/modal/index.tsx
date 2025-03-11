@@ -64,7 +64,7 @@ export function Modal({ modalName, title, children, maxWidth = "2xl" }: ModalPro
                 <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                     <div
                         className={cn(
-                            "relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full",
+                            "relative transform overflow-hidden rounded-lg bg-white dark:bg-zinc-800 text-left shadow-xl transition-all sm:my-8 w-full",
                             maxWidthClasses[maxWidth],
                         )}
                     >
@@ -72,7 +72,7 @@ export function Modal({ modalName, title, children, maxWidth = "2xl" }: ModalPro
                         <div className="absolute right-4 top-4 z-10">
                             <button
                                 type="button"
-                                className="rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                className="rounded-md text-gray-400 hover:text-gray-500 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                 onClick={handleBackdropClick}
                             >
                                 <span className="sr-only">Close</span>
@@ -81,10 +81,10 @@ export function Modal({ modalName, title, children, maxWidth = "2xl" }: ModalPro
                         </div>
 
                         {/* Content */}
-                        <div className="bg-white px-4 pb-4 pt-5 sm:p-6">
+                        <div className="bg-white dark:bg-zinc-800 px-4 pb-4 pt-5 sm:p-6">
                             <div className="sm:flex sm:items-start">
                                 <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
-                                    <h3 id="modal-title" className="text-xl font-semibold leading-6 text-gray-900 mb-4">
+                                    <h3 id="modal-title" className="text-xl font-semibold leading-6 text-gray-900 dark:text-white mb-4">
                                         {title}
                                     </h3>
                                     <div className="mt-2">{children}</div>

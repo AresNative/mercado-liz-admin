@@ -81,8 +81,8 @@ export function SearchComponent(props: SearchableSelectProps) {
     }, [cuestion.multi, cuestion.name, props, searchTerm, cuestion.saveData, formData, formData.skills]);
 
     return (
-        <div className="flex flex-col relative" ref={skillsRef}>
-            <label className="leading-loose flex items-center gap-2">
+        <div className="flex flex-col relative dark:text-white" ref={skillsRef}>
+            <label className="leading-loose flex items-center gap-2 dark:text-white">
                 <Star className="w-4 h-4" />
                 {cuestion.label}
             </label>
@@ -92,7 +92,7 @@ export function SearchComponent(props: SearchableSelectProps) {
                     type="text"
                     placeholder={cuestion.placeholder}
                     value={searchTerm}
-                    className="py-2 pl-10 w-full rounded-md focus:outline-none border focus:ring-purple-500 focus:border-purple-900 border-gray-300 shadow-md focus:border-indigo-500 focus:ring-indigo-500"
+                    className="bg-white dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 py-2 pl-10 w-full rounded-md focus:outline-none border shadow-md focus:border-indigo-500 focus:ring-indigo-500"
                     onClick={() => setShowSkillsDropdown(true)}
                     onChange={(e) => {
                         if (cuestion.options) dispatch(searchData(e.target.value));
@@ -103,7 +103,7 @@ export function SearchComponent(props: SearchableSelectProps) {
                 />
             </div>
             {cuestion.options && showSkillsDropdown && (
-                <div className="absolute z-30 top-[4.6rem] w-full bg-white border border-gray-300 mt-1 rounded-md shadow-lg">
+                <div className="absolute z-30 top-[4.6rem] w-full bg-white dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 mt-1 rounded-md shadow-lg">
                     <div className="p-2">
                         <ul className="max-h-60 overflow-y-auto">
                             {cuestion.options
@@ -121,7 +121,7 @@ export function SearchComponent(props: SearchableSelectProps) {
                                     return (
                                         <li
                                             key={value}
-                                            className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${searchTerm ? 'bg-blue-100' : ''}`}
+                                            className={`px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-900 cursor-pointer ${searchTerm ? 'dark:bg-zinc-800' : ''}`}
                                             onClick={() => handleSkillToggle(value)}
                                         >
                                             {label}

@@ -134,7 +134,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
         return (
             <div className="w-full">
                 <section className="w-fit text-center py-5 m-auto items-center flex gap-2">
-                    <Grid2x2X className="text-gray-500" /> Sin datos disponibles
+                    <Grid2x2X className="text-gray-500 dark:text-gray-200" /> Sin datos disponibles
                 </section>
             </div>
         )
@@ -143,15 +143,15 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
     return (
         <>
             <div className="w-full space-y-8">
-                <div className="bg-white border shadow-xl rounded-lg overflow-hidden">
+                <div className="bg-white dark:bg-zinc-800 border border-gray-300 dark:border-zinc-600 shadow-xl rounded-lg overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full">
-                            <thead className="bg-gray-50">
+                            <thead className="bg-zinc-100 dark:bg-zinc-900">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">
                                         <input
                                             type="checkbox"
-                                            className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                                            className="rounded border-gray-300 dark:border-zinc-600 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                                             checked={selectedRows.length === data.length}
                                             onChange={() =>
                                                 setSelectedRows(
@@ -167,7 +167,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
                                             visibleColumns[column] ? (
                                                 <th
                                                     key={column}
-                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider"
                                                 >
 
                                                     <ul className="flex">
@@ -200,11 +200,11 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
                                     )}
                                 </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="bg-white dark:bg-zinc-800 divide-y divide-gray-200 dark:divide-zinc-600">
                                 {paginatedData.map((item, index) => (
                                     <motion.tr
                                         key={index}
-                                        className={`hover:bg-gray-50`}
+                                        className={`hover:bg-zinc-50 dark:hover:bg-zinc-600`}
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
@@ -223,7 +223,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
                                                     key={column}
                                                     className="px-6 py-4 whitespace-nowrap"
                                                 >
-                                                    <div className="text-sm text-gray-900">
+                                                    <div className="text-sm text-gray-900 dark:text-white">
                                                         {formatValue(column, item[column])}
                                                     </div>
                                                 </td>

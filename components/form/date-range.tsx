@@ -77,7 +77,7 @@ export function DateRangeComponent(props: InputFormProps) {
 
     return (
         <div className="flex flex-col" ref={dropdownRef}>
-            <label className="leading-loose flex items-center gap-2">
+            <label className="leading-loose flex items-center gap-2 dark:text-white">
                 <CalendarRange className="w-4 h-4" />
                 {cuestion.label}
             </label>
@@ -88,14 +88,14 @@ export function DateRangeComponent(props: InputFormProps) {
                     value={inputValue}
                     onClick={() => setShowInterviewDatePicker(true)}
                     readOnly
-                    className="px-4 py-2 border focus:ring-purple-500 focus:border-purple-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600 cursor-pointer"
+                    className="bg-white dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 px-4 py-2 border focus:ring-purple-500 focus:border-purple-900 w-full sm:text-sm rounded-md focus:outline-none text-gray-600 dark:text-white cursor-pointer"
                     placeholder={cuestion.multiple ? "Seleccionar fechas" : "Seleccionar fecha"}
                 />
                 {showInterviewDatePicker && (
-                    <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
+                    <div className="absolute z-10 mt-1 w-full bg-white dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 border rounded-md shadow-lg">
                         <div className="p-2">
                             {cuestion.multiple ? (
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-2 gap-4 dark:text-white">
                                     <div>
                                         <p className="mb-1 font-semibold">Fecha inicial</p>
                                         <input
@@ -107,7 +107,7 @@ export function DateRangeComponent(props: InputFormProps) {
                                                     interviewDateStart: e.target.value,
                                                 })
                                             }
-                                            className="w-full px-2 py-1 border rounded-md"
+                                            className="bg-white dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 w-full px-2 py-1 border rounded-md"
                                         />
                                     </div>
                                     <div>
@@ -121,7 +121,7 @@ export function DateRangeComponent(props: InputFormProps) {
                                                     interviewDateEnd: e.target.value,
                                                 })
                                             }
-                                            className="w-full px-2 py-1 border rounded-md"
+                                            className="bg-white dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 w-full px-2 py-1 border rounded-md"
                                         />
                                     </div>
                                 </div>
@@ -134,7 +134,7 @@ export function DateRangeComponent(props: InputFormProps) {
                                         onChange={(e) =>
                                             setFormData({ interviewDate: e.target.value })
                                         }
-                                        className="w-full px-2 py-1 border rounded-md"
+                                        className="bg-white dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 w-full px-2 py-1 border rounded-md"
                                     />
                                 </div>
                             )}

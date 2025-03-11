@@ -178,9 +178,9 @@ export default function DNDContext({ projectId, statusColumns }: DNDContextProps
                 </div>
                 <DragOverlay>
                     {activeTask && (
-                        <div className="bg-white p-3 rounded shadow opacity-80">
+                        <div className="bg-white dark:bg-zinc-800 p-3 rounded shadow opacity-80">
                             <div className="font-medium">{activeTask.nombre}</div>
-                            <div className="text-sm text-gray-600 truncate">{activeTask.descripcion || 'Sin descripcion'}</div>
+                            <div className="text-sm text-gray-600 dark:text-white truncate">{activeTask.descripcion || 'Sin descripcion'}</div>
                         </div>
                     )}
                 </DragOverlay>

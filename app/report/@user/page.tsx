@@ -37,13 +37,15 @@ import { ColumnsField } from "../constants/columns";
 import { FiltersField } from "../constants/filters";
 
 export default function DynamicReport() {
-    // Llamar a todos los hooks en el nivel superior
-    const { data: glosarioCompras } = useGetGlosariosComprasQuery("");
-    const { data: glosarioVentas } = useGetGlosariosVentasQuery("");
-    const [apiVentas, { isLoading: isLoadingVentas }] = useGetVentasMutation()
-    const [apiCompras, { isLoading: isLoadingCompras }] = useGetComprasMutation();
     // Estado principal
     const [config, setConfig] = useState<ReportType>("COMPRA");
+    const [loadGlosarios, setLoadGlosarios] = useState(false);
+    // Llamar a todos los hooks en el nivel superior
+    const { data: glosarioCompras } = useGetGlosariosComprasQuery("", { skip: !loadGlosarios || config !== "COMPRA" });
+    const { data: glosarioVentas } = useGetGlosariosVentasQuery("", { skip: !loadGlosarios || config !== "VENTA" });
+
+    const [apiVentas, { isLoading: isLoadingVentas }] = useGetVentasMutation();
+    const [apiCompras, { isLoading: isLoadingCompras }] = useGetComprasMutation();
 
     const getAPI = config === "COMPRA" ? apiCompras : apiVentas;
     const loading = config === "COMPRA" ? isLoadingCompras : isLoadingVentas;
@@ -103,7 +105,6 @@ export default function DynamicReport() {
 
     const handleLoadData = useCallback(async () => {
         setError(null);
-
         try {
             const { newStates, inventario } = await loadDataFromAPI(getAPI, filtros, currentPage, rows, columns, currentConfig);
             setPreviewData(newStates.previewData);
@@ -114,14 +115,18 @@ export default function DynamicReport() {
                 Unidad: "Total",
                 Cantidad: inventario,
             }])
-        } catch (error) {
-            console.error(error);
+        } catch (error: any) {
+            setError(error.message);
         }
     }, [getAPI, filtros, currentPage, rows, columns, currentConfig]);
 
     useEffect(() => {
         handleLoadData();
     }, [handleLoadData]);
+
+    useEffect(() => {
+        setLoadGlosarios(true);
+    }, [config]);
 
     const handleConfigChange = useCallback((type: ReportType) => {
         setConfig(type);
@@ -147,7 +152,6 @@ export default function DynamicReport() {
 
     const handleColumnsChange = useCallback((values: any) => {
         if (values.rows) setRows(values.rows);
-
         const newColumns = values.columnas
             .split(',')
             .map((s: string) => s.trim())
@@ -159,13 +163,10 @@ export default function DynamicReport() {
 
     const resumenPorUnidad = totalsParams.reduce((acc: any, item) => {
         const unidad = item.Unidad;
-
         if (!acc[unidad]) {
             acc[unidad] = { Cantidad: 0, Costo: 0 };
         }
-
         acc[unidad].Cantidad += item.Cantidad;
-
         return acc;
     }, {});
 
@@ -177,9 +178,9 @@ export default function DynamicReport() {
                     {Object.entries(REPORT_CONFIGS).map(([type, cfg]) => (
                         <button
                             key={type}
-                            className={`px-2 py-1 md:px-3 md:py-2 border rounded-lg flex gap-1 md:gap-2 items-center transition-colors ${config === type
-                                ? 'bg-indigo-500 text-white border-indigo-600'
-                                : 'bg-white hover:bg-gray-50 text-gray-700'
+                            className={`px-2 py-1 md:px-3 md:py-2 border dark:border-zinc-700 rounded-lg flex gap-1 md:gap-2 items-center transition-colors ${config === type
+                                ? 'bg-indigo-500 text-white border-indigo-700'
+                                : 'bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-gray-700 dark:text-white'
                                 }`}
                             onClick={() => handleConfigChange(type as ReportType)}
                         >
@@ -196,9 +197,9 @@ export default function DynamicReport() {
                     {Object.entries(viewSecctions).map(([key, section]) => (
                         <button
                             key={key}
-                            className={`px-2 py-1 md:px-3 md:py-2 border rounded-lg flex gap-1 md:gap-2 items-center transition-colors ${section
-                                ? 'bg-indigo-500 text-white border-indigo-600'
-                                : 'bg-white hover:bg-gray-50 text-gray-700'
+                            className={`px-2 py-1 md:px-3 md:py-2 border dark:border-zinc-700 rounded-lg flex gap-1 md:gap-2 items-center transition-colors ${section
+                                ? 'bg-indigo-500 text-white border-indigo-700'
+                                : 'bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-gray-700 dark:text-white'
                                 }`}
                             onClick={() =>
                                 setViewSecctions((prev) => ({ ...prev, [key]: !section }))
@@ -223,7 +224,7 @@ export default function DynamicReport() {
             )}
 
             {/* Formulario principal de búsqueda */}
-            {viewSecctions.Filtros && (<div className="mb-8 bg-white border p-6 rounded-xl shadow-sm">
+            {viewSecctions.Filtros && (<div className="mb-8 bg-white dark:bg-zinc-800 border dark:border-zinc-700 p-6 rounded-xl shadow-sm">
                 <MainForm
                     actionType="Buscar"
                     dataForm={dataFormFilter}
@@ -257,10 +258,10 @@ export default function DynamicReport() {
             </div>)}
 
             {/* Gráfico */}
-            {viewSecctions.Grafica && (<section className="my-6 p-6 bg-white shadow-sm rounded-xl">
+            {viewSecctions.Grafica && (<section className="my-6 p-6 bg-white dark:bg-zinc-800 dark:text-white border dark:border-zinc-700 shadow-sm rounded-xl">
                 <h2 className="text-xl font-semibold mb-4">Tendencias</h2>
                 {loading ? (
-                    <div className="h-64 animate-pulse bg-gray-100 rounded-lg" />
+                    <div className="h-64 animate-pulse bg-zinc-100 rounded-lg" />
                 ) : (
                     <RenderChart
                         type="area"
@@ -272,7 +273,7 @@ export default function DynamicReport() {
 
             {/* Selector de columnas y filas */}
             {viewSecctions.Cuestionario && (
-                <div className="my-6 bg-white border p-6 rounded-xl shadow-sm">
+                <div className="my-6 bg-white dark:bg-zinc-800 dark:border-zinc-700 border p-6 rounded-xl shadow-sm">
                     <div className="flex flex-wrap gap-4 items-end">
                         <div className="flex-1 min-w-[300px]">
                             <MainForm
@@ -284,14 +285,14 @@ export default function DynamicReport() {
                             />
                         </div>
                         <button
-                            className="p-2 h-fit border rounded-lg bg-white flex gap-2 items-center hover:bg-gray-50 transition-colors text-gray-700"
+                            className="p-2 h-fit border rounded-lg bg-white flex gap-2 items-center hover:bg-zinc-50 transition-colors text-gray-700"
                             onClick={() => setColumns(Totales)}
                         >
                             <Aperture className="text-gray-400 size-5" />
                             Vista Totales
                         </button>
                         <button
-                            className="p-2 h-fit border rounded-lg bg-white flex gap-2 items-center hover:bg-gray-50 transition-colors text-gray-700"
+                            className="p-2 h-fit border rounded-lg bg-white flex gap-2 items-center hover:bg-zinc-50 transition-colors text-gray-700"
                             onClick={() => { setColumns(Expo); setRows(30) }}
                         >
                             <Aperture className="text-gray-400 size-5" />
@@ -304,11 +305,11 @@ export default function DynamicReport() {
             {/* Tabla de datos */}
             {viewSecctions.Tabla && (<section className="my-6 overflow-hidden">
                 <div className="p-6">
-                    <h2 className="text-xl font-semibold">Detalle de {currentConfig.title}</h2>
+                    <h2 className="text-xl font-semibold dark:text-white">Detalle de {currentConfig.title}</h2>
                 </div>
 
                 {loading ? (
-                    <div className="h-64 animate-pulse bg-gray-100" />
+                    <div className="h-64 animate-pulse bg-zinc-100" />
                 ) : (
                     <>
 

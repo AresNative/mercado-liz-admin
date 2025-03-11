@@ -14,9 +14,9 @@ export function CheckboxComponent(props: InputFormProps) {
                         : {}
                 )
                 }
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300  dark:border-zinc-700 rounded"
             />
-            <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
+            <label htmlFor="terms" className="ml-2 block text-sm text-gray-900 dark:text-white">
                 {cuestion.label}
             </label>
             {props.errors[cuestion.name] && props.errors[cuestion.name]?.message && (

@@ -33,7 +33,7 @@ const TreemapChart: React.FC<TreemapChartProps> = ({ data, height = 350 }) => {
             align: "center",
             style: {
                 fontSize: "20px",
-                fontWeight: "bold",
+                fontWeight: "bold"
             },
         },
         tooltip: {

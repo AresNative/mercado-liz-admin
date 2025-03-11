@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
 import { ChartData } from "../../@user/page";
 import { formatValue } from "@/utils/constants/format-values";
+import { getLocalStorageItem } from "@/utils/functions/local-storage";
 
 // Carga dinámica de ApexCharts para evitar problemas en el servidor de Next.js
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
@@ -22,6 +23,7 @@ const DynamicChart: React.FC<DynamicChartProps> = ({
     data,
     height = 350,
 }) => {
+    const savedTheme = getLocalStorageItem("theme") || "light";
     // Configuración común para los gráficos
     const chartOptions: ApexOptions =
         type === "pie"
@@ -47,7 +49,7 @@ const DynamicChart: React.FC<DynamicChartProps> = ({
                 chart: { type, /* toolbar: { show: true }, */ background: "transparent" },
                 xaxis: {
                     categories,
-                    labels: { style: { colors: "#64748b", fontSize: "12px" } },
+                    labels: { style: { colors: savedTheme === "light" ? "#64748b" : "#fff", fontSize: "12px" } },
                 },
                 stroke: {
                     curve: type === "area" || type === "line" ? "smooth" : "straight",

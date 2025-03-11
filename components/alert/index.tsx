@@ -53,7 +53,7 @@ export default function Alert() {
             <dialog
                 ref={dialogRef}
                 open={show}
-                className="max-w-lg w-full rounded-lg bg-white shadow-xl p-6 z-20 backdrop-blur-lg"
+                className="max-w-lg w-full rounded-lg bg-white dark:bg-zinc-800 shadow-xl p-6 z-20 backdrop-blur-lg"
             >
                 <div className="flex items-start space-x-4">
                     {/* Icono */}
@@ -64,14 +64,14 @@ export default function Alert() {
                     </div>
                     <div>
                         <h3 className={`text-lg font-semibold ${styles.text}`}>{title}</h3>
-                        <p className="mt-2 text-sm text-gray-500">{message}</p>
+                        <p className="mt-2 text-sm text-gray-500 dark:text-gray-200">{message}</p>
                     </div>
                 </div>
                 {buttonText && (<div className="mt-6 flex justify-end space-x-4">
                     {/* Botón de Cancelar */}
                     <button
                         onClick={closeDialog}
-                        className="px-4 py-2 text-sm font-semibold text-gray-900 border border-gray-300 rounded-md hover:bg-gray-50"
+                        className="px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white border border-gray-300  dark:border-zinc-700 rounded-md hover:bg-zinc-50"
                     >
                         Cancel
                     </button>

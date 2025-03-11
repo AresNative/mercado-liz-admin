@@ -27,7 +27,7 @@ export function PasswordComponent(props: InputFormProps) {
 
     return (
         <div className="flex flex-col">
-            <label className="leading-loose flex items-center gap-2">
+            <label className="leading-loose flex items-center gap-2 dark:text-white">
                 <LockKeyhole className="w-4 h-4" />
                 {cuestion.label}
             </label>
@@ -36,7 +36,7 @@ export function PasswordComponent(props: InputFormProps) {
                     type={showPassword ? "text" : "password"}
                     name={cuestion.name}
                     onChange={handleInputChange}
-                    className="px-4 py-2 border focus:ring-purple-500 focus:border-purple-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
+                    className="bg-white dark:bg-zinc-800 px-4 py-2 border focus:ring-purple-500 focus:border-purple-900 w-full sm:text-sm border-gray-300  dark:border-zinc-700 rounded-md focus:outline-none text-gray-600 dark:text-white"
                     placeholder={cuestion.placeholder}
                     maxLength={cuestion.maxLength}
                     {...props.register(cuestion.name,
@@ -48,7 +48,7 @@ export function PasswordComponent(props: InputFormProps) {
                 <button
                     type="button"
                     onClick={togglePasswordVisibility}
-                    className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
+                    className="absolute inset-y-0 right-2 flex items-center text-gray-500 dark:text-gray-200 hover:text-gray-700 focus:outline-none"
                 >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>

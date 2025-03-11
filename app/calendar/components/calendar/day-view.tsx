@@ -28,13 +28,13 @@ export default function DayView({ currentDate, events }: DayViewProps) {
   const filteredEvents = events.filter((event) => isSameDay(event.start, currentDate))
 
   return (
-    <div className="bg-white dark:bg-gray-800 overflow-auto">
+    <div className="bg-white dark:bg-zinc-800 overflow-auto">
       <div className="flex h-[600px] overflow-y-auto">
         <div className="w-16 flex-shrink-0 border-r border-gray-200 dark:border-gray-700">
           {hours.map((hour) => (
             <div
               key={hour}
-              className="h-[50px] text-xs text-right pr-2 text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800"
+              className="h-[50px] text-xs text-right pr-2 text-gray-500 dark:text-gray-200 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800"
             >
               {hour}:00
             </div>

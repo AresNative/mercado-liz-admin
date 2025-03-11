@@ -59,7 +59,7 @@ export function CalendarComponent({ cuestion, setValue, register, errors }: Inpu
 
     return (
         <div className="flex flex-col" ref={dropdownRef}>
-            <label className="leading-loose flex items-center gap-2">
+            <label className="leading-loose flex items-center gap-2 dark:text-white">
                 <Calendar1 className="w-4 h-4" />
                 {cuestion.label}
             </label>
@@ -76,7 +76,7 @@ export function CalendarComponent({ cuestion, setValue, register, errors }: Inpu
                         setDay(today.getDate());
                     }}
                     readOnly
-                    className="px-4 py-2 border focus:ring-purple-500 focus:border-purple-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600 cursor-pointer pr-8"
+                    className="bg-white dark:bg-zinc-800 px-4 py-2 border focus:ring-purple-500 focus:border-purple-900 w-full sm:text-sm border-gray-300  dark:border-zinc-700 rounded-md focus:outline-none text-gray-600 dark:text-white cursor-pointer pr-8"
                     placeholder={cuestion.placeholder}
                     {...register(cuestion.name, cuestion.require ? { required: "El campo es obligatorio." } : {})}
                 />
@@ -84,18 +84,18 @@ export function CalendarComponent({ cuestion, setValue, register, errors }: Inpu
                     <button
                         type="button"
                         onClick={handleClear}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-white"
                         aria-label="Limpiar fecha"
                     >
                         ×
                     </button>
                 )}
                 {showDatePicker && (
-                    <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg p-2">
+                    <div className="absolute z-10 mt-1 w-full dark:text-white bg-white dark:bg-zinc-800 border border-gray-300  dark:border-zinc-700 rounded-md shadow-lg p-2">
                         <div className="grid grid-cols-3 gap-2">
                             <select
                                 aria-label="Seleccionar año"
-                                className="px-2 py-1 border rounded-md"
+                                className="bg-white dark:bg-zinc-800 border-gray-300 px-2 py-1 border dark:border-zinc-700 rounded-md"
                                 value={year}
                                 onChange={(e) => setYear(parseInt(e.target.value))}
                             >
@@ -107,7 +107,7 @@ export function CalendarComponent({ cuestion, setValue, register, errors }: Inpu
                             </select>
                             <select
                                 aria-label="Seleccionar mes"
-                                className="px-2 py-1 border rounded-md"
+                                className="bg-white dark:bg-zinc-800 border-gray-300 px-2 py-1 border dark:border-zinc-700 rounded-md"
                                 value={month}
                                 onChange={(e) => setMonth(parseInt(e.target.value))}
                             >
@@ -119,7 +119,7 @@ export function CalendarComponent({ cuestion, setValue, register, errors }: Inpu
                             </select>
                             <select
                                 aria-label="Seleccionar día"
-                                className="px-2 py-1 border rounded-md"
+                                className="bg-white dark:bg-zinc-800 border-gray-300 px-2 py-1 border dark:border-zinc-700 rounded-md"
                                 value={day}
                                 onChange={(e) => setDay(parseInt(e.target.value))}
                             >

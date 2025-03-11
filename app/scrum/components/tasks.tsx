@@ -56,7 +56,7 @@ export const SortableTask: React.FC<SortableTaskProps> = ({ task, refetch }) => 
     };
 
     return (
-        <section className="bg-white border p-4 mb-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+        <section className="bg-white dark:bg-zinc-800 border dark:border-zinc-700 p-4 mb-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
             <div
                 ref={setNodeRef}
                 style={style}
@@ -66,7 +66,7 @@ export const SortableTask: React.FC<SortableTaskProps> = ({ task, refetch }) => 
             >
                 {/* Encabezado */}
                 <div className="flex items-center justify-between">
-                    <h3 className="font-semibold text-gray-800 text-sm truncate">
+                    <h3 className="dark:text-white font-semibold text-gray-800 text-sm truncate">
                         {task.nombre}
                     </h3>
                     <Badge
@@ -76,14 +76,14 @@ export const SortableTask: React.FC<SortableTaskProps> = ({ task, refetch }) => 
                 </div>
 
                 {/* Descripción */}
-                <p className="text-sm text-gray-600 mt-2 truncate">
+                <p className="text-sm text-gray-600 dark:text-white mt-2 truncate">
                     {task.descripcion || "Sin descripción"}
                 </p>
 
 
             </div>{/* Acciones */}
             <ul className="flex justify-between items-center mt-3">
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-500 dark:text-gray-200">
                     {task.fecha_vencimiento
                         ? new Date(task.fecha_vencimiento).toLocaleDateString()
                         : "Sin fecha"}

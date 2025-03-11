@@ -69,7 +69,7 @@ export default function Postulaciones() {
 
             <section className="container flex gap-4" ref={containerRef}>
 
-                <ul className="h-2/4 flex flex-col p-2 border rounded-lg gap-2">
+                <ul className="h-2/4 flex flex-col p-2 border dark:border-zinc-700 rounded-lg gap-2">
                     <div data-swapy-slot="a">
                         <div data-swapy-item="a" className="bg-yellow-400 text-white text-center size-10 rounded-lg">
                             <div>A</div>
@@ -88,7 +88,7 @@ export default function Postulaciones() {
                         </div>
                     </div>
                 </ul>
-                <ul className="h-2/4 flex flex-col p-2 border rounded-lg gap-2">
+                <ul className="h-2/4 flex flex-col p-2 border dark:border-zinc-700 rounded-lg gap-2">
                     <div data-swapy-slot="d">
                         <div data-swapy-item="d" className="bg-yellow-400 text-white text-center size-10 rounded-lg">
                             <div>D</div>
