@@ -59,6 +59,7 @@ export const buildFilters = (searchParams: any): formatFilter[] => {
       arr.push({ key: "FechaEmision", value: ff, operator: "=" });
     }
   }
+  console.log(arr);
 
   return arr;
 };
