@@ -5,6 +5,6 @@ export const triggerFormSubmit = () => {
       new Event("submit", { bubbles: true, cancelable: false })
     );
   } else {
-    console.error("No se encontró ningún formulario en el DOM");
+    console.log("No se encontró ningún formulario en el DOM");
   }
 };

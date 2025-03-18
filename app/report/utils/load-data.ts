@@ -35,22 +35,22 @@ export const loadDataFromAPI = async (
         loadDataGrafic(
           getAPI,
           {
-            filters: { filtros, sumas: [{ key: "Categoria" }] },
+            filters: { filtros, Selects: [{ key: "Categoria" }] },
             page: 1,
             pageSize: 5,
             sum: true,
           },
-          "Categoria",
+          ["Costo", "Categoria"],
           currentConfig.amountKey
         ),
         loadData(getAPI, {
-          filters: { filtros, sumas: [{ key: currentConfig.sumKey }] },
+          filters: { filtros, Selects: [{ key: currentConfig.sumKey }] },
           page: 1,
           pageSize: 300000,
           sum: true,
         }),
         loadData(getAPI, {
-          filters: { filtros, sumas: columns },
+          filters: { filtros, Selects: columns },
           page: currentPage,
           pageSize: rows,
           sum: false,
@@ -58,7 +58,7 @@ export const loadDataFromAPI = async (
         loadData(getAPI, {
           filters: {
             filtros: filtrosInventario,
-            sumas: [
+            Selects: [
               {
                 key:
                   currentConfig.type === "COMPRA"

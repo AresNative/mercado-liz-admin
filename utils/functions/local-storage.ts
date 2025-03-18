@@ -4,7 +4,7 @@ export const setLocalStorageItem = (key: string, value: any) => {
       localStorage.setItem(key, JSON.stringify(value));
     }
   } catch (error) {
-    console.error(`Error setting ${key} in localStorage:`, error);
+    console.log(`Error setting ${key} in localStorage:`, error);
   }
 };
 
@@ -15,7 +15,7 @@ export const getLocalStorageItem = (key: string) => {
       return item ? JSON.parse(item) : null;
     }
   } catch (error) {
-    console.error("Error while getting item from localStorage:", error);
+    console.log("Error while getting item from localStorage:", error);
   }
 };
 
@@ -25,6 +25,6 @@ export const removeFromLocalStorage = (key: string) => {
       localStorage.removeItem(key);
     }
   } catch (error) {
-    console.error(`Error removing ${key} from localStorage:`, error);
+    console.log(`Error removing ${key} from localStorage:`, error);
   }
 };

@@ -40,7 +40,7 @@ export const auth = createApi({
                         setLocalStorageItem("token", responseData.token);
                     }
                 } catch (error) {
-                    console.error("Error al hacer login:", error);
+                    console.log("Error al hacer login:", error);
                 }
             },
         }),

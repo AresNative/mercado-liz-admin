@@ -47,7 +47,7 @@ export const SortableTask: React.FC<SortableTaskProps> = ({ task, refetch }) => 
             }).unwrap();
             if (refetch) refetch();
         } catch (error) {
-            console.error("Error archiving task:", error);
+            console.log("Error archiving task:", error);
         }
     };
 

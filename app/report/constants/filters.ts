@@ -59,7 +59,7 @@ export function FiltersField(data: RowData[] = [], getAPI: any): Field[] {
       }
     } catch (error) {
       if (error) {
-        console.error("Error al cargar datos:", error);
+        console.log("Error al cargar datos:", error);
       }
     }
   }

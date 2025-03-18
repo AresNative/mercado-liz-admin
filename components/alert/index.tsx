@@ -42,6 +42,15 @@ export default function Alert() {
         }
         setShow(false); // Cerrar la alerta
     };
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) {
+                setShow(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
     return (
         <section
             className={

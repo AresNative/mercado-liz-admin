@@ -113,14 +113,14 @@ export function SearchComponent(props: SearchableSelectProps) {
                                         : skill.toString();
                                     return searchText.toLowerCase().includes(searchTerm.toLowerCase());
                                 })
-                                .map((skill: any) => {
+                                .map((skill: any, key: number) => {
                                     const isObject = typeof skill === 'object' && skill !== null;
                                     const value = isObject ? skill.value.toString() : skill.toString();
                                     const label = isObject ? skill.label : skill.toString();
 
                                     return (
                                         <li
-                                            key={value}
+                                            key={key}
                                             className={`px-4 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-900 cursor-pointer ${searchTerm ? 'dark:bg-zinc-800' : ''}`}
                                             onClick={() => handleSkillToggle(value)}
                                         >

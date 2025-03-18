@@ -83,7 +83,7 @@ export default function DNDContext({ projectId, statusColumns }: DNDContextProps
                             );
                         });
                     } catch (error) {
-                        console.error('Error updating task order:', error);
+                        console.log('Error updating task order:', error);
                     }
                 }
             }
@@ -112,7 +112,7 @@ export default function DNDContext({ projectId, statusColumns }: DNDContextProps
                 ).sort((a, b) => a.order - b.order)
             );
         } catch (error) {
-            console.error('Error updating task status or order:', error);
+            console.log('Error updating task status or order:', error);
         }
     }, [tasks, statusColumns, putTaskOrder, putTaskStatus]);
 

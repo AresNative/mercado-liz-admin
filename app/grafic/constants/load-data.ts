@@ -10,11 +10,22 @@ export interface formatFilter {
 interface formatSuma {
   key: string;
 }
+interface orderBy {
+  Key: string;
+  Direction: string;
+}
 
 export interface formatLoadDate {
   filters: {
     filtros: formatFilter[];
-    sumas: formatSuma[];
+    Selects: formatSuma[];
+    sumaAs?: [
+      {
+        Key: "";
+        Alias: "";
+      }
+    ];
+    Order?: orderBy[];
   };
   page: number;
   pageSize?: number;
@@ -73,7 +84,7 @@ export async function loadDataGrafic(
 
     return chartData;
   } catch (error) {
-    console.error("Error al cargar los datos para la gráfica:", error);
+    console.log("Error al cargar los datos para la gráfica:", error);
     throw error; // Relanzar el error para manejarlo en el componente que llama a esta función
   }
 }
@@ -94,6 +105,6 @@ export async function loadData(
     // Si el error es porque la solicitud fue cancelada, no lo mostramos
     if (error.name === "AbortError") return;
 
-    console.error("Error en loadData:", error);
+    console.log("Error en loadData:", error);
   }
 }
