@@ -45,7 +45,7 @@ export function FiltersField(data: RowData[] = [], getAPI: any): Field[] {
               operator: "like",
             },
           ],
-          sumas: [{ key: filters }],
+          Selects: [{ key: filters }],
         },
         page: 1,
         pageSize: 20,

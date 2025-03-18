@@ -51,7 +51,7 @@ export default function Mermas() {
         const dataFilter: formatLoadDate = {
             filters: {
                 filtros,
-                sumas: [{ key: "Categoria" }],
+                Selects: [{ key: "Categoria" }],
             },
             page: 1,
             sum: true,
@@ -63,7 +63,7 @@ export default function Mermas() {
         const dataTotal: formatLoadDate = {
             filters: {
                 filtros,
-                sumas: [],
+                Selects: [],
             },
             page: 1,
             sum: true,
@@ -77,7 +77,7 @@ export default function Mermas() {
         const dataTable: formatLoadDate = {
             filters: {
                 filtros,
-                sumas: [
+                Selects: [
                     { key: "Nombre" },
                     { key: "Categoria" }
                 ],
