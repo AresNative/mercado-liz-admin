@@ -3,44 +3,57 @@
 import { Modal } from "@/components/modal";
 import { openModalReducer } from "@/hooks/reducers/drop-down";
 import { useAppDispatch } from "@/hooks/selector";
-import { option } from "framer-motion/client";
-import { Grip, MoveDown, MoveUp, Plus, Trash } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createSwapy } from "swapy";
 
-export default function Postulaciones() {
+interface Tasks {
+    [key: string]: string[];
+}
+export default function ScrumBoard() {
     const containerRef = useRef<HTMLElement>(null);
-    const swapyRef = useRef<ReturnType<typeof createSwapy>>(null);
+    const swapyRef = useRef<ReturnType<typeof createSwapy> | null>(null);
+    const dispatch = useAppDispatch();
+    const [tasks, setTasks] = useState<Tasks>({
+        "To Do": ["Tarea 1", "Tarea 2", "Tarea 3"],
+        "In Progress": ["Tarea 4", "Tarea 5", "Tarea 6"],
+        "Done": ["Tarea 7", "Tarea 8", "Tarea 9"]
+    });
 
     useEffect(() => {
         if (containerRef.current) {
-            // Inicializar Swapy después de que el componente se monte
             swapyRef.current = createSwapy(containerRef.current, {
-                animation: 'dynamic'
-                // Opciones adicionales...
+                animation: 'dynamic',
+                /* dragOnHold: true, */
             });
 
-            // Configurar event listeners
             const swapy = swapyRef.current;
 
-            swapy.onBeforeSwap((event) => {
-                /* console.log('beforeSwap', event); */
-                return true;
+            swapy.onBeforeSwap(() => true);
+            swapy.onSwapStart(() => console.log('Swap start'));
+
+            swapy.onSwap((event: any) => {
+                /*  const { from, to, item } = event;
+                 const task = item.task;
+                 // Extraer la columna a partir del slot (formato "ColumnName-index")
+                 const fromColumn = from.split('-')[0];
+                 const toColumn = to.split('-')[0];
+ 
+                 // Si se arrastra a otra columna, agregar una nueva instancia (sin eliminar la original)
+                 if (fromColumn !== toColumn && task) {
+                     setTasks((prevTasks) => {
+                         const newTasks = { ...prevTasks };
+                         newTasks[toColumn] = [...newTasks[toColumn], task];
+                         return newTasks;
+                     });
+                 } 
+                 
+                <uses-permission android:name="android.permission.CAMERA" />
+                <uses-feature android:name="android.hardware.camera" />
+                 
+                */
             });
+            swapy.onSwapEnd(() => console.log('Swap end'));
 
-            /* swapy.onSwapStart((event) => {
-                console.log('start', event);
-            });
-
-            swapy.onSwap((event) => {
-                console.log('swap', event);
-            });
-
-            swapy.onSwapEnd((event) => {
-                console.log('swap end:', event);
-            }); */
-
-            // Cleanup al desmontar el componente
             return () => {
                 if (swapyRef.current) {
                     swapyRef.current.destroy();
@@ -48,65 +61,35 @@ export default function Postulaciones() {
             };
         }
     }, []);
-    const dispatch = useAppDispatch();
+
     function openModal() {
-        dispatch(
-            openModalReducer({ modalName: "bidView", isOpen: true })
-        );
+        dispatch(openModalReducer({ modalName: "taskDetails", isOpen: true }));
     }
+
     return (
         <>
-            <button onClick={openModal}>Test</button>
-            <Modal
-                modalName="bidView"
-                title="You Are Bidding On"
-            >
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
+            <button onClick={openModal} className="p-2 bg-blue-500 text-white rounded-lg">Nueva Tarea</button>
+            <Modal modalName="taskDetails" title="Detalles de la Tarea">
+                <div className="grid gap-4 p-4">
+                    {/* Contenido del modal */}
                 </div>
             </Modal>
 
-
-            <section className="container flex gap-4" ref={containerRef}>
-
-                <ul className="h-2/4 flex flex-col p-2 border dark:border-zinc-700 rounded-lg gap-2">
-                    <div data-swapy-slot="a">
-                        <div data-swapy-item="a" className="bg-yellow-400 text-white text-center size-10 rounded-lg">
-                            <div>A</div>
-                        </div>
+            <section className="container grid grid-cols-3 gap-6 mt-6" ref={containerRef}>
+                {Object.keys(tasks).map((status) => (
+                    <div key={status} className="p-4 border rounded-lg dark:border-zinc-700 bg-gray-100 dark:bg-zinc-800">
+                        <h3 className="text-lg font-bold mb-4">{status}</h3>
+                        <ul className="min-h-[200px] flex flex-col gap-4">
+                            {tasks[status].map((task, i) => (
+                                <div key={`${status}-${i}`} data-swapy-slot={`${status}-${i}`}>
+                                    <div data-swapy-item={task} data-task={task} className="p-4 bg-white dark:bg-zinc-700 rounded-lg shadow-md cursor-grab">
+                                        <div>{task}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </ul>
                     </div>
-
-                    <div data-swapy-slot="b">
-                        <div data-swapy-item="b" className="bg-red-400 text-white text-center size-10 rounded-lg">
-                            <div>B</div>
-                        </div>
-                    </div>
-
-                    <div data-swapy-slot="c">
-                        <div data-swapy-item="c" className="bg-green-400 text-white text-center size-10 rounded-lg">
-                            <div>C</div>
-                        </div>
-                    </div>
-                </ul>
-                <ul className="h-2/4 flex flex-col p-2 border dark:border-zinc-700 rounded-lg gap-2">
-                    <div data-swapy-slot="d">
-                        <div data-swapy-item="d" className="bg-yellow-400 text-white text-center size-10 rounded-lg">
-                            <div>D</div>
-                        </div>
-                    </div>
-
-                    <div data-swapy-slot="e">
-                        <div data-swapy-item="e" className="bg-red-400 text-white text-center size-10 rounded-lg">
-                            <div>E</div>
-                        </div>
-                    </div>
-
-                    <div data-swapy-slot="f">
-                        <div data-swapy-item="f" className="bg-green-400 text-white text-center size-10 rounded-lg">
-                            <div>F</div>
-                        </div>
-                    </div>
-                </ul>
+                ))}
             </section>
         </>
     );
