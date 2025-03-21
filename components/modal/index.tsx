@@ -16,6 +16,7 @@ interface ModalProps {
 
 export function Modal({ modalName, title, children, maxWidth = "2xl" }: ModalProps) {
     // Handle escape key
+    const dialogRef = React.useRef<HTMLDialogElement | null>(null);
     const dispatch = useAppDispatch();
     const isOpen = useAppSelector((state) => state.dropDownReducer.modals[modalName]);
 
@@ -52,15 +53,22 @@ export function Modal({ modalName, title, children, maxWidth = "2xl" }: ModalPro
         full: "sm:max-w-full",
     }
 
-    if (!isOpen) return null
+    //if (!isOpen) return null
 
     return (
-        <div className="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-            {/* Backdrop */}
+        <dialog
+            id={modalName}
+            ref={dialogRef}
+            open={isOpen}
+            /* closedby="any" */
+            className="fixed inset-0 z-50 overflow-y-auto"
+            aria-modal="true"
+            aria-labelledby="modal-title">
+
             <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={handleBackdropClick} />
 
             {/* Modal */}
-            <div className="fixed inset-0 z-10 overflow-y-auto">
+            <section className="fixed inset-0 z-10 overflow-y-auto">
                 <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                     <div
                         className={cn(
@@ -69,16 +77,15 @@ export function Modal({ modalName, title, children, maxWidth = "2xl" }: ModalPro
                         )}
                     >
                         {/* Close button */}
-                        <div className="absolute right-4 top-4 z-10">
+                        <form method="dialog" className="absolute right-4 top-4 z-10">
                             <button
-                                type="button"
                                 className="rounded-md text-gray-400 hover:text-gray-500 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                 onClick={handleBackdropClick}
                             >
                                 <span className="sr-only">Close</span>
                                 <X className="h-6 w-6" aria-hidden="true" />
                             </button>
-                        </div>
+                        </form>
 
                         {/* Content */}
                         <div className="bg-white dark:bg-zinc-800 px-4 pb-4 pt-5 sm:p-6">
@@ -93,8 +100,8 @@ export function Modal({ modalName, title, children, maxWidth = "2xl" }: ModalPro
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </section>
+        </dialog>
     )
 }
 
