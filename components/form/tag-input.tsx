@@ -1,5 +1,6 @@
 "use client";
 
+import { Plus } from "lucide-react";
 import { useState } from "react";
 
 interface TagInputProps {
@@ -27,7 +28,8 @@ export const TagInputComponent = ({
     const [newTag, setNewTag] = useState("");
     const tags = watch(cuestion.name) || [];
 
-    const addTag = () => {
+    const addTag = (e: any) => { // Recibir el evento
+        e.preventDefault();
         if (newTag.trim() && !tags.includes(newTag.trim())) {
             setValue(cuestion.name, [...tags, newTag.trim()]);
             setNewTag("");
@@ -44,7 +46,7 @@ export const TagInputComponent = ({
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Enter") {
             e.preventDefault();
-            addTag();
+            addTag(e);
         }
     };
 
@@ -80,27 +82,13 @@ export const TagInputComponent = ({
                     onChange={(e) => setNewTag(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder={cuestion.placeholder || "Añadir etiqueta"}
-                    className="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+                    className="bg-white dark:bg-zinc-800 px-4 py-2 border dark:border-zinc-700 focus:ring-purple-500 focus:border-purple-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600 dark:text-white"
                 />
                 <button
-                    type="button"
                     onClick={addTag}
                     className="ml-2 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-600"
                 >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    >
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
+                    <Plus />
                 </button>
             </div>
             {errors[cuestion.name] && (
