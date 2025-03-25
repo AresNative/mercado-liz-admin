@@ -32,7 +32,7 @@ export default function DNDContext({ projectId, statusColumns }: DNDContextProps
             const filteredTasks = tasksData.filter((t: Task) => t.estado !== 'archivado');
             setTasks(filteredTasks);
         }
-    }, [tasksData, refetchTasks]);
+    }, [tasksData]);
 
     const handleDragStart = useCallback((event: DragStartEvent) => {
         const { active } = event;

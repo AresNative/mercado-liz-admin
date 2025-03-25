@@ -376,8 +376,8 @@ export function ScrumBoard({ initialTasks }: ScrumBoardProps) {
             {/* Summary Card */}
             <CardResumen
                 icon={<Package className="text-white" />}
-                title={`Actividad`}
-                value={"21 pts"}
+                title={`Puntos de actividad`}
+                value={`${totalStoryPoints} pts`}
             />
             {/* Task Board */}
             <div className="flex justify-end mb-4">
