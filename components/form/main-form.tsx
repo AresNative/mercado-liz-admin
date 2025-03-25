@@ -22,6 +22,7 @@ import { FileComponent as File } from "./file";
 import { ImgComponent as Image } from "./img";
 
 import { LinkForm as Link } from "@/components/link"
+import { TagInputComponent as TagInput } from "./tag-input"
 
 import { Button } from "../button";
 
@@ -157,6 +158,8 @@ export function SwitchTypeInputRender(props: any) {
       return <Search {...props} />;
     case "LINK":
       return <Link {...props} />;
+    case "TAG_INPUT":
+      return <TagInput {...props} />;
     case "Flex":
       return <FlexComponent {...props} elements={props.cuestion.elements} />;
     default:

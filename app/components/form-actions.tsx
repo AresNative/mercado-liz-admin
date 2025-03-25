@@ -28,7 +28,7 @@ export default function FormLogin() {
                 message_button={'Enviar'}
                 actionType={"post-login"}
                 dataForm={LogInField()}
-                onSuccess={(result) => {
+                onSuccess={(result: any) => {
 
                     try {
                         const token = result.data.token;

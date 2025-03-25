@@ -151,7 +151,7 @@ export default function Mermas() {
                     },
                 ]}
                 valueAssign={["search", "sucursal", "fecha_inicial", "fecha_final"]}
-                action={(values) => {
+                action={(values: any) => {
                     setSerachParam(values.search);
                     setSucursal(values.sucursal);
 

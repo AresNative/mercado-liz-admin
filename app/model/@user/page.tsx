@@ -62,13 +62,9 @@ export default function ScrumBoard() {
         }
     }, []);
 
-    function openModal() {
-        dispatch(openModalReducer({ modalName: "taskDetails", isOpen: true }));
-    }
-
     return (
         <>
-            <button onClick={openModal} className="p-2 bg-blue-500 text-white rounded-lg">Nueva Tarea</button>
+            <button onClick={() => dispatch(openModalReducer({ modalName: "taskDetails", isOpen: true }))} className="p-2 bg-blue-500 text-white rounded-lg">Nueva Tarea</button>
             <Modal modalName="taskDetails" title="Detalles de la Tarea">
                 <div className="grid gap-4 p-4">
                     {/* Contenido del modal */}

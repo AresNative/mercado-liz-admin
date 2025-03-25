@@ -26,14 +26,12 @@ const DashboardLayout = async ({ admin, user }: DashboardLayoutProps) => {
   // Renderizado en el servidor
   return (
     <Layout>
-      {/* Muestra el contenido según el rol o un mensaje por defecto */}
-      {userRole && roleContent[userRole] ? (
-        user
-      ) : (
-        user
-      )}
       <Providers>
-        <></>
+        {userRole && roleContent[userRole] ? (
+          admin
+        ) : (
+          admin
+        )}
       </Providers>
     </Layout>
   );

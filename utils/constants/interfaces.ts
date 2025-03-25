@@ -15,123 +15,192 @@ export type FieldType =
   | "FILE"
   | "IMG"
   | "SEARCH"
-  | "LINK";
+  | "LINK"
+  | "TAG_INPUT";
 
 export interface SelectOption {
   value: string;
   label: string;
 }
 
-export interface Field {
+export interface BaseField {
   id?: number;
-  type: FieldType;
   name?: string;
   label?: string;
   placeholder?: string;
   require: boolean;
-  elements?: Field[]; // For Flex type
-  options?: string[] | SelectOption[]; // For CHECKBOX_GROUP and SELECT
-  enableAutocomplete?: string; // Changed to string to match "true"
-  multi?: boolean; // For SELECT
-  multiple?: boolean; // For SELECT
-  maxLength?: number; // For TEXT_AREA and INPUT
-  valueDefined?: any;
-  href?: string;
+  valueDefined?: unknown;
+}
+
+export interface FlexField extends BaseField {
+  type: "Flex";
+  elements: Field[];
+}
+
+export interface InputField extends BaseField {
+  type: "INPUT";
+  maxLength?: number;
+  pattern?: string;
+  minLength?: number;
+}
+
+export interface PasswordField extends BaseField {
+  type: "PASSWORD";
+  minLength?: number;
+  pattern?: string;
+}
+
+export interface PhoneField extends BaseField {
+  type: "PHONE";
+  pattern?: string;
+}
+
+export interface TextAreaField extends BaseField {
+  type: "TEXT_AREA";
+  maxLength?: number;
+  minLength?: number;
+  rows?: number;
+}
+
+export interface MailField extends BaseField {
+  type: "MAIL";
+  pattern?: string;
+}
+
+export interface DateField extends BaseField {
+  type: "DATE";
+  min?: string;
+  max?: string;
+}
+
+export interface DateRangeField extends BaseField {
+  type: "DATE_RANGE";
+  multiple?: boolean;
+}
+
+export interface CheckboxField extends BaseField {
+  type: "CHECKBOX";
+}
+
+export interface CheckboxGroupField extends BaseField {
+  type: "CHECKBOX_GROUP";
+  options: string[];
+}
+
+export interface SelectField extends BaseField {
+  type: "SELECT";
+  options: string[] | SelectOption[];
+  multi?: boolean;
+  valueDefined?: unknown;
+  enableAutocomplete?: string;
+}
+
+export interface FileField extends BaseField {
+  type: "FILE";
+  accept?: string;
+  multiple?: boolean;
+}
+
+export interface ImageField extends BaseField {
+  type: "IMG";
+  accept?: string;
+}
+
+export interface SearchField extends BaseField {
+  type: "SEARCH";
+  options?: string[];
+  multi?: boolean;
+  saveData?: boolean;
+}
+
+export interface LinkField extends BaseField {
+  type: "LINK";
+  href: string;
+}
+
+export interface TagInputField extends BaseField {
+  type: "TAG_INPUT";
+  suggestions?: string[];
+}
+
+export type Field =
+  | FlexField
+  | InputField
+  | PasswordField
+  | PhoneField
+  | TextAreaField
+  | MailField
+  | DateField
+  | DateRangeField
+  | CheckboxField
+  | CheckboxGroupField
+  | SelectField
+  | FileField
+  | ImageField
+  | SearchField
+  | LinkField
+  | TagInputField;
+
+export interface FormError {
+  message?: string;
+}
+
+export interface FormErrors {
+  [key: string]: FormError | undefined;
+}
+
+export interface BaseFormProps {
+  handleSubmit: () => void;
+  setError: (name: string, error: object) => void;
+  clearErrors: (name: string) => void;
+  errors: FormErrors;
 }
 
 export interface MainFormProps {
   message_button: string;
   actionType: string;
   dataForm: Field[];
-  aditionalData?: any;
-  valueAssign?: any;
+  aditionalData?: Record<string, unknown>;
+  valueAssign?: string | string[];
   action?: (...args: any[]) => any;
-  onSuccess?: (result: any, formData: any) => void;
+  onSuccess?: (result: unknown, formData: Record<string, unknown>) => void;
 }
 
-export interface ChecboxFormProps {
-  cuestion: {
-    name: string;
-    placeholder?: string;
-    label?: string;
-    require: boolean;
-    options: string[];
-  };
-  control: any;
-  handleSubmit: () => void;
+export interface ChecboxFormProps extends BaseFormProps {
+  cuestion: CheckboxGroupField;
+  control: unknown;
   setValue: (name: string, value: boolean) => Promise<void>;
   register: (name: string, options: { required?: string }) => object;
-  setError: (name: string, error: object) => void;
-  clearErrors: (name: string) => void;
   watch: (name: string) => string;
-  errors: Record<string, { message?: string } | undefined>;
 }
 
-export interface DateRangeInputProps {
-  cuestion: {
-    name: string;
-    placeholder?: string;
-    label?: string;
-    require: boolean;
-  };
-  control: any; // Replace with the actual type from react-hook-form
-  handleSubmit: () => void;
+export interface DateRangeInputProps extends BaseFormProps {
+  cuestion: DateRangeField;
+  control: unknown;
   setValue: (name: string, value: string) => void;
-  setError: (name: string, error: object) => void;
-  clearErrors: (name: string) => void;
-  errors: Record<string, { message?: string } | undefined>;
 }
 
-export interface InputFormProps {
-  cuestion: {
-    name: string;
-  } & Field;
-  handleSubmit: () => void;
+export interface InputFormProps extends BaseFormProps {
+  cuestion: Field;
   watch: (name: string) => string;
   getValues: (name: string) => string;
   setValue: (name: string, value: string) => void;
-  setError: (name: string, error: object) => void;
-  clearErrors: (name: string) => void;
   register: (name: string, options: { required?: string }) => object;
-  errors: Record<string, { message?: string } | undefined>;
 }
 
-export interface InputMediaProps {
-  cuestion: {
-    name: string;
-    placeholder?: string;
-    label?: string;
-    require?: boolean;
-    accept?: string; // Allowed file types
-    multiple?: boolean;
-  };
-  handleSubmit: () => void;
+export interface InputMediaProps extends BaseFormProps {
+  cuestion: FileField | ImageField;
   setValue: (name: string, value: File | File[] | null) => void;
   register: (name: string, options: { required?: string }) => object;
-  errors: Record<string, { message?: string } | undefined>;
 }
 
-export interface SearchableSelectProps {
-  cuestion: {
-    name: string;
-    placeholder?: string;
-    label?: string;
-    require?: boolean;
-    options: string[];
-    multi?: boolean;
-    valueDefined?: string;
-    enableAutocomplete?: boolean;
-    saveData?: boolean;
-  };
-  handleSubmit: () => any;
+export interface SearchableSelectProps extends BaseFormProps {
+  cuestion: SearchField;
   setValue: (name: string, value: string) => void;
-  setError: (name: string, error: object) => void;
-  clearErrors: (name: string) => void;
   register: (
     name: string,
     options: Record<string, unknown>
   ) => Record<string, unknown>;
-  errors: Record<string, { message?: string } | undefined>;
 }
 
 export interface ButtonProps {
@@ -141,17 +210,18 @@ export interface ButtonProps {
   color?: keyof typeof alertClasses;
   children?: React.ReactNode;
   disabled?: boolean;
-  onClick?: (...args: any[]) => any;
+  onClick?: (...args: unknown[]) => unknown;
 }
 
 export interface UserRoleRendererProps {
-  user: React.ReactNode; // Renderizado cuando el rol es "user"
-  admin: React.ReactNode; // Renderizado cuando el rol es "admin"
-  fallback: React.ReactNode; // Renderizado cuando el rol no es reconocido
-  role: string | null; // El rol del usuario, puede ser "admin", "user", "none", o null
-  loadingRole: boolean; // Indicador de si se está cargando el rol
-  error: string | null; // Error al obtener el rol
+  user: React.ReactNode;
+  admin: React.ReactNode;
+  fallback: React.ReactNode;
+  role: string | null;
+  loadingRole: boolean;
+  error: string | null;
 }
+
 export interface DashboardLayoutProps {
   admin: React.ReactNode;
   user: React.ReactNode;
