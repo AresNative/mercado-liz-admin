@@ -11,7 +11,7 @@ export function MailComponent(props: InputFormProps) {
         if (cuestion.valueDefined) {
             props.setValue(cuestion.name, cuestion.valueDefined);
         }
-    }, [cuestion.valueDefined, cuestion.name, props]);
+    }, [cuestion.valueDefined]);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;

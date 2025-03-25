@@ -61,7 +61,7 @@ export function SelectComponent(props: SearchableSelectProps) {
         if (cuestion.valueDefined) {
             props.setValue(cuestion.name, cuestion.valueDefined);
         }
-    }, [cuestion.valueDefined, cuestion.name, props]);
+    }, [cuestion.valueDefined]);
     useEffect(() => {
         // Prepara el valor a setear: si es multi, lo junta en un string, de lo contrario toma el primer elemento
         const value = cuestion.multi

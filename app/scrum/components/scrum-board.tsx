@@ -376,7 +376,7 @@ export function ScrumBoard({ initialTasks }: ScrumBoardProps) {
             {/* Summary Card */}
             <CardResumen
                 icon={<Package className="text-white" />}
-                title={`Puntos de actividad`}
+                title={`Actividad`}
                 value={`${totalStoryPoints} pts`}
             />
             {/* Task Board */}
@@ -666,6 +666,7 @@ export function ScrumBoard({ initialTasks }: ScrumBoardProps) {
                                 name: "title",
                                 label: "Título",
                                 placeholder: "Ingrese el título de la tarea",
+                                valueDefined: editingTask.title,
                                 require: true
                             },
                             {
@@ -673,6 +674,7 @@ export function ScrumBoard({ initialTasks }: ScrumBoardProps) {
                                 name: "description",
                                 label: "Descripción",
                                 placeholder: "Ingrese la descripción de la tarea",
+                                valueDefined: editingTask.description,
                                 require: true
                             },
                             {
@@ -680,6 +682,7 @@ export function ScrumBoard({ initialTasks }: ScrumBoardProps) {
                                 name: "assignee",
                                 label: "Asignado a",
                                 placeholder: "Ingrese el nombre del asignado",
+                                valueDefined: editingTask.assignee,
                                 require: true
                             },
                             {
@@ -723,69 +726,7 @@ export function ScrumBoard({ initialTasks }: ScrumBoardProps) {
                                 ],
                                 require: true
                             }
-                        ]/* [
-                            {
-                                type: "INPUT",
-                                name: "title",
-                                label: "Título",
-                                placeholder: "Título de la tarea",
-                                valueDefined: editingTask.title,
-                                require: true
-                            },
-                            {
-                                type: "TEXT_AREA",
-                                name: "description",
-                                label: "Descripción",
-                                placeholder: "Descripción de la tarea",
-                                valueDefined: editingTask.description,
-                                require: true
-                            },
-                            {
-                                type: "INPUT",
-                                name: "assignee",
-                                label: "Asignado a",
-                                placeholder: "Nombre del asignado",
-                                valueDefined: editingTask.assignee,
-                                require: true
-                            },
-                            {
-                                type: "SELECT",
-                                name: "priority",
-                                label: "Prioridad",
-                                valueDefined: editingTask.priority,
-                                options: [
-                                    { value: "low", label: "Baja" },
-                                    { value: "medium", label: "Media" },
-                                    { value: "high", label: "Alta" }
-                                ]
-                            },
-                            {
-                                type: "TAG_INPUT",
-                                name: "tags",
-                                label: "Etiquetas",
-                                valueDefined: editingTask.tags,
-                                placeholder: "Añadir etiqueta"
-                            },
-                            {
-                                type: "INPUT",
-                                name: "storyPoints",
-                                label: "Puntos de Historia",
-                                minLength: 1,
-                                valueDefined: editingTask.storyPoints
-                            },
-                            {
-                                type: "SELECT",
-                                name: "status",
-                                label: "Estado",
-                                valueDefined: editingTask.status,
-                                options: [
-                                    { value: "backlog", label: "Backlog" },
-                                    { value: "todo", label: "Por hacer" },
-                                    { value: "in-progress", label: "En progreso" },
-                                    { value: "done", label: "Completado" }
-                                ]
-                            }
-                        ] */}
+                        ]}
                         actionType="edit-task"
                         action={() => {
                             dispatch(closeModalReducer({ modalName: "editTask" }));
