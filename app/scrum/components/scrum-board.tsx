@@ -60,9 +60,7 @@ export function ScrumBoard({ initialTasks }: ScrumBoardProps) {
     const [dragOverColumn, setDragOverColumn] = useState<string | null>(null)
     const [dragOverTaskId, setDragOverTaskId] = useState<string | null>(null)
     const [dragPosition, setDragPosition] = useState<"above" | "below" | null>(null)
-    const [createModalOpen, setCreateModalOpen] = useState(false)
     const [detailsModalOpen, setDetailsModalOpen] = useState(false)
-    const [editModalOpen, setEditModalOpen] = useState(false)
 
     // Ref to store the original order of tasks before dragging
     const originalTasksRef = useRef<Task[]>([])
@@ -83,9 +81,7 @@ export function ScrumBoard({ initialTasks }: ScrumBoardProps) {
     useEffect(() => {
         const handleEscapeKey = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
-                setCreateModalOpen(false)
                 setDetailsModalOpen(false)
-                setEditModalOpen(false)
             }
         }
 
@@ -292,7 +288,6 @@ export function ScrumBoard({ initialTasks }: ScrumBoardProps) {
                 priority: "medium",
                 tags: ["planning"],
             })
-            setCreateModalOpen(false)
         } catch (error) {
             console.error("Failed to create task:", error)
         }
@@ -311,7 +306,6 @@ export function ScrumBoard({ initialTasks }: ScrumBoardProps) {
             }
 
             setEditingTask(null)
-            setEditModalOpen(false)
         } catch (error) {
             console.error("Failed to update task:", error)
         }
@@ -335,7 +329,6 @@ export function ScrumBoard({ initialTasks }: ScrumBoardProps) {
     const openEditTask = (task: Task, e: React.MouseEvent) => {
         e.stopPropagation()
         setEditingTask(task)
-        setEditModalOpen(true)
         dispatch(openModalReducer({ modalName: "editTask", isOpen: true }))
     }
 
@@ -634,7 +627,6 @@ export function ScrumBoard({ initialTasks }: ScrumBoardProps) {
                                         onClick={() => {
                                             setEditingTask(selectedTask)
                                             setDetailsModalOpen(false)
-                                            setEditModalOpen(true)
                                         }}
                                         className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
                                     >
