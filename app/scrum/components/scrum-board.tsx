@@ -336,6 +336,7 @@ export function ScrumBoard({ initialTasks }: ScrumBoardProps) {
         e.stopPropagation()
         setEditingTask(task)
         setEditModalOpen(true)
+        dispatch(openModalReducer({ modalName: "editTask", isOpen: true }))
     }
 
     const confirmDeleteTask = (id: string, e: React.MouseEvent) => {
