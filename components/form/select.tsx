@@ -61,7 +61,7 @@ export function SelectComponent(props: SearchableSelectProps) {
         if (cuestion.valueDefined) {
             props.setValue(cuestion.name, cuestion.valueDefined);
         }
-    }, [cuestion.valueDefined]);
+    }, [cuestion.valueDefined, cuestion.name, props]);
     useEffect(() => {
         // Prepara el valor a setear: si es multi, lo junta en un string, de lo contrario toma el primer elemento
         const value = cuestion.multi
@@ -98,7 +98,7 @@ export function SelectComponent(props: SearchableSelectProps) {
                             ? (cuestion.multi
                                 ? `${formData.skills.length} seleccionadas`
                                 : formData.skills[0])
-                            : `Seleccionar ${cuestion.name}`}
+                            : `${cuestion.valueDefined ?? "Seleccionar " + cuestion.name}`}
                     </span>
                     <ChevronDown className="w-4 h-4" />
                 </div>
