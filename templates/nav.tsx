@@ -27,11 +27,11 @@ export default function Nav() {
                 <div className="mx-auto px-6 py-4 sm:px-8">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                            <img
-                                alt="Logo"
-                                src="logo.png"
-                                className="h-8 w-auto"
-                            />
+                            <Link href="/" className="flex items-center">
+                                <div className="h-8 w-8 rounded-br-lg rounded-tl-lg bg-indigo-600 text-white flex items-center justify-center text-lg font-bold">
+                                    <span className='pl-2 pt-4'>ML</span>
+                                </div>
+                            </Link>
                             <div className="hidden sm:flex space-x-6 ml-10">
                                 {navigation.map((item) => (
                                     <Link
