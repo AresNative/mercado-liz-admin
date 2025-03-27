@@ -681,6 +681,30 @@ export function ScrumBoard({ initialTasks }: ScrumBoardProps) {
                                                             <p className="mt-1 text-sm text-gray-700">Última actualización de la tarea.</p>
                                                         </div>
 
+                                                        {/* Historial de comentarios */}
+                                                        <div className="p-2 bg-gray-50 rounded-md border border-gray-200">
+                                                            <div className="flex justify-between items-start">
+                                                                <span className="text-xs font-medium text-gray-700">Ana García</span>
+                                                                <span className="text-xs text-gray-500">
+                                                                    {new Date(Date.now() - 86400000).toLocaleDateString()}
+                                                                </span>
+                                                            </div>
+                                                            <p className="mt-1 text-sm text-gray-700">
+                                                                He actualizado el diseño según los comentarios del cliente.
+                                                            </p>
+                                                            <div className="mt-2 flex flex-wrap gap-2">
+                                                                <div className="w-20 h-20 border border-gray-200 rounded-md bg-gray-100 flex items-center justify-center overflow-hidden">
+                                                                    <img
+                                                                        src="/placeholder.svg?height=80&width=80"
+                                                                        alt="Imagen adjunta"
+                                                                        className="object-cover"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+
+
                                                         {/* Formulario para agregar comentarios */}
                                                         <div className="border border-gray-200 rounded-md overflow-hidden">
                                                             <textarea
@@ -812,28 +836,6 @@ export function ScrumBoard({ initialTasks }: ScrumBoardProps) {
                                                                             </button>
                                                                         </div>
                                                                     ))}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Historial de comentarios */}
-                                                        <div className="p-2 bg-gray-50 rounded-md border border-gray-200">
-                                                            <div className="flex justify-between items-start">
-                                                                <span className="text-xs font-medium text-gray-700">Ana García</span>
-                                                                <span className="text-xs text-gray-500">
-                                                                    {new Date(Date.now() - 86400000).toLocaleDateString()}
-                                                                </span>
-                                                            </div>
-                                                            <p className="mt-1 text-sm text-gray-700">
-                                                                He actualizado el diseño según los comentarios del cliente.
-                                                            </p>
-                                                            <div className="mt-2 flex flex-wrap gap-2">
-                                                                <div className="w-20 h-20 border border-gray-200 rounded-md bg-gray-100 flex items-center justify-center overflow-hidden">
-                                                                    <img
-                                                                        src="/placeholder.svg?height=80&width=80"
-                                                                        alt="Imagen adjunta"
-                                                                        className="object-cover"
-                                                                    />
                                                                 </div>
                                                             </div>
                                                         </div>
